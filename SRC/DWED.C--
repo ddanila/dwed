@@ -101,8 +101,11 @@ inline void CHDIR(DX) {
         }
 }
 
-//  return ES:DI = env string 
+//  return ES:DI = env string
 inline void ENVSTR(AX) {
+        $PUSH BX;
+        BX = AX;
+        WHILE(DSBYTE[BX] != 0) BX++;
         ES = DSWORD[ENV_IN_PSP];
         DI = 0;
         WHILE (ESBYTE[DI] != 0) {
@@ -110,14 +113,20 @@ inline void ENVSTR(AX) {
                 CX = 128;
                 $REPZ
                 $CMPSB
-                SI--;
-                DI--;
-                BH = DSBYTE[SI];
-                BL = ESBYTE[DI];
-                IF(BX == '=') RETURN;
+                // matched only if we consumed the target's NUL (SI-1==BX)
+                // and the env byte we stopped on is '='
+                IF(SI - 1 == BX) {
+                        DI--;
+                        IF(ESBYTE[DI] == '=') {
+                                DI++;
+                                $POP BX;
+                                RETURN;
+                        }
+                }
                 WHILE(ESBYTE[DI] != 0) DI++;
                 DI++;
         }
+        $POP BX;
 }
 
 // DX = fname
@@ -244,11 +253,16 @@ inline void INIT() {
                 $LODSB;
         }
         SI += 2;
+        CX = 255;
         WHILE(TRUE) {
                 $LODSB;
                 IF(AL == 0) BREAK;
+                IF(CX == 0) BREAK;
                 $STOSB;
+                CX--;
         }
+        AL = 0;
+        $STOSB;
         $PUSH CS;
         $POP DS;
         WHILE(DI != #dwed) {
@@ -273,11 +287,16 @@ inline void INIT() {
         $POP DS;
         $PUSH CS;
         $POP ES;
+        CX = 255;
         WHILE(TRUE) {
                 $LODSB;
-                $STOSB;
                 IF(AL == 0) BREAK;
+                IF(CX == 0) BREAK;
+                $STOSB;
+                CX--;
         }
+        AL = 0;
+        $STOSB;
         $PUSH CS;
         $POP DS;
         // CP/M BDOS API call - not need :)
