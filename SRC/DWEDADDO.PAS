@@ -213,8 +213,8 @@ begin
                                 '+': calc_op1 := calc_op2 + calc_op1;
                                 '-': calc_op1 := calc_op2 - calc_op1;
                                 '*': calc_op1 := calc_op2 * calc_op1;
-                                '/': calc_op1 := calc_op2 div calc_op1;
-                                'M': calc_op1 := calc_op2 mod calc_op1;
+                                '/': if calc_op1 <> 0 then calc_op1 := calc_op2 div calc_op1;
+                                'M': if calc_op1 <> 0 then calc_op1 := calc_op2 mod calc_op1;
                                 '&': calc_op1 := calc_op2 and calc_op1;
                                 '|': calc_op1 := calc_op2 or calc_op1;
                                 '^': calc_op1 := calc_op2 xor calc_op1;

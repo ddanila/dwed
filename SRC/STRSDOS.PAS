@@ -38,7 +38,7 @@ function create(next, prev : pointer; body : string) : pointer;
 function put(r : pointer; var body : string) : pointer;
 procedure get(r : pointer; var dest : string);
 function delete(r : pointer; num_from, num_to : longint) : pointer;
-function merge(r : pointer) : pointer;
+function merge(r : pointer; var merged : boolean) : pointer;
 
 function is_first(r : pointer) : boolean;
 function is_last(r : pointer) : boolean;
@@ -232,7 +232,7 @@ begin
         end;
         while (t <> nil) and (t^.num <= num_to) do begin
                         t := del_str(t);
-                        if t^.prev = nil then r := t;
+                        if (t <> nil) and (t^.prev = nil) then r := t;
         end;
         while (t <> nil) do begin
                 t^.num := n; inc(n);
@@ -241,10 +241,11 @@ begin
         delete := r;
 end;
 
-function merge(r : pointer) : pointer;
+function merge(r : pointer; var merged : boolean) : pointer;
 var s1, s2 : string;
         t1, t2 :PDosStringRec;
 begin
+        merged := false;
         if PDosStringRec(r)^.next <> nil then begin
                 t1 := r;
                 t2 := t1^.next;
@@ -254,6 +255,7 @@ begin
                         r := strsdos.create(t2^.next, t1^.prev, s1 + s2);
                         free_str(t1);
                         free_str(t2);
+                        merged := true;
                 end;
         end;
         merge := r;

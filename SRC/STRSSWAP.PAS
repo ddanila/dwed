@@ -39,7 +39,7 @@ function create(next, prev : dword; body : string) : dword;
 function put(r : dword; var body : string) : dword;
 procedure get(r : dword; var dest : string);
 function delete(r : dword; num_from, num_to : dword) : dword;
-function merge(r : dword) : dword;
+function merge(r : dword; var merged : boolean) : dword;
 
 function is_first(r : dword) : boolean;
 function is_last(r : dword) : boolean;
@@ -283,11 +283,12 @@ begin
         delete := r;
 end;
 
-function merge(r : dword) : dword;
+function merge(r : dword; var merged : boolean) : dword;
 var     s1, s2 : string;
         t1, t2 : TExtStringRec;
         r1, r2 : dword;
 begin
+        merged := false;
         r1 := r;
         dbb_get(dbb_idx, r1, t1);
         r2 := t1.next;
@@ -309,6 +310,7 @@ begin
                         dbb_get(dbb_idx, t1.next, t2);
                         t2.prev := r1;
                         dbb_put(dbb_idx, t1.next, t2);
+                        merged := true;
                 end;
         end;
         merge := r;

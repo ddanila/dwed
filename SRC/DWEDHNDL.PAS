@@ -535,6 +535,7 @@ end;
 function hk_bs(var ctx:TEditorContext; event:PEvent):integer;
 var     r : integer;
         s : string;
+        merged : boolean;
 begin
         r := SCRU_NONE;
         if ctx.current^.editor.selection then begin
@@ -549,15 +550,21 @@ begin
                                 with ctx.current^ do begin
                                         cline := strs.go_prev(cline);
                                         strs.get(cline, s);
-                                        cline := strs.merge(cline);
-                                        rline := strs.go_first(cline);
-                                        if scry <> 0 then dec(scry);
-                                        total := strs.renum(rline);
-                                        chg := true;
-                                        editor.x := length(s) + 1;
+                                        cline := strs.merge(cline, merged);
+                                        if merged then begin
+                                                rline := strs.go_first(cline);
+                                                if scry <> 0 then dec(scry);
+                                                total := strs.renum(rline);
+                                                chg := true;
+                                                editor.x := length(s) + 1;
+                                        end else begin
+                                                cline := strs.go_next(cline);
+                                        end;
                                 end;
-                                load_ed(ctx);
-                                r := SCRU_FULL;
+                                if merged then begin
+                                        load_ed(ctx);
+                                        r := SCRU_FULL;
+                                end;
                         end;
                 end else begin
                         with ctx.current^ do begin
@@ -573,6 +580,7 @@ end;
 
 function hk_del(var ctx:TEditorContext; event:PEvent):integer;
 var     r : integer;
+        merged : boolean;
 begin
         r := SCRU_NONE;
         if ctx.current^.editor.selection then begin
@@ -584,13 +592,17 @@ begin
                 if ctx.current^.editor.x > length(ctx.current^.editor.line) then begin
                         commit(ctx);
                         with ctx.current^ do begin
-                                cline := strs.merge(cline);
-                                if strs.is_first(cline) then rline := cline;
-                                total := strs.renum(rline);
-                                chg := true;
+                                cline := strs.merge(cline, merged);
+                                if merged then begin
+                                        if strs.is_first(cline) then rline := cline;
+                                        total := strs.renum(rline);
+                                        chg := true;
+                                end;
                         end;
-                        load_ed(ctx);
-                        r := SCRU_FULL;
+                        if merged then begin
+                                load_ed(ctx);
+                                r := SCRU_FULL;
+                        end;
                 end else begin
                         with ctx.current^ do begin
                                 System.delete(editor.line, editor.x, 1);

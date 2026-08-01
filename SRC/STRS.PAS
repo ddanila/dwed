@@ -44,7 +44,7 @@ procedure free(r : EditorStr);
 function put(r : EditorStr; var body : string) : EditorStr;
 procedure get(r : EditorStr; var dest : string);
 function delete(r : EditorStr; num_from, num_to : longint) : EditorStr;
-function merge(r : EditorStr) : EditorStr;
+function merge(r : EditorStr; var merged : boolean) : EditorStr;
 function is_first(r : EditorStr) : boolean;
 function is_last(r : EditorStr) : boolean;
 
@@ -236,11 +236,11 @@ begin
         spinner_stop;
 end;
 
-function merge(r : EditorStr) : EditorStr;
+function merge(r : EditorStr; var merged : boolean) : EditorStr;
 begin
-        if memType = MT_SXMS then merge := EditorStr(strssxms.merge(dword(r)))
-        else if memType = MT_SWAP then merge := EditorStr(strsswap.merge(dword(r)))
-        else merge := EditorStr(strsdos.merge(pointer(r)));
+        if memType = MT_SXMS then merge := EditorStr(strssxms.merge(dword(r), merged))
+        else if memType = MT_SWAP then merge := EditorStr(strsswap.merge(dword(r), merged))
+        else merge := EditorStr(strsdos.merge(pointer(r), merged));
 end;
 
 function append(r : EditorStr; var pos : integer; p : pchar; var lnum:word) : EditorStr;

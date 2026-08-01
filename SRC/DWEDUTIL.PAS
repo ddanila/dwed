@@ -495,6 +495,7 @@ var
         bline, eline      : EditorStr;
         lineStr  : string;
         is_last  : boolean;
+        merged   : boolean;
 begin
         if not ctx.current^.editor.selection then exit;
         get_sel_coord(ctx, sb_x, sb_y, se_x, se_y);
@@ -522,7 +523,7 @@ begin
                                 lineStr := copy(lineStr, se_x, length(lineStr) - se_x + 1);
                                 eline := strs.put(eline, lineStr);
                         end;
-                        bline := strs.merge(bline);
+                        bline := strs.merge(bline, merged);
                 end;
                 ctx.current^.cline := bline;
         end;

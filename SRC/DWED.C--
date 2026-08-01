@@ -261,8 +261,7 @@ inline void INIT() {
                 $STOSB;
                 CX--;
         }
-        AL = 0;
-        $STOSB;
+        ESBYTE[DI] = 0;
         $PUSH CS;
         $POP DS;
         WHILE(DI != #dwed) {
