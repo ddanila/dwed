@@ -19,7 +19,9 @@ mechanism. Save, Save As, Save All, Close, Exit, New, Open, Windows, and Next
 Window use the checked entry and report an error before proceeding when
 replacement fails. Creating or selecting another document must wait until the
 current edited line is committed. Save All stops on the failing document so the
-user can retry it.
+user can retry it. External-command preflight also stops on commit refusal,
+selects the failing document, and returns before writing session state or
+releasing documents.
 
 `STRS.try_done` discards the index before releasing payload ownership. Refused
 index close retains the payload store; refused deletion retains its cleanup
@@ -36,7 +38,10 @@ with injected payload write failure. The subsequent
 to document creation and switching, partial index writes with retained rollback,
 a separate unchanged document, and conventional-memory allocation refusal.
 Next Window is retried successfully after the failure to verify publication
-before switching. A BIOS keyboard hook acknowledges only the error dialog; filesystem failures use real DOS file handles with optional cache
+before switching. The [handoff report](handoff-commit-milestone.json) adds
+F5/F8/F9 event-handler refusal tests, including an unselected failing document,
+and ordinary launch/resume and recursive-launch regression checks.
+A BIOS keyboard hook acknowledges only the error dialog; filesystem failures use real DOS file handles with optional cache
 allocation refused during fixture setup.
 
 Remaining command callers still use legacy `commit`/`put`, whose own updates

@@ -1,7 +1,8 @@
 { SPDX-License-Identifier: MIT }
 program strput;
-uses cachehook,dos,strs,dwedtype,dwedutil,system2,dwedhndl,dwedcmd;
+uses cachehook,dos,strs,dwedtype,dwedutil,system2,dwedhndl,dwedcmd,event,kminput;
 const lines=1100; target_number=910;
+      external_keys:array[1..3] of byte=(SCAN_F5,SCAN_F8,SCAN_F9);
       commands:array[1..9] of TEditorCommand=(CMD_SAVE,CMD_SAVE_AS,CMD_SAVE_ALL,CMD_CLOSE,CMD_EXIT,
           CMD_NEW,CMD_OPEN,CMD_WINDOWS,CMD_NEXT_WINDOW);
 var output:text; checks:longint; backend,kind,i,j,error:integer;
@@ -9,7 +10,7 @@ var output:text; checks:longint; backend,kind,i,j,error:integer;
     selected,fault,hits,reads,writes,payload_writes,payload_closes:word;
     root,last,target,added,n,p,other:EditorStr; body,oldbody,actual:string;
     ctx:TEditorContext; filectx,snapshot,secondctx,second_snapshot:TFileContext; ok:boolean; baseline:longint;
-    held:array[0..63] of pointer; held_count:integer; amount:word; command_index,command_fault,result_code,key_reads:integer;
+    held:array[0..63] of pointer; held_count:integer; amount:word; command_index,command_fault,result_code,key_reads:integer; e:TEvent;
 procedure intercept(flags,cs,ip,ax,bx,cx,dx,si,di,ds,es,bp:word); interrupt;
 var r:registers; service:byte; matching,reject:boolean;
 begin
@@ -73,7 +74,8 @@ begin
         filectx.editor.line:=body; filectx.editor.chg:=true;
         filectx.editor.x:=3; filectx.editor.sel_x:=2; filectx.editor.sel_row:=909;
         filectx.editor.selection:=true; filectx.total:=lines;
-        filectx.format.newline:=#13#10; snapshot:=filectx;
+        filectx.format.newline:=#13#10; filectx.config:=@ctx.config;
+        filectx.editor.desired_cell:=-1; snapshot:=filectx;
 end;
 procedure unchanged;
 begin
@@ -102,6 +104,9 @@ begin
         System.Assign(output,'A:\STRPUT.LOG'); System.Rewrite(output);
         GetIntVec($16,old16); GetIntVec($21,old21); GetIntVec($60,old60); SetIntVec($60,old21);
         FillChar(ctx,sizeof(ctx),0); selected:=1;
+        ctx.config.width:=80; ctx.config.height:=25; ctx.config.tab_size:=8;
+        ctx.config.udef_f5:='ECHO HANDOFF'; ctx.config.udef_f8:=ctx.config.udef_f5;
+        ctx.config.udef_f9:=ctx.config.udef_f5;
         for backend:=1 to 2 do begin
                 System.Writeln(output,'backend ',backend,' fixtures'); System.Flush(output);
                 baseline:=MemAvail; fault:=0; handles:=0; collect:=true;
@@ -182,6 +187,31 @@ begin
                 check((result_code=SCRU_FULL) and (ctx.current=@secondctx),'window switch retries after failure');
                 check(filectx.chg and not filectx.editor.chg,'window switch commits source line');
                 expect_target(body); ctx.current:=@filectx;
+                for command_fault:=1 to 2 do
+                for command_index:=1 to 3 do begin
+                        kind:=40+command_index;
+                        check(strs.retry_update(error),'settle previous handoff rollback');
+                        check(strs.try_put(target,oldbody,error),'restore handoff fixture'); evict;
+                        body:='unsaved handoff text'; prepare_context; ctx.all:=@filectx;
+                        FillChar(secondctx,sizeof(secondctx),0); secondctx.rline:=last;
+                        secondctx.cline:=last; secondctx.scrline:=last; secondctx.config:=@ctx.config;
+                        secondctx.editor.desired_cell:=-1; second_snapshot:=secondctx;
+                        filectx.next:=@secondctx; snapshot:=filectx;
+                        { Refusal must also stop the scan when another document was selected. }
+                        if command_index=2 then ctx.current:=@secondctx;
+                        FillChar(e,sizeof(e),0); e.etype:=KEYBOARD; e.scancode:=external_keys[command_index];
+                        selected:=1; fault:=1; if command_fault=2 then begin selected:=2; fault:=4 end;
+                        key_reads:=0; SetIntVec($16,@acknowledge); arm;
+                        result_code:=process_event(ctx,e); disarm; SetIntVec($16,old16);
+                        check((hits>0) and (key_reads=1),'external command reports commit refusal');
+                        check((result_code=SCRU_FULL) and (ctx.exit_code=0),'refusal cannot launch external command');
+                        check((ctx.current=@filectx) and (ctx.all=@filectx),'handoff retains documents and selects failing one');
+                        unchanged; expect_target(oldbody);
+                        for i:=0 to sizeof(secondctx)-1 do
+                                check(Mem[Seg(secondctx):Ofs(secondctx)+i]=Mem[Seg(second_snapshot):Ofs(second_snapshot)+i],
+                                      'handoff preserves other document');
+                        if command_fault=2 then check(strs.pending_update,'handoff retains index rollback');
+                end;
                 kind:=11; check(strs.retry_update(error),'settle before discard test');
                 check(strs.try_put(target,oldbody,error),'discard fixture'); evict;
                 body:='unsaved replacement'; prepare_context; selected:=2; fault:=3; arm;
@@ -218,6 +248,14 @@ begin
                 result_code:=execute_command(ctx,commands[command_index]); SetIntVec($16,old16);
                 check((result_code=SCRU_FULL) and (key_reads=1),'command reports DOS growth allocation refusal');
                 check((ctx.current=@filectx) and (ctx.all=@filectx),'DOS command retains document ownership'); unchanged;
+        end;
+        for command_index:=1 to 3 do begin
+                FillChar(e,sizeof(e),0); e.etype:=KEYBOARD; e.scancode:=external_keys[command_index];
+                key_reads:=0; SetIntVec($16,@acknowledge);
+                result_code:=process_event(ctx,e); SetIntVec($16,old16);
+                check((result_code=SCRU_FULL) and (key_reads=1),'handoff reports DOS allocation refusal');
+                check((ctx.current=@filectx) and (ctx.all=@filectx) and (ctx.exit_code=0),'DOS handoff retains document ownership');
+                unchanged;
         end;
         FreeMem(other,amount); while held_count>0 do begin dec(held_count); FreeMem(held[held_count],16384) end;
         check(checked_commit,'DOS growth retry'); target:=filectx.cline; root:=filectx.rline;

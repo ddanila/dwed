@@ -1221,7 +1221,9 @@ begin
                 srcctx := ctx.current;
                 ctx.current := ctx.all;
                 while (ctx.current <> nil) do begin
-                        commit(ctx);
+                        if not try_commit(ctx,errCode) then begin
+                                handle_error(ctx,errCode); hk_userdef:=SCRU_FULL; exit;
+                        end;
                         if ctx.current^.chg then begin
                                 scr.cln(0, 0, ctx.config.color.top);
                                 scr.printhl(1, 0,
