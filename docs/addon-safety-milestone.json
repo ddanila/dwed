@@ -1,0 +1,2480 @@
+{
+  "scope": "Checked ASCII/calculator insertion, selection replacement, unsupported-byte refusal, calculator radix and arithmetic edges, and monochrome focus",
+  "parent_base_revision": "d58610e9a444a65afc99cbff7085ab01b3ae26d2",
+  "dwed_base_revision": "bc6c851116c938e1a1d2b776cb56005f811dd527",
+  "source_sha256": {
+    "SRC/DWED.TXT": "9a9d277cb7accac778df47cc3aa1a8e112845074c5a51da0f92fff2acf6fc07a",
+    "SRC/DWEDADDO.PAS": "79647f143786ac2846edba495bd688e49dace202acb1f763cd0fa20ce245e2ef",
+    "SRC/DWEDUTIL.PAS": "f5e19aad7c648278119c9e2c3d11c643666d427208c3bf41e227932b2d7a744a"
+  },
+  "test_source_sha256": {
+    "tests/dwed_addon_scenarios.py": "9164b96b6969a808adf8f06b2bd11bb7d1401980cf0334054a309e2e119e8030",
+    "tests/test_dwed_qemu.py": "92c89abbc4e2af536674b9b94a8c9aee2dcc208eef0d4c96110d72d4d02a979e"
+  },
+  "broad_addon_test_sha256": "7900fa7227e93b1347f98dc2089c496068e1554e88ac12ab067af747267d37b3",
+  "broad_regression": {
+    "run_directory": "out/dwed-qemu-zbr1z6go",
+    "case_count": 78,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 234414,
+              "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10240,
+              "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 233618,
+              "sha256": "f9816954b220db4f2bd0d32a534cc8eba0b7b7c49b8a1c459874359029c7b550"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 234662,
+              "sha256": "76117c1c7badeb2c81a75e3509a720c341f69aa36e100a9b1d3f2ee5ada6e94e"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 234414,
+            "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 269470,
+          "sha256": "cfaf01f6d8b8bc912d8910dcf7cb65b6b590352e6c05c17ca0733959b8171136"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 234414,
+            "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10240,
+            "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 233618,
+            "sha256": "f9816954b220db4f2bd0d32a534cc8eba0b7b7c49b8a1c459874359029c7b550"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 234662,
+            "sha256": "76117c1c7badeb2c81a75e3509a720c341f69aa36e100a9b1d3f2ee5ada6e94e"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "edit-low",
+        "mode": "low",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "edit-high",
+        "mode": "high",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "screen-memory-low",
+        "mode": "low",
+        "screen_memory_notice": true,
+        "memory_probe": "PASS 123 assertions",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "screen-memory-high",
+        "mode": "high",
+        "screen_memory_notice": true,
+        "memory_probe": "PASS 123 assertions",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "help-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "help_pages": 2,
+        "help_flow": "help-low",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "help-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "help_pages": 2,
+        "help_flow": "help-high",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "help-mono-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "help_pages": 2,
+        "help_flow": "help-mono-low",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "menu-save-low",
+        "mode": "low",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "menu-save-high",
+        "mode": "high",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clipboard-probe-low",
+        "mode": "low",
+        "clipboard_probe": "PASS 89 assertions",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clipboard-probe-high",
+        "mode": "high",
+        "clipboard_probe": "PASS 89 assertions",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-byte-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-byte",
+        "addon_attributes": null,
+        "reopened": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-byte-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-byte",
+        "addon_attributes": null,
+        "reopened": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-tab-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-tab",
+        "addon_attributes": null,
+        "reopened": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-tab-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-tab",
+        "addon_attributes": null,
+        "reopened": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-hex-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-hex",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-hex-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-hex",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-control-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-control",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-control-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-control",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-overflow-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-overflow",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-overflow-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-overflow",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-selection-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-selection",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-selection-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-selection",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-cancel-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-cancel",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-cancel-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-cancel",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-menu-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-menu",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-menu-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-menu",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-value-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-value",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-value-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-value",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-hex-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-hex",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-hex-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-hex",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-overflow-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-overflow",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-overflow-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-overflow",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-boundary-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-boundary",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-boundary-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-boundary",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-selection-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-selection",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-selection-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-selection",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-negative-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-negative",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-negative-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-negative",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-divzero-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-divzero",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-divzero-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-divzero",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-div-min-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-div-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-div-min-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-div-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-mod-min-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-mod-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-mod-min-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-mod-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-add-wrap-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-add-wrap",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-add-wrap-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-add-wrap",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-binary-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-binary",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-binary-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-binary",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-bitwise-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-bitwise",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-bitwise-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-bitwise",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-mono-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-mono",
+        "addon_attributes": [
+          112,
+          7
+        ],
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-mono-low",
+        "mode": "low",
+        "completed": false,
+        "error": "[112, 112]"
+      },
+      {
+        "case": "dialog-exit-save-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "dialog_flow": "exit-save",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "dialog-exit-full-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "dialog_flow": "exit-full",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-typing-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "typing",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-split-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "split",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-merge-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "merge",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-cut-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "cut",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-paste-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "paste",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-multi-cut-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "multi-cut",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-save-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "save",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-windows-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "windows",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-branch-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "branch",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-indent-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "indent",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-move-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "move",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-typing-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "typing",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-edit-capacity-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "undo_flow": "capacity",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-mixed-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "mixed",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-import-large-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "import-large",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-import-control-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "import-control",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-import-missing-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "import-missing",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-export-full-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "export-full",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-paste-overflow-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "paste-overflow",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-replace-newline-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "replace-newline",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-cut-overflow-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "cut-overflow",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-copy-capacity-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "copy-capacity",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "clip-edit-mixed-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "clipboard_flow": "mixed",
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "corrected_display_check": {
+    "run_directory": "out/dwed-qemu-jhfa9kmk",
+    "case_count": 1,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 234414,
+              "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10240,
+              "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 233618,
+              "sha256": "f9816954b220db4f2bd0d32a534cc8eba0b7b7c49b8a1c459874359029c7b550"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 234662,
+              "sha256": "76117c1c7badeb2c81a75e3509a720c341f69aa36e100a9b1d3f2ee5ada6e94e"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 234414,
+            "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 269470,
+          "sha256": "cfaf01f6d8b8bc912d8910dcf7cb65b6b590352e6c05c17ca0733959b8171136"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 234414,
+            "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10240,
+            "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 233618,
+            "sha256": "f9816954b220db4f2bd0d32a534cc8eba0b7b7c49b8a1c459874359029c7b550"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 234662,
+            "sha256": "76117c1c7badeb2c81a75e3509a720c341f69aa36e100a9b1d3f2ee5ada6e94e"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "addon-calc-mono-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-mono",
+        "addon_attributes": [
+          7,
+          112
+        ],
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "display_test_correction": "The original calculator monochrome assertion sampled its highlighted colon as the ordinary cell. Captured VRAM identifies the colon and radix arrow as selected and adjacent padding as ordinary. Only the test coordinates changed; the same final package passes the corrected assertion.",
+  "qualified_case_count": 78,
+  "qualified_results": [
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "screen-memory-low",
+      "mode": "low",
+      "screen_memory_notice": true,
+      "memory_probe": "PASS 123 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "screen-memory-high",
+      "mode": "high",
+      "screen_memory_notice": true,
+      "memory_probe": "PASS 123 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-low",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-high",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-mono-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-mono-low",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "menu-save-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "menu-save-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clipboard-probe-low",
+      "mode": "low",
+      "clipboard_probe": "PASS 89 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clipboard-probe-high",
+      "mode": "high",
+      "clipboard_probe": "PASS 89 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-byte-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-byte",
+      "addon_attributes": null,
+      "reopened": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-byte-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-byte",
+      "addon_attributes": null,
+      "reopened": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-tab-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-tab",
+      "addon_attributes": null,
+      "reopened": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-tab-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-tab",
+      "addon_attributes": null,
+      "reopened": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-hex-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-hex",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-hex-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-hex",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-control-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-control",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-control-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-control",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-overflow",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-overflow-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-overflow",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-selection-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-selection",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-selection-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-selection",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-cancel",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-cancel-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-cancel",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-menu-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-menu",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-menu-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-menu",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-value-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-value",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-value-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-value",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-hex-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-hex",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-hex-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-hex",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-overflow",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-overflow-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-overflow",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-boundary-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-boundary",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-boundary-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-boundary",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-selection-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-selection",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-selection-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-selection",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-negative-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-negative",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-negative-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-negative",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-divzero-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-divzero",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-divzero-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-divzero",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-div-min-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-div-min",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-div-min-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-div-min",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-mod-min-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-mod-min",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-mod-min-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-mod-min",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-add-wrap-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-add-wrap",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-add-wrap-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-add-wrap",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-binary-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-binary",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-binary-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-binary",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-bitwise-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-bitwise",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-bitwise-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-bitwise",
+      "addon_attributes": null,
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-ascii-mono-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "ascii-mono",
+      "addon_attributes": [
+        112,
+        7
+      ],
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "addon-calc-mono-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "addon_flow": "calc-mono",
+      "addon_attributes": [
+        7,
+        112
+      ],
+      "reopened": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dialog-exit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-save",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dialog-exit-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-full",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-typing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-split-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "split",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-merge-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "merge",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "cut",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-paste-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "paste",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-multi-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "multi-cut",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "save",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-windows-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "windows",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-branch-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "branch",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-indent-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "indent",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-move-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "move",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-typing-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-capacity-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "capacity",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "mixed",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-import-large-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-large",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-import-control-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-control",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-import-missing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-missing",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-export-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "export-full",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-paste-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "paste-overflow",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-replace-newline-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "replace-newline",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-cut-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "cut-overflow",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-copy-capacity-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "copy-capacity",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "clip-edit-mixed-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "mixed",
+      "dos_version": "MS-DOS Version 6.22"
+    }
+  ],
+  "microsoft_622_qualification": {
+    "run_directory": "out/dwed-qemu-zo4g64qs",
+    "case_count": 14,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 234414,
+              "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10240,
+              "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 233618,
+              "sha256": "f9816954b220db4f2bd0d32a534cc8eba0b7b7c49b8a1c459874359029c7b550"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 234662,
+              "sha256": "76117c1c7badeb2c81a75e3509a720c341f69aa36e100a9b1d3f2ee5ada6e94e"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 234414,
+            "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 269470,
+          "sha256": "cfaf01f6d8b8bc912d8910dcf7cb65b6b590352e6c05c17ca0733959b8171136"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "ca2c5347a0ab34a8b49774887eee2c74130acc493bccc57d87643e6ac323706f",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "615b656d0d094a31cb10ab56ab31273062c535d819e8208d412ad5d022847c93",
+        "EMM386.EXE": "d4a011769db9415402d7be129fffb762fa7d174096bcc921aa5ce85734072635"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 234414,
+            "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10240,
+            "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 233618,
+            "sha256": "f9816954b220db4f2bd0d32a534cc8eba0b7b7c49b8a1c459874359029c7b550"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 234662,
+            "sha256": "76117c1c7badeb2c81a75e3509a720c341f69aa36e100a9b1d3f2ee5ada6e94e"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "addon-ascii-byte-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-byte",
+        "addon_attributes": null,
+        "reopened": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-byte-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-byte",
+        "addon_attributes": null,
+        "reopened": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-control-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-control",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-ascii-control-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "ascii-control",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-hex-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-hex",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-hex-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-hex",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-overflow-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-overflow",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-overflow-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-overflow",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-divzero-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-divzero",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-divzero-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-divzero",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-div-min-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-div-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-div-min-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-div-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-mod-min-low",
+        "mode": "low",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-mod-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "addon-calc-mod-min-high",
+        "mode": "high",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "addon_flow": "calc-mod-min",
+        "addon_attributes": null,
+        "reopened": false,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "negative_control": {
+    "run_directory": "out/dwed-qemu-l9lgiuzd",
+    "case_count": 2,
+    "environment": {
+      "package": null,
+      "launcher_name": "DWED.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 233178,
+            "sha256": "f3f7c3b990894290b93ca721884ae585d293bcdf44266588401460704a16023d"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 9472,
+            "sha256": "132ece7639f9f8392df57ace65b781bccfea48f031b58cb7c7e56b0efa6325f9"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160172,
+            "sha256": "ddfab8694242fb4f4319938636f60f713e9c8b9097eadccd9b63fb6a4714a016"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160696,
+            "sha256": "cc7df89ee3a1d63bcde4acd013871c70f99d5693b338162192aa1188132a455e"
+          },
+          "TABTEST.exe": {
+            "bytes": 232366,
+            "sha256": "95a7778d06d214a10c5880808803a54772e3f26aaadea30c4f9b49698af676b8"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168738,
+            "sha256": "1f568329d92d1e3338f2600e5313051935d0319030b78e116ceffd294b295e82"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 233410,
+            "sha256": "57375d15a3691df69c5ed295ce2f355debc954afd853fcc3d4b316827cfc93a3"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "addon-ascii-control-low",
+        "mode": "low",
+        "completed": false,
+        "error": " File   Edit   Search   Options    Help\n\u0001DWED_MARKER\nsecond line\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n SAMPLE.TXT                                                      44    2 1/3 *I"
+      },
+      {
+        "case": "addon-calc-overflow-low",
+        "mode": "low",
+        "completed": false,
+        "error": " File   Edit   Search   Options    Help\n\nrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr4\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n SAMPLE.TXT                                                          256 2/3 *I"
+      }
+    ]
+  },
+  "negative_control_observations": [
+    "The previous ASCII picker inserts byte 01 into a dirty document instead of refusing it.",
+    "The previous calculator clips value 46 to 4 at the physical-line boundary instead of refusing insertion."
+  ],
+  "reproducibility": {
+    "builds": [
+      "dwed/out/addon-safe-c",
+      "dwed/out/addon-safe-d"
+    ],
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 234414,
+        "sha256": "4d718cd1372ad7b6e93fdeae84fbed7e4b332ccde350b39bd2b9e80add22e8b0"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 10240,
+        "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37604,
+        "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+      },
+      "STORTEST.exe": {
+        "bytes": 160176,
+        "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+      },
+      "CLIPTEST.exe": {
+        "bytes": 160700,
+        "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+      },
+      "TABTEST.exe": {
+        "bytes": 233618,
+        "sha256": "f9816954b220db4f2bd0d32a534cc8eba0b7b7c49b8a1c459874359029c7b550"
+      },
+      "SAVETEST.exe": {
+        "bytes": 168742,
+        "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+      },
+      "RECVTEST.exe": {
+        "bytes": 37584,
+        "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+      },
+      "MEMTEST.exe": {
+        "bytes": 234662,
+        "sha256": "76117c1c7badeb2c81a75e3509a720c341f69aa36e100a9b1d3f2ee5ada6e94e"
+      }
+    },
+    "identical_build_manifests": true,
+    "identical_artifact_bytes": true,
+    "identical_archive_bytes": true,
+    "archive_sha256": "cfaf01f6d8b8bc912d8910dcf7cb65b6b590352e6c05c17ca0733959b8171136"
+  },
+  "package": {
+    "path": "dwed/out/package-addon-safe-c/EDIT.ZIP",
+    "bytes": 269470,
+    "sha256": "cfaf01f6d8b8bc912d8910dcf7cb65b6b590352e6c05c17ca0733959b8171136",
+    "status": "development",
+    "package_checks": "passed deterministic archive, license notices and invalid-input rejection"
+  },
+  "limitations": [
+    "Runtime evidence uses the conventional-memory backend, private local FAT images and VGA text modes.",
+    "Other display geometries, mouse operation of addon controls and alternate backing stores are outside this qualification.",
+    "Table-command safety, final allocation review, memory limits and legacy-platform release qualification remain open.",
+    "The development package has not been promoted into the parent distribution."
+  ]
+}

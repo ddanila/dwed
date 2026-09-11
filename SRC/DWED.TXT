@@ -160,6 +160,23 @@ Unsaved documents offer Save/Discard/Cancel.
 ~F6~ selects the next open document.
 ~Alt-F6~ opens the window list.
 ~Alt-F5~ shows the DOS screen.
+///1ADDONS
+~Ctrl-Alt-A~ opens the ASCII table.
+~Enter~ inserts a text byte; ~Shift-Enter~ inserts
+its hexadecimal code. Tab bytes are supported;
+other control bytes are refused.
+
+~Ctrl-Alt-C~ opens the integer calculator.
+~Tab~ changes radix. ~Shift-Enter~ inserts the value.
+Backspace removes one digit in the selected radix.
+Division by zero reports an error and allows retry.
+Arithmetic uses fixed-width signed values.
+
+Both tools replace selected text when present.
+An insertion that would overflow a line is refused
+without clipping its value. The tool remains open
+so you can change the value or press Esc to cancel.
+Successful insertion supports Undo and Redo.
 ///1SYNTAX-HL
 Syntax highlighting supports assembler, Pascal,
 BASIC, C/C++, Sphinx C--, XML/HTML and DOS batches.

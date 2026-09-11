@@ -128,7 +128,8 @@ windows and cancellation of an oversized edit. The generated
 
 Replacement command grouping, saved-state behaviour and failure rollback are
 covered in [SEARCH-REPLACE.md](SEARCH-REPLACE.md) and its generated evidence.
-Remaining qualification includes optional addon/table commands, constrained-memory editor runs beyond the tested capacity failure,
+Addon insertion and arithmetic scenarios are covered in [ADDONS.md](ADDONS.md)
+and its generated evidence. Remaining qualification includes table commands, constrained-memory editor runs beyond the tested capacity failure,
 legacy CPUs and modifier-key queues under delayed input, and swap/XMS support.
 The broader whitespace-editing, host clipboard, mouse, display and safe-save recovery gates
 in `EDIT-PLAN.md` also remain open.

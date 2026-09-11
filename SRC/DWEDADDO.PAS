@@ -31,7 +31,7 @@ procedure calculator(var ctx : TEditorContext);
 
 implementation
 
-uses system2, strutil, str, kminput, event, scr, scrui, strs;
+uses system2, strutil, str, kminput, event, scr, scrui, strs, dwedutil;
 
 type
 RadixType = (RADIX2, RADIX10, RADIX16);
@@ -65,19 +65,18 @@ begin
         end;
 end;
 
-procedure insert_str(var ctx : TEditorContext; str : string);
-var     line_len : integer;
-        str_len  : integer;
+function insert_str(var ctx:TEditorContext; value:string):boolean;
+var buffer:array[0..255] of char; i:integer;
 begin
-        line_len := length(ctx.current^.editor.line);
-        str_len := length(str);
-        if line_len + str_len > 255 then str_len := 255 - line_len;
-        str := copy(str, 1, str_len);
-
-        System.insert(str, ctx.current^.editor.line, ctx.current^.editor.x);
-        ctx.current^.editor.chg := true;
-        ctx.current^.chg := true;
-        inc(ctx.current^.editor.x, str_len);
+        insert_str:=false;
+        for i:=1 to length(value) do
+                if (value[i]<#32) and (value[i]<>#9) then begin
+                        handle_error(ctx,1007); exit;
+                end;
+        FillChar(buffer,sizeof(buffer),0);
+        if value<>'' then Move(value[1],buffer[0],length(value));
+        commit(ctx);
+        insert_str:=replace_text(ctx,@buffer[0],sizeof(buffer),false);
 end;
 
 const
@@ -91,22 +90,22 @@ var     x, y, i, j : integer;
         e          : TEvent;
 begin
         x := (scr.getwidth - 50) shr 1; y := (scr.getheight - 22) shr 1;
-        scrui.box(x, y, 50, 22, $1b);
+        scrui.box(x, y, 50, 22, ctx.config.color.menu);
         while true do begin
-                for i := 1 to 20 do scr.hprint(x + 1, y + i, $1b, ' ', 48);
+                for i := 1 to 20 do scr.hprint(x + 1, y + i, ctx.config.color.menu, ' ', 48);
                 for i := 0 to 15 do begin
                         b := (i and 1) = 0;
                         for j := 0 to 15 do begin
-                                if b then color := $17 else color := $1e;
+                                if b then color := ctx.config.color.menu else color := ctx.config.color.menu_sel;
                                 cb := j or (i shl 4);
                                 scr.hprint(x + 2 + j * 3, y + 3 + i, color, chr(cb) , 1);
-                                if cb = ascii_tbl_sel then scr.chcolor(x + 1 + j * 3, y + 3 + i, $31, 3);
+                                if cb = ascii_tbl_sel then scr.chcolor(x + 1 + j * 3, y + 3 + i, ctx.config.color.menu_sel, 3);
                                 b := not b;
                         end;
                 end;
-                scr.hprint(x + 1, y + 2, $1b, #$C4 , 48);
-                scr.hprint(x + 1, y + 19, $1b, #$C4 , 48);
-                printhl(x + 2, y + 1, $1b, $1e, concat(
+                scr.hprint(x + 1, y + 2, ctx.config.color.menu, #$C4 , 48);
+                scr.hprint(x + 1, y + 19, ctx.config.color.menu, #$C4 , 48);
+                printhl(x + 2, y + 1, ctx.config.color.menu, ctx.config.color.menu_sel, concat(
                         'Hex: ~',
                         hexb(ascii_tbl_sel),
                         '~ Dec: ~',
@@ -118,7 +117,7 @@ begin
                         '~  Color'
                         ));
                 scr.chcolor(x + 43, y + 1, ascii_tbl_sel, 5);
-                scr.printhl(x + 2, y + 20, $1b, $1e, 
+                scr.printhl(x + 2, y + 20, ctx.config.color.menu, ctx.config.color.menu_sel,
                         '~'+#$11+#$D9+'~ Enter symbol     ' + #$B3 +
                         '  ~Shift~+~'+#$11+#$D9+'~ Enter hex code'
                         );
@@ -134,15 +133,9 @@ begin
                 SCAN_RIGHT: ascii_tbl_sel := (ascii_tbl_sel and $F0) or ((ascii_tbl_sel + 1) and $0F);
                 SCAN_ENTER: begin
                         if e.ctrl_keys = key_shift then begin
-                                insert_str(ctx, '' + hexb(ascii_tbl_sel));
-                                break;
+                                if insert_str(ctx, '' + hexb(ascii_tbl_sel)) then break;
                         end else begin
-                                if (ascii_tbl_sel = 9)
-                                  or (ascii_tbl_sel = 0)
-                                  or (ascii_tbl_sel = $0a)
-                                  or (ascii_tbl_sel = $0d) then continue;
-                                insert_str(ctx, '' + chr(ascii_tbl_sel));
-                                break;
+                                if insert_str(ctx, '' + chr(ascii_tbl_sel)) then break;
                         end;
                 end;
                 SCAN_ESC: break;
@@ -170,36 +163,37 @@ var     x, y, i    : integer;
         key        : word;
         ch         : char;
         e          : TEvent;
+        value      : string;
 begin
         scr.set_cursor(scr.cursor);
         x := (scr.getwidth - 41) shr 1;
         y := (scr.getheight - 10) shr 1;
-        scrui.box(x, y, 41, 10, $1b);
-        for i := 1 to 8 do scr.hprint(x + 1, y + i, $1b, ' ', 39);
-        scr.printhl(x + 2, y + 1, $1b, $1e, 'Dec~:');
-        scr.printhl(x + 2, y + 2, $1b, $1e, 'Hex~:');
-        scr.printhl(x + 2, y + 3, $1b, $1e, 'Bin~:');
-        scr.hprint(x + 1, y + 4, $1b, #$C4 , 39);
-        scr.printhl(x + 2, y + 5, $1b, $1e, '~+~ Add   ~-~ Sub   ~*~ Mul   ~/~ Div   ~M~ Mod');
-        scr.printhl(x + 2, y + 6, $1b, $1e, '~&~ And   ~|~ Or    ~^~ Xor   ~!~ Not   ~N~ Neg');
-        scr.hprint(x + 1, y + 7, $1b, #$C4 , 39);
-        scr.printhl(x + 2, y + 8, $1b, $1e, '~Spc~ Clr  ~'+#$1D+'~ Rdx   ~Shift~+~'+#$11+#$D9+'~ Enter value');
+        scrui.box(x, y, 41, 10, ctx.config.color.menu);
+        for i := 1 to 8 do scr.hprint(x + 1, y + i, ctx.config.color.menu, ' ', 39);
+        scr.printhl(x + 2, y + 1, ctx.config.color.menu, ctx.config.color.menu_sel, 'Dec~:');
+        scr.printhl(x + 2, y + 2, ctx.config.color.menu, ctx.config.color.menu_sel, 'Hex~:');
+        scr.printhl(x + 2, y + 3, ctx.config.color.menu, ctx.config.color.menu_sel, 'Bin~:');
+        scr.hprint(x + 1, y + 4, ctx.config.color.menu, #$C4 , 39);
+        scr.printhl(x + 2, y + 5, ctx.config.color.menu, ctx.config.color.menu_sel, '~+~ Add   ~-~ Sub   ~*~ Mul   ~/~ Div   ~M~ Mod');
+        scr.printhl(x + 2, y + 6, ctx.config.color.menu, ctx.config.color.menu_sel, '~&~ And   ~|~ Or    ~^~ Xor   ~!~ Not   ~N~ Neg');
+        scr.hprint(x + 1, y + 7, ctx.config.color.menu, #$C4 , 39);
+        scr.printhl(x + 2, y + 8, ctx.config.color.menu, ctx.config.color.menu_sel, '~Spc~ Clr  ~'+#$1D+'~ Rdx   ~Shift~+~'+#$11+#$D9+'~ Enter value');
         while true do begin
-                scr.vprint(x + 6, y + 1,  $1b, ' ', 3);
-                if radix = RADIX10 then begin scr.print(x + 6, y + 1, $1e, '' + #$10); locate(x + 39, y + 1); end
-                else if radix = RADIX16 then begin scr.print(x + 6, y + 2, $1e, '' + #$10); locate(x + 39, y + 2); end
-                else if radix = RADIX2  then begin scr.print(x + 6, y + 3, $1e, '' + #$10); locate(x + 39, y + 3); end;
-                scr.print(x + 7, y + 1, $1b, lpad(ltoa(calc_op1), 32));
-                scr.print(x + 7, y + 2, $1b, lpad(hexdw(calc_op1), 32));
-                scr.print(x + 7, y + 3, $1b, lpad(bindw(calc_op1), 32));
+                scr.vprint(x + 6, y + 1,  ctx.config.color.menu, ' ', 3);
+                if radix = RADIX10 then begin scr.print(x + 6, y + 1, ctx.config.color.menu_sel, '' + #$10); locate(x + 39, y + 1); end
+                else if radix = RADIX16 then begin scr.print(x + 6, y + 2, ctx.config.color.menu_sel, '' + #$10); locate(x + 39, y + 2); end
+                else if radix = RADIX2  then begin scr.print(x + 6, y + 3, ctx.config.color.menu_sel, '' + #$10); locate(x + 39, y + 3); end;
+                scr.print(x + 7, y + 1, ctx.config.color.menu, lpad(ltoa(calc_op1), 32));
+                scr.print(x + 7, y + 2, ctx.config.color.menu, lpad(hexdw(calc_op1), 32));
+                scr.print(x + 7, y + 3, ctx.config.color.menu, lpad(bindw(calc_op1), 32));
 
-                scr.chcolor(x + 7 + 20, y + 1, $1A, 3);
-                scr.chcolor(x + 7 + 26, y + 1, $1A, 3);
+                scr.chcolor(x + 7 + 20, y + 1, ctx.config.color.menu_sel, 3);
+                scr.chcolor(x + 7 + 26, y + 1, ctx.config.color.menu_sel, 3);
 
-                scr.chcolor(x + 7 + 24, y + 2, $1E, 2);
-                scr.chcolor(x + 7 + 28, y + 2, $1E, 2);
-                scr.chcolor(x + 7, y + 3, $1E, 8);
-                scr.chcolor(x + 7 + 16, y + 3, $1E, 8);
+                scr.chcolor(x + 7 + 24, y + 2, ctx.config.color.menu_sel, 2);
+                scr.chcolor(x + 7 + 28, y + 2, ctx.config.color.menu_sel, 2);
+                scr.chcolor(x + 7, y + 3, ctx.config.color.menu_sel, 8);
+                scr.chcolor(x + 7 + 16, y + 3, ctx.config.color.menu_sel, 8);
                 scr.show;
                 while true do begin
                         wait_event(e);
@@ -213,17 +207,21 @@ begin
                                 '+': calc_op1 := calc_op2 + calc_op1;
                                 '-': calc_op1 := calc_op2 - calc_op1;
                                 '*': calc_op1 := calc_op2 * calc_op1;
-                                '/': if calc_op1 <> 0 then calc_op1 := calc_op2 div calc_op1;
-                                'M': if calc_op1 <> 0 then calc_op1 := calc_op2 mod calc_op1;
+                                '/','M': if calc_op1=0 then handle_error(ctx,200)
+                                        else if (calc_op2=(-2147483647-1)) and (calc_op1=-1) then begin
+                                                { Match fixed-width arithmetic without a divide trap. }
+                                                if calc_op='/' then calc_op1:=calc_op2 else calc_op1:=0;
+                                        end else if calc_op='/' then calc_op1:=calc_op2 div calc_op1
+                                        else calc_op1:=calc_op2 mod calc_op1;
                                 '&': calc_op1 := calc_op2 and calc_op1;
                                 '|': calc_op1 := calc_op2 or calc_op1;
                                 '^': calc_op1 := calc_op2 xor calc_op1;
                                 end;
                         end else begin
-                                if radix = RADIX10 then insert_str(ctx, ltoa(calc_op1))
-                                else if radix = RADIX16 then insert_str(ctx, hexdw(calc_op1))
-                                else if radix = RADIX2 then insert_str(ctx, bindw(calc_op1));
-                                break;
+                                if radix = RADIX10 then value:=ltoa(calc_op1)
+                                else if radix = RADIX16 then value:=hexdw(calc_op1)
+                                else value:=bindw(calc_op1);
+                                if insert_str(ctx,value) then break;
                         end;
                 end;
                 SCAN_TAB: begin
@@ -234,7 +232,7 @@ begin
                 SCAN_BS: begin
                         if radix = RADIX2 then calc_op1 := calc_op1 shr 1
                         else if radix = RADIX10 then calc_op1 := calc_op1 div 10
-                        else if radix = RADIX16 then calc_op1 := calc_op1 shr 8;
+                        else if radix = RADIX16 then calc_op1 := calc_op1 shr 4;
                 end;
                 end;
                 ch := upcase(e.ascii);
