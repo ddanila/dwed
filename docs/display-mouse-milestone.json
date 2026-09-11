@@ -1,0 +1,1058 @@
+{
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 197162,
+        "sha256": "0d6b8f72df3f34084ce34678862b46baca63e815a0cb6dd104943f67aa3b9c88"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 6912,
+        "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37572,
+        "sha256": "5503446dc22b472cd5f73c40b04dacf6b0052f1fd12a3ddef3e1e1b33276ccd2"
+      },
+      "STORTEST.exe": {
+        "bytes": 144700,
+        "sha256": "4c1ebd49ab46c14d7c748f04ccc51fce3d2c59eee63d958cdab55e873b89d213"
+      },
+      "CLIPTEST.exe": {
+        "bytes": 145208,
+        "sha256": "146a4478a985fca32900ac41e5ebb11782407adaa33ae4fc92a986425f8ad9c4"
+      },
+      "TABTEST.exe": {
+        "bytes": 194796,
+        "sha256": "f8e37bf5faedfe75b4880d56c94abc18598eeed8f60014ac2974a903507d1eb2"
+      }
+    }
+  },
+  "clean_builds_identical": true,
+  "parent_revision": "4baa9abc806638d2ff406d5ca37c26e886dd0ea6",
+  "dwed_base_revision": "6860821c7372c5fd345caba259720d1e81645c10",
+  "runtime": "QEMU 486 TCG; private copies of parent out/floppy.img",
+  "editor_memory_backend": "DOS",
+  "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+  "display_scope": "QEMU VGA color and mode 7; real CuteMouse PS/2 input in the mouse cases",
+  "mouse_archive": {
+    "url": "https://archive.org/download/cutemouse-floppy-img/CutemouseFloppy.vfd",
+    "sha256": "550c4082e06567e2079fb90acca711186b02e13dc5cae7b05984613c4f2617e1"
+  },
+  "mouse_executable_sha256": "822cf550c9e19a22785722d2306aa08ede10ff20bfe931d5a81a15f77c5f363e",
+  "negative_control": {
+    "build": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 196822,
+          "sha256": "89f111b692aaa1d61a2b31c35cfef8c75267fcd1f8b50ae8c1fc72506cab9608"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 6912,
+          "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37572,
+          "sha256": "5503446dc22b472cd5f73c40b04dacf6b0052f1fd12a3ddef3e1e1b33276ccd2"
+        },
+        "STORTEST.exe": {
+          "bytes": 144588,
+          "sha256": "09ff69efa0ea4a53f55f160b5405b35b2873910f33a74e2b8fca761ef25e2327"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 145112,
+          "sha256": "d3210a1e8dd876de7da93a7834992e8f1cad7defa204e10bb54de6f1f3477abc"
+        },
+        "TABTEST.exe": {
+          "bytes": 194552,
+          "sha256": "a1f92ee0d975cbef035f41f77838827f3519bae8ae98371db0dcdd74015392d3"
+        }
+      }
+    },
+    "case": "mono-edit-flow-low",
+    "expected_failure": true,
+    "blank_monochrome_screen": true
+  },
+  "source_sha256": {
+    "dwed/SRC/SCR.PAS": "5bea89b22e37ecf44d71d44d944e61fefb59cd5f6299a82a1b53b38837be347b",
+    "dwed/SRC/DWEDOVL.PAS": "0c73bf5a04847e4760dd6174eff58ffcae403a46965dd78fddad319b17c68337",
+    "dwed/SRC/DWEDMENU.PAS": "06c39ca810d813bdbb4ddf805a89d5fb3494ddc3e0ade33f74efdb63d196058d",
+    "dwed/SRC/DWEDHNDL.PAS": "dfc45ac3cdecfafb5235bf3f2a6590ae4b32f76b98d7411ee119afb8917f72b1",
+    "dwed/SRC/EVENT.PAS": "c4b3971028a49c7bcd6f9d4fadc5803ef26dd1c501f5a3cb039ff500ad2eafe9",
+    "dwed/vendor/system2/KMINPUT.PAS": "142a50bfa3a9755e3938c7bb4cc198294080a2d394dfe669549e24639aba850e",
+    "dwed/tools/build.py": "611c86a5aa102d0ce513ada04d0152e291f02ecb4fc5e5d53fbd9163a7b8759b",
+    "tests/test_dwed_qemu.py": "f89f3c1a661165fb4b0bf5caad195ad5e114b31e4ff83aa576af98edc0075ef7",
+    "tests/dwed_mono_scenarios.py": "584fbeb07768b66f6351b334bd8cfb4f5cd7a7d48c4677b6c23a4ba3ffade38d",
+    "tests/dwed_mouse_scenarios.py": "b99d799a5ef826abf2e7a992f3562a26cb46ee2792ec554f6600b314a01ed6ba",
+    "tests/dwed_mouse_telemetry.asm": "5948acdb5bb3a105f04cadefe7f191e486073e2c5722fa601155d7cb84039629",
+    "tests/prepare_dwed_mouse.py": "8e2e0854520d3f5f866d753ccda07b03976c509d42ce9fb4b1e5a722961f1a1f",
+    "tests/dos_app_smoke.json": "278883d40b465fab274307ae2462f16c7ad5d8c3ac932c526e1a6bee0294c35e",
+    "tests/capture_dos_app_smoke.py": "340392f67985bb1dd498cfcb73ba1f22430be064eedc9d2a7fa20a300bb8d903",
+    "Makefile": "61b874c56722fde4265da7c003aa65f0bc3a5f4bd5df548e695b4cb2a2c63169"
+  },
+  "case_count": 101,
+  "cases": [
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "backup-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "outside-directory-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-lf-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-cr-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-no-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-tabs-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-codepage-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-max-line-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-empty-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-long-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-control-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "new-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "split-whitespace-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "remove-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-alt-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-copy-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "shortcut-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-journal-low",
+      "mode": "low",
+      "journal_probe": "PASS 95638 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-journal-high",
+      "mode": "high",
+      "journal_probe": "PASS 95638 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-low",
+      "mode": "low",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-high",
+      "mode": "high",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "clipboard-probe-low",
+      "mode": "low",
+      "clipboard_probe": "PASS 89 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "clipboard-probe-high",
+      "mode": "high",
+      "clipboard_probe": "PASS 89 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "tab-probe-low",
+      "mode": "low",
+      "tab_probe": "PASS 4209 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "tab-probe-high",
+      "mode": "high",
+      "tab_probe": "PASS 4209 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "dialog-exit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-save"
+    },
+    {
+      "case": "dialog-exit-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-cancel"
+    },
+    {
+      "case": "dialog-close-discard-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "close-discard"
+    },
+    {
+      "case": "dialog-close-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "close-cancel"
+    },
+    {
+      "case": "dialog-saveas-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "saveas-cancel"
+    },
+    {
+      "case": "dialog-unnamed-exit-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-unnamed-close-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-close"
+    },
+    {
+      "case": "dialog-unnamed-saveall-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "dialog-unnamed-cancel-name-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-cancel-name"
+    },
+    {
+      "case": "dialog-unnamed-cancel-all-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-cancel-all"
+    },
+    {
+      "case": "dialog-overwrite-no-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "overwrite-no"
+    },
+    {
+      "case": "dialog-overwrite-yes-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "overwrite-yes"
+    },
+    {
+      "case": "dialog-startup-unnamed-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-startup-command-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-exit-save-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-save"
+    },
+    {
+      "case": "dialog-unnamed-saveall-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "dialog-exit-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-full"
+    },
+    {
+      "case": "undo-edit-typing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing"
+    },
+    {
+      "case": "undo-edit-split-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "split"
+    },
+    {
+      "case": "undo-edit-merge-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "merge"
+    },
+    {
+      "case": "undo-edit-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "cut"
+    },
+    {
+      "case": "undo-edit-paste-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "paste"
+    },
+    {
+      "case": "undo-edit-multi-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "multi-cut"
+    },
+    {
+      "case": "undo-edit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "save"
+    },
+    {
+      "case": "undo-edit-windows-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "windows"
+    },
+    {
+      "case": "undo-edit-branch-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "branch"
+    },
+    {
+      "case": "undo-edit-indent-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "indent"
+    },
+    {
+      "case": "undo-edit-move-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "move"
+    },
+    {
+      "case": "undo-edit-typing-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing"
+    },
+    {
+      "case": "undo-edit-capacity-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "capacity"
+    },
+    {
+      "case": "clip-edit-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "mixed"
+    },
+    {
+      "case": "clip-edit-import-large-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-large"
+    },
+    {
+      "case": "clip-edit-import-control-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-control"
+    },
+    {
+      "case": "clip-edit-import-missing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-missing"
+    },
+    {
+      "case": "clip-edit-export-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "export-full"
+    },
+    {
+      "case": "clip-edit-paste-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "paste-overflow"
+    },
+    {
+      "case": "clip-edit-replace-newline-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "replace-newline"
+    },
+    {
+      "case": "clip-edit-cut-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "cut-overflow"
+    },
+    {
+      "case": "clip-edit-copy-capacity-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "copy-capacity"
+    },
+    {
+      "case": "clip-edit-mixed-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "mixed"
+    },
+    {
+      "case": "tab-edit-layout-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "layout"
+    },
+    {
+      "case": "tab-edit-layout-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "layout"
+    },
+    {
+      "case": "tab-edit-insert-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "insert"
+    },
+    {
+      "case": "tab-edit-insert-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "insert"
+    },
+    {
+      "case": "tab-edit-scroll-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "scroll"
+    },
+    {
+      "case": "tab-edit-width-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "width"
+    },
+    {
+      "case": "tab-edit-zero-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "zero"
+    },
+    {
+      "case": "tab-edit-overwrite-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "overwrite"
+    },
+    {
+      "case": "tab-edit-limit-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "limit"
+    },
+    {
+      "case": "tab-edit-indent-limit-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "indent-limit"
+    },
+    {
+      "case": "tab-edit-unindent-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "tab_flow": "unindent"
+    },
+    {
+      "case": "mono-edit-flow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "display_flow": "mode7"
+    },
+    {
+      "case": "mono-edit-flow-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "display_flow": "mode7"
+    },
+    {
+      "case": "mono-edit-rows-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "display_flow": "mode7-missing-rows"
+    },
+    {
+      "case": "mouse-edit-menu-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "mouse_driver_sha256": "822cf550c9e19a22785722d2306aa08ede10ff20bfe931d5a81a15f77c5f363e",
+      "mouse_positions": [
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          3,
+          4,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          9,
+          2,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          9,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "case": "mouse-edit-menu-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "mouse_driver_sha256": "822cf550c9e19a22785722d2306aa08ede10ff20bfe931d5a81a15f77c5f363e",
+      "mouse_positions": [
+        [
+          2,
+          0,
+          0
+        ],
+        [
+          3,
+          4,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          9,
+          2,
+          0
+        ],
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          9,
+          3,
+          0
+        ]
+      ]
+    },
+    {
+      "case": "mouse-edit-drag-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "mouse_driver_sha256": "822cf550c9e19a22785722d2306aa08ede10ff20bfe931d5a81a15f77c5f363e",
+      "mouse_positions": [
+        [
+          1,
+          2,
+          0
+        ],
+        [
+          8,
+          2,
+          1
+        ],
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          1,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "case": "mouse-edit-drag-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "mouse_driver_sha256": "822cf550c9e19a22785722d2306aa08ede10ff20bfe931d5a81a15f77c5f363e",
+      "mouse_positions": [
+        [
+          1,
+          2,
+          0
+        ],
+        [
+          8,
+          2,
+          1
+        ],
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          1,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "case": "mouse-edit-mono-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "mouse_driver_sha256": "822cf550c9e19a22785722d2306aa08ede10ff20bfe931d5a81a15f77c5f363e",
+      "mouse_positions": [
+        [
+          1,
+          2,
+          0
+        ],
+        [
+          8,
+          2,
+          1
+        ],
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          1,
+          2,
+          0
+        ]
+      ]
+    }
+  ]
+}

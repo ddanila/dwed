@@ -7,8 +7,8 @@ Document name, dirty state and cursor information occupy the bottom row;
 the viewport reserves both rows. F10 opens File. Alt-F/E/S/O/H opens a group
 directly. Arrows navigate groups and entries, Home/End select the first/last
 entry, Enter executes and Esc or F10 cancels. Highlighted letters are menu
-mnemonics. Mouse clicks and pointer selection are implemented but still need
-qualification with a DOS mouse driver.
+mnemonics. Mouse clicks and pointer selection are exercised with a real DOS driver in
+the [display/mouse matrix](DISPLAY-MOUSE.md).
 
 `DWEDCMD.PAS` defines logical commands. `DWEDHNDL.PAS` dispatches both menu
 choices and mapped shortcuts through `execute_command`; menu code does not
@@ -29,7 +29,7 @@ Save, Save As, Save All, Close and Exit now share the
 [save outcome and cancellation rules](SAVE-DIALOGS.md), including unnamed
 documents. The [text-cell mapping](TEXT-CELLS.md) covers tab-stop display and selection.
 Remaining work includes broader undo qualification, host clipboard
-interoperability, mouse qualification, monochrome/accessibility
+interoperability, additional mouse/display combinations, accessibility
 checks and the remaining command/dialog tests.
 
 The parent QEMU suite checks Save via menu navigation and Alt-F, selection

@@ -71,5 +71,5 @@ The parent `tests/dwed_clipboard_scenarios.py` drives actual editor commands
 and compares disk bytes after mixed-separator paste and undo/redo, rejected
 imports, oversized paste/cut/copy, long-line selection replacement and
 clipboard export on a full disk. `clipboard-milestone.json` records the builds
-and QEMU results. Tab-stop rendering and selection are described in `TEXT-CELLS.md`. Real mouse
-drivers and alternate-store qualification remain in the broader editor plan.
+and QEMU results. Tab-stop rendering and selection are described in `TEXT-CELLS.md`. The real-driver clipboard popup cases are described in `DISPLAY-MOUSE.md`;
+additional drivers and alternate stores remain in the broader editor plan.

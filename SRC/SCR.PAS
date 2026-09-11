@@ -27,6 +27,7 @@ interface
 var
         screen        : pchar;
         cursor        : word;
+        monochrome    : boolean;
 
 procedure cls(clr : byte);
 procedure cln(x, y : integer; clr : byte);
@@ -111,6 +112,10 @@ asm
         mov        ax, seg0040
         mov        ds, ax
         mov        al, byte ptr[$0084]
+        or         al, al
+        jnz        @rows
+        mov        al, 24
+@rows:
         xor        ah, ah
         inc        ax
         pop        ds
@@ -470,9 +475,9 @@ var spin : char;
 begin
         spin := SPINNER[((spinnerValue shr 3) mod length(SPINNER)) + 1];
         mem[vseg:0] := Ord(spin);
-        mem[vseg:1] := $20;
+        if monochrome then mem[vseg:1] := $07 else mem[vseg:1] := $20;
         screen^ := spin;
-        screen[1] := #$20;
+        if monochrome then screen[1] := #$07 else screen[1] := #$20;
         Inc(spinnerValue);
         if spinnerValue = 90 then gray_palette;
 end;
@@ -603,6 +608,8 @@ end;
 
 procedure WaitRetrace; assembler;
 asm
+        cmp  byte ptr [monochrome], 0
+        jne  @done
         mov  dx, $3da
 @l1:    in   al, dx
         test al, 8
@@ -610,16 +617,18 @@ asm
 @l2:    in   al, dx
         test al, 8
         jz   @l2
+@done:
 end;
 
 begin
         GetIntVec($1c, spinnerOldInt);
         spinnerOn := false;
-        vga := Detect.IsVga;
+        monochrome := mem[seg0040:$49]=7;
+        vga := Detect.IsVga and not monochrome;
         save_palette;
         cursor := scr.get_cursor;
-        if (not vga) and IsMonochrome then vseg := segb000 else vseg := segb800;
-        scr.set_blink(false);
+        if monochrome then vseg := segb000 else vseg := segb800;
+        if not monochrome then scr.set_blink(false);
         screen_size := (scr.getwidth * scr.getheight) shl 1;
         line_size := scr.getwidth shl 1;
         getmem(screen, screen_size);

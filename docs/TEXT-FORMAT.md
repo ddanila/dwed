@@ -32,6 +32,8 @@ the alternate backing stores still need runtime qualification. Raw metadata
 does not establish undo correctness or clipboard fidelity. The event decoder
 now recovers modifiers encoded in BIOS key words, fixing queued Ctrl-End and
 Ctrl-S after key release. BIOS entries do not encode every modifier combination;
-Delayed modifier queues and real mouse drivers still need qualification;
+Delayed modifier queues and additional mouse drivers still need qualification;
 held Shift navigation and direct mouse-event mapping are covered in
 `TEXT-CELLS.md`.
+
+Real-driver and monochrome qualification is scoped in `DISPLAY-MOUSE.md`.

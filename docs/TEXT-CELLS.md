@@ -46,8 +46,8 @@ Table commands retain their inherited whitespace policies and need separate
 qualification. Automatic indentation is also separate from display geometry.
 
 The mouse clipboard popup now dispatches through the same transaction boundary
-as keyboard and menu commands. Real DOS mouse-driver interaction, popup
-navigation and cancellation still require end-to-end qualification.
+as keyboard and menu commands. Real DOS driver interaction, popup cancellation and clipboard undo/redo are
+covered by the scoped `DISPLAY-MOUSE.md` matrix.
 
 ## Evidence and remaining scope
 
@@ -66,5 +66,6 @@ cover nondefault and
 invalid configuration values, multi-line selection and long visual lines.
 `text-cells-milestone.json` records build and runtime evidence.
 
-Monochrome, alternate text geometries, real mouse drivers, legacy CPUs and
-constrained-memory runs remain part of the broader `EDIT-PLAN.md` gates.
+Monochrome and real-driver results are recorded in `DISPLAY-MOUSE.md`.
+Alternate text geometries, additional drivers, legacy CPUs and constrained-memory
+runs remain part of the broader `EDIT-PLAN.md` gates.

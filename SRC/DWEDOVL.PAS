@@ -304,6 +304,13 @@ begin
                 end;
         end;
 
+        { Mode 7 uses readable monochrome attributes even with a color CFG. }
+        if scr.monochrome then with ctx.config.color do begin
+                top:=$70; top_hl:=$70; text:=$07; text_dl:=$07;
+                text_hl:=$0F; text_sel:=$70; menu:=$07; menu_sel:=$70;
+                help_menu:=$07; help_menu_sel:=$70; help:=$07; help_hl:=$0F;
+        end;
+
         upstr(ctx.config.memory);
         if ctx.config.memory = MEM_SXMS then strs.init(strs.MT_SXMS)
         else if ctx.config.memory = MEM_SWAP then strs.init(strs.MT_SWAP)

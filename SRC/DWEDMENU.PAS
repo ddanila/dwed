@@ -27,6 +27,14 @@ Commands:array[0..4,0..7] of TEditorCommand=(
  (CMD_HIGHLIGHT,CMD_INSERT_MODE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE),
  (CMD_HELP,CMD_ABOUT,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE));
 
+function mnemonic_color(color:byte; selected:boolean):byte;
+begin
+        if scr.monochrome then begin
+                if selected then mnemonic_color:=$70 else mnemonic_color:=$0F;
+        end else if selected then mnemonic_color:=(color and $F0) or $0E
+        else mnemonic_color:=(color and $F0) or $04;
+end;
+
 procedure draw_menu_bar(var ctx:TEditorContext; active:integer);
 var i:integer; color:byte;
 begin
@@ -35,8 +43,7 @@ begin
                 color:=ctx.config.color.menu;
                 if i=active then color:=ctx.config.color.menu_sel;
                 scr.print(MenuX[i],0,color,MenuTitle[i]);
-                if i=active then scr.chcolor(MenuX[i]+1,0,(color and $F0) or $0E,1)
-                else scr.chcolor(MenuX[i]+1,0,(color and $F0) or $04,1);
+                scr.chcolor(MenuX[i]+1,0,mnemonic_color(color,i=active),1);
         end;
 end;
 
@@ -90,17 +97,18 @@ begin
                 scrui.box(x,1,30,MenuCount[group]+2,ctx.config.color.menu);
                 for i:=0 to MenuCount[group]-1 do begin
                         caption:=Captions[group,i];
+                        if scr.monochrome and not enabled(ctx,Commands[group,i]) then
+                                caption:='- '+caption;
                         while length(caption)<28 do caption:=caption+' ';
                         color:=ctx.config.color.menu;
                         if i=selected then color:=ctx.config.color.menu_sel;
-                        if not enabled(ctx,Commands[group,i]) then
+                        if (not scr.monochrome) and not enabled(ctx,Commands[group,i]) then
                                 color:=(color and $F0) or $08;
                         scr.print(x+1,i+2,color,caption);
                         if enabled(ctx,Commands[group,i]) then
                                 for j:=1 to length(Captions[group,i]) do
                                         if upcase(caption[j])=Mnemonics[group][i+1] then begin
-                                                if i=selected then color:=(color and $F0) or $0E
-                                                else color:=(color and $F0) or $04;
+                                                color:=mnemonic_color(color,i=selected);
                                                 scr.chcolor(x+j,i+2,color,1);
                                                 break;
                                         end;
