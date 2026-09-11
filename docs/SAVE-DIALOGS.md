@@ -25,5 +25,6 @@ The parent dialog scenarios exercise save-on-exit, discard/cancel, cancelled
 Save As, unnamed Close/Exit/Save All, stopping a batch on cancellation,
 overwrite acceptance/refusal, disk-full retention and unnamed startup/resume.
 They verify actual destination and backup bytes as well as editor state and
-process completion. Mouse operation of the confirmation controls and injected
-commit/close/rename failures remain part of release qualification.
+process completion. Mouse operation of the confirmation controls remains part
+of release qualification. Injected DOS save failures and remaining recovery
+work are described in [SAVE-TRANSACTION.md](SAVE-TRANSACTION.md).

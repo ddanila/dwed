@@ -5,7 +5,9 @@ interface
 type TSaveFile = record
         handle : word;
         opened : boolean;
-        temporary, destination : string;
+        temporary, destination, backup, previous_backup : string;
+        original_moved : boolean;
+        cleanup_error, recovery_error : integer;
 end;
 
 procedure start_save(var f:TSaveFile; name:string; var error:integer);
@@ -64,12 +66,60 @@ begin
 end;
 
 procedure cancel_save(var f:TSaveFile);
-var ignored:integer;
+var code:integer;
 begin
-        if f.opened then ignored:=close_handle(f.handle);
-        f.opened:=false;
-        if f.temporary<>'' then ignored:=remove_file(f.temporary);
-        f.temporary:='';
+        if f.opened then begin
+                code:=close_handle(f.handle);
+                { Invalid handle on retry means close already released it. }
+                if (code<>0) and (code<>6) then begin f.cleanup_error:=code; exit end;
+                f.opened:=false;
+        end;
+        { A failed rollback leaves all recoverable generations in place. }
+        if f.original_moved or (f.previous_backup<>'') then exit;
+        if f.temporary<>'' then begin
+                code:=remove_file(f.temporary);
+                if (code=0) or (code=2) then f.temporary:=''
+                else f.cleanup_error:=code;
+        end;
+end;
+
+function park_backup(var f:TSaveFile):integer;
+var attr:word; code,i,separator:integer; dir,number,candidate:string;
+begin
+        park_backup:=0;
+        code:=attributes(f.backup,attr);
+        if code=2 then exit;
+        if (code=0) and (attr and $19<>0) then code:=5;
+        if code<>0 then begin park_backup:=code; exit end;
+        separator:=length(f.backup);
+        while (separator>0) and (f.backup[separator]<>'\') and
+              (f.backup[separator]<>':') do dec(separator);
+        dir:=copy(f.backup,1,separator);
+        for i:=0 to 9999 do begin
+                str(i,number); while length(number)<4 do number:='0'+number;
+                candidate:=dir+'$EB'+number+'.TMP';
+                code:=attributes(candidate,attr);
+                if code=2 then begin
+                        { DOS rename refuses to overwrite a competing file. }
+                        code:=move_file(f.backup,candidate);
+                        if code=0 then begin f.previous_backup:=candidate; exit end;
+                        if attributes(candidate,attr)<>0 then begin park_backup:=code; exit end;
+                end else if code<>0 then begin park_backup:=code; exit end;
+        end;
+        park_backup:=80;
+end;
+
+procedure restore_generations(var f:TSaveFile);
+begin
+        if f.original_moved then begin
+                f.recovery_error:=move_file(f.backup,f.destination);
+                if f.recovery_error<>0 then exit;
+                f.original_moved:=false;
+        end;
+        if f.previous_backup<>'' then begin
+                f.recovery_error:=move_file(f.previous_backup,f.backup);
+                if f.recovery_error=0 then f.previous_backup:='';
+        end;
 end;
 
 procedure start_save(var f:TSaveFile; name:string; var error:integer);
@@ -115,14 +165,14 @@ begin
 end;
 
 procedure finish_save(var f:TSaveFile; var error:integer);
-var regs:registers; attr:word; backup,extension:string;
-    i,separator,close_error,rollback_error:integer; existed:boolean;
+var regs:registers; attr:word; extension:string;
+    i,separator,close_error:integer; existed:boolean;
 begin
         if error<>0 then begin cancel_save(f); exit end;
         { Commit DOS buffers before closing and touching the old destination. }
         fillchar(regs,sizeof(regs),0); regs.ah:=$68; regs.bx:=f.handle;
         intr($21,regs); error:=result_code(regs);
-        close_error:=close_handle(f.handle); f.opened:=false;
+        close_error:=close_handle(f.handle); f.opened:=close_error<>0;
         if error=0 then error:=close_error;
         if error<>0 then begin cancel_save(f); exit end;
         error:=attributes(f.destination,attr); existed:=error=0;
@@ -136,25 +186,31 @@ begin
                         if (f.destination[i]='.') and (separator=length(f.destination)) then separator:=i-1;
                         dec(i);
                 end;
-                backup:=copy(f.destination,1,separator)+'.BAK';
+                f.backup:=copy(f.destination,1,separator)+'.BAK';
                 { Editing a .BAK file must not delete the destination itself. }
                 extension:=copy(f.destination,separator+1,255);
                 for i:=1 to length(extension) do extension[i]:=upcase(extension[i]);
                 if extension='.BAK' then
-                        backup:=copy(f.destination,1,separator)+'.BK!';
-                error:=remove_file(backup);
-                if error=2 then error:=0;
-                if error=0 then error:=move_file(f.destination,backup);
+                        f.backup:=copy(f.destination,1,separator)+'.BK!';
+                error:=park_backup(f);
                 if error<>0 then begin cancel_save(f); exit end;
+                error:=move_file(f.destination,f.backup);
+                if error<>0 then begin
+                        restore_generations(f); cancel_save(f); exit;
+                end;
+                f.original_moved:=true;
         end;
         error:=move_file(f.temporary,f.destination);
         if error<>0 then begin
-                if existed then begin
-                        rollback_error:=move_file(backup,f.destination);
-                        { If rollback fails, retain both recoverable files. }
-                        if rollback_error<>0 then exit;
+                restore_generations(f); cancel_save(f);
+        end else begin
+                f.temporary:=''; f.original_moved:=false;
+                { Publication is complete. Cleanup cannot undo a successful
+                  save; retain its path and error if the old backup persists. }
+                if f.previous_backup<>'' then begin
+                        f.cleanup_error:=remove_file(f.previous_backup);
+                        if f.cleanup_error=0 then f.previous_backup:='';
                 end;
-                cancel_save(f);
-        end else f.temporary:='';
+        end;
 end;
 end.

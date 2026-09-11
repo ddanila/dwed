@@ -35,8 +35,9 @@ Concurrent same-size rewrites of the source are not detected by this check.
 
 Save Clipboard uses the document saver in `SAFESAVE.PAS`, including checked
 writes, temporary files and backup replacement. Disk-full failure preserves
-the existing destination and backup. The broader injected close/rename failure
-and interrupted-save recovery qualification remains part of `EDIT-PLAN.md`.
+the existing destination and backup. Injected close/rename failures are covered
+at the shared writer boundary in
+`SAVE-TRANSACTION.md`; interrupted-save recovery remains part of `EDIT-PLAN.md`.
 
 ## Host clipboard boundary
 
