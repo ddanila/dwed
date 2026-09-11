@@ -26,6 +26,14 @@ unit strsdos;
 
 interface
 
+uses unredo;
+
+const REPLAY_NO_MEMORY = 8;
+      REPLAY_INVALID = 13;
+
+function replay_group(var root:pointer; group:PUndoGroup; forward:boolean;
+                      reserve:longint; var errCode:integer):boolean;
+
 procedure init;
 procedure done;
 
@@ -310,6 +318,135 @@ begin
         r := strsdos.put(r, s1);
         strsdos.create(PDosStringRec(r)^.next, r, s2);
         split := r;
+end;
+
+{ Apply a journal group without publishing a partial document. Every node and
+  replay record is allocated before the first link changes. Removed nodes are
+  retained until commit, so rollback never needs to allocate. }
+type
+PReplayStep = ^TReplayStep;
+TReplayStep = record
+        previous, next : PReplayStep;
+        change : PUndoChange;
+        prepared, removed, left, right : PDosStringRec;
+        kind : TUndoKind;
+        applied : boolean;
+end;
+
+function replay_allocate(size:word; reserve:longint):pointer;
+var p:pointer;
+begin
+        p:=nil;
+        if (MaxAvail>=size) and (MemAvail-longint(size)>=reserve) then
+                GetMem(p,size);
+        replay_allocate:=p;
+end;
+
+procedure replay_link(var head:PDosStringRec; left,right,node:PDosStringRec);
+begin
+        if node<>nil then begin
+                node^.prev:=left; node^.next:=right;
+                if left=nil then head:=node else left^.next:=node;
+                if right<>nil then right^.prev:=node;
+        end else begin
+                if left=nil then head:=right else left^.next:=right;
+                if right<>nil then right^.prev:=left;
+        end;
+end;
+
+function replay_group(var root:pointer; group:PUndoGroup; forward:boolean;
+                      reserve:longint; var errCode:integer):boolean;
+var first,last,step,next:PReplayStep;
+    change:PUndoChange;
+    head,node,left:PDosStringRec;
+    oldtext,newtext,actual,temp:string;
+    size:word; number:longint;
+begin
+        replay_group:=false; errCode:=REPLAY_INVALID;
+        if group=nil then exit;
+        if reserve<0 then reserve:=0;
+        first:=nil; last:=nil; errCode:=0;
+        if forward then change:=group^.first else change:=group^.last;
+        while (change<>nil) and (errCode=0) do begin
+                step:=replay_allocate(sizeof(TReplayStep),reserve);
+                if step=nil then errCode:=REPLAY_NO_MEMORY else begin
+                        FillChar(step^,sizeof(TReplayStep),0);
+                        step^.change:=change; step^.kind:=change^.kind;
+                        step^.previous:=last;
+                        if last=nil then first:=step else last^.next:=step;
+                        last:=step;
+                        undo_text(change,oldtext,newtext);
+                        if not forward then begin
+                                temp:=oldtext; oldtext:=newtext; newtext:=temp;
+                                case step^.kind of
+                                UNDO_INSERT:step^.kind:=UNDO_DELETE;
+                                UNDO_DELETE:step^.kind:=UNDO_INSERT;
+                                end;
+                        end;
+                        if step^.kind<>UNDO_DELETE then begin
+                                size:=norm_len(length(newtext));
+                                node:=replay_allocate(sizeof(TDosStringRec)+size-1,reserve);
+                                if node=nil then errCode:=REPLAY_NO_MEMORY else begin
+                                        node^.next:=nil; node^.prev:=nil; node^.num:=0;
+                                        node^.allocated:=size; node^.len:=length(newtext);
+                                        Move(newtext[1],node^.body[1],length(newtext));
+                                        step^.prepared:=node;
+                                end;
+                        end;
+                end;
+                if forward then change:=change^.next else change:=change^.previous;
+        end;
+        head:=root; step:=first;
+        while (step<>nil) and (errCode=0) do begin
+                { Resolve the ordinal in the intermediate document, not the
+                  cached line numbers from before the command. }
+                node:=head; left:=nil; number:=1;
+                while (node<>nil) and (number<step^.change^.line) do begin
+                        left:=node; node:=node^.next; inc(number);
+                end;
+                if (number<>step^.change^.line) or
+                   ((node=nil) and (step^.kind<>UNDO_INSERT)) then
+                        errCode:=REPLAY_INVALID
+                else begin
+                        if step^.kind=UNDO_INSERT then step^.right:=node
+                        else begin
+                                undo_text(step^.change,oldtext,newtext);
+                                if not forward then oldtext:=newtext;
+                                strsdos.get(node,actual);
+                                if actual<>oldtext then errCode:=REPLAY_INVALID;
+                                step^.removed:=node; step^.right:=node^.next;
+                        end;
+                        if errCode=0 then begin
+                                step^.left:=left;
+                                replay_link(head,step^.left,step^.right,step^.prepared);
+                                if step^.removed<>nil then begin
+                                        step^.removed^.next:=nil;
+                                        step^.removed^.prev:=nil;
+                                end;
+                                step^.applied:=true;
+                        end;
+                end;
+                step:=step^.next;
+        end;
+        if errCode<>0 then begin
+                step:=last;
+                while step<>nil do begin
+                        if step^.applied then
+                                replay_link(head,step^.left,step^.right,step^.removed);
+                        step:=step^.previous;
+                end;
+        end else begin
+                root:=head;
+                number:=strsdos.renum(root);
+                replay_group:=true;
+        end;
+        step:=first;
+        while step<>nil do begin
+                next:=step^.next;
+                if errCode=0 then free_str(step^.removed)
+                else free_str(step^.prepared);
+                FreeMem(step,sizeof(TReplayStep)); step:=next;
+        end;
 end;
 
 function from_file(fname : string; tab_size : integer; var errCode : integer; scrupdate : pointer) : pointer;
