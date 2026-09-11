@@ -39,3 +39,6 @@ The unmodified Free Pascal runtime is under the GNU Library GPL with its
 independent-module linking exception; its notices are in `licenses/fpc`.
 Corresponding runtime source is available from the versioned source URL in
 `tools/toolchain.json`. The compiler itself is a separate build tool.
+
+For a development archive containing EDIT.COM and its runtime notices, use the
+[staged package procedure](PACKAGE.md). This is separate from release promotion.
