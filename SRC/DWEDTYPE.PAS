@@ -24,7 +24,7 @@ unit dwedtype;
 
 interface
 
-uses strs, dwedhl, event;
+uses strs, dwedhl, event, unredo;
 
 const
 SCRU_QUIT   = 1;
@@ -123,6 +123,7 @@ TFileContext = record
         total        : DWord;
         scrx, scry   : integer;
         next         : PFileContext;
+        history      : TUndoHistory;
         format       : TTextFormat;
         rline        : EditorStr;
         cline        : EditorStr;

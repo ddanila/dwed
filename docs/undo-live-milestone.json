@@ -1,0 +1,575 @@
+{
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 193738,
+        "sha256": "11349d394bf4ce215f0c1dc909055cac9e9a391d956c636e02321a8cf5e16cf6"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 6912,
+        "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37572,
+        "sha256": "5503446dc22b472cd5f73c40b04dacf6b0052f1fd12a3ddef3e1e1b33276ccd2"
+      },
+      "STORTEST.exe": {
+        "bytes": 140502,
+        "sha256": "a2395b9e055cd2720b60357c9e5e902076ab578c9a37227a2c595e9681871598"
+      }
+    }
+  },
+  "clean_builds_identical": true,
+  "parent_revision": "8da85ae0b4ae44d44807bc6a97d2855a6556f3d3",
+  "runtime": "QEMU 486 TCG; private copies of parent out/floppy.img",
+  "editor_memory_backend": "DOS",
+  "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+  "source_sha256": {
+    "dwed/SRC/DWED.TXT": "9ea090ce4ec85cde0ba1dd80927e3e0abeed9021eddfd97723fcca740f7092dc",
+    "dwed/SRC/DWEDCMD.PAS": "7fabc5bc57913049b2869a3793ce3c81055ea92479d6c7345d8f9817828a8597",
+    "dwed/SRC/DWEDHNDL.PAS": "1ed5238e2160da9b1d2171bdd37f4e79d471c24e23d6f1b94fbe7e7637527c7f",
+    "dwed/SRC/DWEDMENU.PAS": "08b65f41bcd73f06f14ad5bbae01281d9a6f5543185457afffdcd2514805fabe",
+    "dwed/SRC/DWEDTYPE.PAS": "718ce8ba965f38a042d55d44436ad52fb36571b67e8333e73b8d4ba7e0749674",
+    "dwed/SRC/DWEDUTIL.PAS": "d5e4e51197bc3a20bab2738d88f7ebb6801c513e3614d8d46ea2890222311b43",
+    "dwed/SRC/DWEDUNDO.PAS": "160abba70955d5f3adc2515e41b2ccaf31cc5f80b6f9c3d1b9e8fd8125a35127",
+    "dwed/SRC/STRS.PAS": "ee2e30bb301288552fa41833ec4318fa755d99aa8e436419ffe29e8be8c3837f",
+    "dwed/SRC/STRSDOS.PAS": "b1ee72088d48332aa72a7ceadd3c48d682a0acc6ac221b81be3447e325dd5c0a",
+    "dwed/tests/STORTEST.PAS": "ccfc7961c509bcf6ab4428d93c8aced0d2795e4bbd9c37e6915fda923ea0f1f8",
+    "tests/test_dwed_qemu.py": "ffe3291273ab2a978f896abc39e17564141cd0889589b5e986e5e3e384da539f",
+    "tests/dwed_undo_scenarios.py": "d8c9ea7182ff055e18e59d8b5caa12e4d0801e1531d8d6fbef161bdfc68c2f5d"
+  },
+  "cases": [
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "backup-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "outside-directory-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-lf-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-cr-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-no-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-tabs-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-codepage-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-max-line-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-empty-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-long-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-control-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "new-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "split-whitespace-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "remove-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-alt-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-copy-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "shortcut-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-journal-low",
+      "mode": "low",
+      "journal_probe": "PASS 95638 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-journal-high",
+      "mode": "high",
+      "journal_probe": "PASS 95638 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-low",
+      "mode": "low",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-high",
+      "mode": "high",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "dialog-exit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-save"
+    },
+    {
+      "case": "dialog-exit-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-cancel"
+    },
+    {
+      "case": "dialog-close-discard-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "close-discard"
+    },
+    {
+      "case": "dialog-close-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "close-cancel"
+    },
+    {
+      "case": "dialog-saveas-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "saveas-cancel"
+    },
+    {
+      "case": "dialog-unnamed-exit-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-unnamed-close-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-close"
+    },
+    {
+      "case": "dialog-unnamed-saveall-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "dialog-unnamed-cancel-name-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-cancel-name"
+    },
+    {
+      "case": "dialog-unnamed-cancel-all-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-cancel-all"
+    },
+    {
+      "case": "dialog-overwrite-no-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "overwrite-no"
+    },
+    {
+      "case": "dialog-overwrite-yes-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "overwrite-yes"
+    },
+    {
+      "case": "dialog-startup-unnamed-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-startup-command-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-exit-save-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-save"
+    },
+    {
+      "case": "dialog-unnamed-saveall-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "dialog-exit-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-full"
+    },
+    {
+      "case": "undo-edit-typing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing"
+    },
+    {
+      "case": "undo-edit-split-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "split"
+    },
+    {
+      "case": "undo-edit-merge-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "merge"
+    },
+    {
+      "case": "undo-edit-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "cut"
+    },
+    {
+      "case": "undo-edit-paste-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "paste"
+    },
+    {
+      "case": "undo-edit-multi-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "multi-cut"
+    },
+    {
+      "case": "undo-edit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "save"
+    },
+    {
+      "case": "undo-edit-windows-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "windows"
+    },
+    {
+      "case": "undo-edit-branch-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "branch"
+    },
+    {
+      "case": "undo-edit-indent-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "indent"
+    },
+    {
+      "case": "undo-edit-move-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "move"
+    },
+    {
+      "case": "undo-edit-typing-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing"
+    },
+    {
+      "case": "undo-edit-capacity-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "capacity"
+    }
+  ]
+}

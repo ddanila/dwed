@@ -3,7 +3,8 @@ program stortest;
 uses unredo,strsdos;
 var output:text; tests:longint;
     h:TUndoHistory; position:TUndoPosition;
-    root,node:pointer;
+    root,node,original_root:pointer;
+    merged:boolean;
     lines:array[1..16] of string; count:integer;
     pointers:array[1..16] of pointer;
     hashes:array[0..600] of longint;
@@ -126,6 +127,18 @@ begin
         check(undo_accept(h,g,forward),'acknowledge');
 end;
 
+{$F+}
+procedure fail_during_live_edit;
+var text:string; p:pointer;
+begin
+        text:='partial live edit'; p:=strsdos.put(root,text);
+        { The next allocation must jump out of this far callback. }
+        h.reserve:=MemAvail;
+        text:='cannot allocate'; p:=strsdos.put(p,text);
+        check(false,'allocation failure must abort callback');
+end;
+{$F-}
+
 begin
         assign(output,'A:\STORE.LOG'); rewrite(output); tests:=0;
         root:=nil; count:=0; FillChar(position,sizeof(position),0);
@@ -245,6 +258,40 @@ begin
         end;
         strsdos.free(root); undo_done(h);
         check(MemAvail=before_heap,'stress replay has no heap leak');
+        { Capture the actual legacy mutation entry points, then replay the
+          journal they produced rather than a hand-constructed group. }
+        root:=nil; count:=3; lines[1]:='first'; lines[2]:=''; lines[3]:=#9#128#255;
+        node:=nil;
+        for i:=1 to count do begin
+                node:=strsdos.create(nil,node,lines[i]); if root=nil then root:=node;
+        end;
+        n:=strsdos.renum(root);
+        undo_init(h,UNDO_DEFAULT_LIMIT,UNDO_DEFAULT_RESERVE);
+        if setjmp(transaction_jump)=0 then begin
+                transaction_bind(h,root,position);
+                b:='changed'; root:=strsdos.put(root,b);
+                root:=strsdos.split(root,4);
+                root:=strsdos.merge(root,merged); check(merged,'live merge');
+                n:=strsdos.renum(root); root:=strsdos.delete(root,2,2);
+                node:=strsdos.create(nil,strsdos.go_last(root),'tail');
+                transaction_commit(position);
+        end else begin transaction_cancel; check(false,'unexpected live abort') end;
+        lines[1]:='changed'; lines[2]:=#9#128#255; lines[3]:='tail';
+        n:=strsdos.renum(root); compare_store;
+        replay(false); check(lines[1]='first','captured live undo');
+        replay(true); check(lines[1]='changed','captured live redo');
+        replay(false); original_root:=root; remember;
+        if setjmp(transaction_jump)=0 then begin
+                transaction_bind(h,root,position); fail_during_live_edit;
+                check(false,'missing live abort');
+        end else begin
+                transaction_cancel; root:=original_root;
+                check(transaction_error=1004,'live allocation error code');
+        end;
+        h.reserve:=UNDO_DEFAULT_RESERVE; unchanged;
+        check(undo_next(h)<>nil,'live failure preserves redo');
+        replay(true); compare_store;
+        strsdos.free(root); undo_done(h);
         writeln(output,'PASS ',tests,' assertions'); close(output);
         assign(output,'A:\STORE.OK'); rewrite(output);
         writeln(output,'ATOMIC STORAGE PASS'); close(output);

@@ -81,7 +81,7 @@ function get_ticks : longint;
 
 implementation
 
-uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch;
+uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo;
 
 function get_ticks : longint;
 begin
@@ -597,6 +597,7 @@ end;
 
 procedure reset_file(p : PFileContext);
 begin
+        undo_init(p^.history,UNDO_DEFAULT_LIMIT,UNDO_DEFAULT_RESERVE);
         with p^ do begin
                 sfname := mk_short_name(fname);
                 if fname='' then sfname:='Untitled';
@@ -666,6 +667,7 @@ function get_err_msg(errCode:integer) : string;
 var     errMsg : string;
 begin
         case errCode of
+        1004: errMsg := 'Cannot record edit; document unchanged';
         1001: errMsg := 'Line exceeds 255 bytes; file was not opened';
         1002: errMsg := 'Mixed line endings; file was not opened';
         1003: errMsg := 'Unsupported control byte; file was not opened';
@@ -674,6 +676,7 @@ begin
         3: errMsg := 'Path not found';
         4: errMsg := 'Too many open files';
         5: errMsg := 'File access denied';
+        8: errMsg := 'Not enough memory';
         6: errMsg := 'Invalid file handle';
         12: errMsg := 'Invalid file access code';
         15: errMsg := 'Invalid drive number';

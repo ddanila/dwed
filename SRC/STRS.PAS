@@ -33,6 +33,8 @@ TTextFormat = record
 end;
 EditorStr = pointer;
 
+function supports_undo:boolean;
+
 procedure init(mType : MemoryType);
 procedure done;
 
@@ -72,6 +74,9 @@ uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, safesave
 
 const
 memType : MemoryType = MT_DOS;
+
+function supports_undo:boolean;
+begin supports_undo:=memType=MT_DOS end;
 
 procedure init(mType : MemoryType);
 begin

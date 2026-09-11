@@ -32,7 +32,8 @@ function process_event(var ctx : TEditorContext; var e : TEvent) : integer;
 implementation
 
 uses dwedhelp, scr, kminput, cstring, scrui, strs, str, dwedscru, dwedutil,
-dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu;
+dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu,
+unredo, strsdos, dwedundo;
 
 {$F+}
 const
@@ -76,6 +77,8 @@ begin
 end;
 
 function command_for(proc:pointer; var e:TEvent):TEditorCommand;forward;
+function run_action(var ctx:TEditorContext; var e:TEvent; command:TEditorCommand;
+                    callback:pointer; reset_selection:boolean):integer;forward;
 
 function process_event(var ctx : TEditorContext; var e : TEvent) : integer;
 var     h         : PEventHandler;
@@ -89,7 +92,7 @@ begin
         group := menu_request(e);
         if group >= 0 then begin
                 command := choose_menu(ctx,group);
-                r := execute_command(ctx,command);
+                r := run_action(ctx,e,command,nil,false);
                 if r <> SCRU_QUIT then r := norm_xy(ctx,SCRU_FULL);
                 process_event := r;
                 exit;
@@ -100,14 +103,13 @@ begin
                 if h <> nil then begin
                         proc := TEventProc(h^.proc);
                         command := command_for(h^.proc,e);
-                        if command <> CMD_NONE then r := execute_command(ctx,command)
-                        else r := proc(ctx, @e);
+                        r := run_action(ctx,e,command,h^.proc,h^.reset_selection);
                         if r=SCRU_QUIT then begin process_event:=r; exit end;
                         if (command=CMD_NONE) and h^.reset_selection and ctx.current^.editor.selection then begin
                                 ctx.current^.editor.selection := false;
                                 r := SCRU_FULL;
                         end;
-                end else r := hk_default(ctx, @e);
+                end else r := run_action(ctx,e,CMD_NONE,@hk_default,false);
                 if prev_scrx <> ctx.current^.scrx then r := SCRU_FULL;
         end else if e.etype in [MOUSE_MOVE,
                 MOUSE_PRESS_B1, MOUSE_PRESS_B2,
@@ -484,6 +486,7 @@ begin
                 ctx.current^.fname:=newname;
                 ctx.current^.sfname:=mk_short_name(newname);
                 ctx.current^.chg:=false;
+                undo_saved(ctx.current^.history);
                 save_document:=SAVE_OK;
         end;
 end;
@@ -1169,6 +1172,7 @@ begin
                 end;
                 r := ctx.current;
                 strs.free(r^.rline);
+                undo_done(r^.history);
                 freemem(r, sizeof(TFileContext));
                 if prev <> nil then prev^.next := next else ctx.all := next;
                 if next = nil then next := ctx.all;
@@ -1297,6 +1301,7 @@ begin
                         ctx.all^.cline := nil;
                         srcctx := ctx.all;
                         ctx.all := ctx.all^.next;
+                        undo_done(srcctx^.history);
                         freemem(srcctx, sizeof(TFileContext));
                 end;
         end;
@@ -1351,11 +1356,18 @@ begin
         hk_move_line_down := r;
 end;
 
+function hk_undo(var ctx:TEditorContext; event:PEvent):integer;
+begin hk_undo:=replay_edit(ctx,false) end;
+function hk_redo(var ctx:TEditorContext; event:PEvent):integer;
+begin hk_redo:=replay_edit(ctx,true) end;
+
 { Match the near declarations; callbacks above intentionally remain far. }
 {$F-}
 function command_for(proc:pointer; var e:TEvent):TEditorCommand;
 begin
         command_for:=CMD_NONE;
+        if proc=@hk_undo then command_for:=CMD_UNDO;
+        if proc=@hk_redo then command_for:=CMD_REDO;
         if proc=@hk_load then command_for:=CMD_OPEN;
         if proc=@hk_save_as then command_for:=CMD_SAVE_AS;
         if proc=@hk_close then command_for:=CMD_CLOSE;
@@ -1380,6 +1392,29 @@ begin
         end;
 end;
 
+function run_action(var ctx:TEditorContext; var e:TEvent; command:TEditorCommand;
+                    callback:pointer; reset_selection:boolean):integer;
+var record_edit:boolean; r:integer; action:TEventProc;
+begin
+        record_edit:=not (command in [CMD_NEW,CMD_OPEN,CMD_SAVE,CMD_SAVE_AS,
+                CMD_SAVE_ALL,CMD_CLOSE,CMD_EXIT,CMD_WINDOWS,CMD_NEXT_WINDOW,CMD_UNDO,CMD_REDO]);
+        if callback=@hk_userdef then record_edit:=false;
+        if record_edit then record_edit:=start_edit(ctx);
+        if (not record_edit) or (setjmp(transaction_jump)=0) then begin
+                r:=SCRU_NONE;
+                if command<>CMD_NONE then r:=execute_command(ctx,command)
+                else if callback<>nil then begin action:=TEventProc(callback); r:=action(ctx,@e) end;
+                if (r<>SCRU_QUIT) and (command=CMD_NONE) and reset_selection and
+                   ctx.current^.editor.selection then begin
+                        ctx.current^.editor.selection:=false; r:=SCRU_FULL;
+                end;
+                if record_edit then finish_edit(ctx);
+        end else begin
+                cancel_edit(ctx); r:=SCRU_FULL;
+        end;
+        run_action:=r;
+end;
+
 function execute_command(var ctx:TEditorContext; command:TEditorCommand):integer;
 var e:TEvent; r:integer;
 begin
@@ -1387,6 +1422,8 @@ begin
         fillchar(e,sizeof(e),0); e.etype:=KEYBOARD;
         r:=SCRU_NONE;
         case command of
+        CMD_UNDO:r:=hk_undo(ctx,@e);
+        CMD_REDO:r:=hk_redo(ctx,@e);
         CMD_NEW:begin commit(ctx); new_file(ctx,''); r:=SCRU_FULL end;
         CMD_SAVE:r:=hk_save(ctx,@e);
         CMD_SAVE_ALL:begin e.ctrl_keys:=key_shift; r:=hk_save(ctx,@e) end;
@@ -1494,6 +1531,8 @@ begin
         reg_handler(SCAN_C, true, false, false, false, @hk_cb_copy);
         reg_handler(SCAN_V, true, false, false, false, @hk_cb_paste);
 
+        reg_handler(SCAN_Z, true, false, false, false, @hk_undo);
+        reg_handler(SCAN_Z, true, true, false, false, @hk_redo);
         reg_handler(SCAN_Y, true, false, false, false, @hk_cb_cutline);
         reg_handler(SCAN_U, true, false, false, false, @hk_cb_paste);
 

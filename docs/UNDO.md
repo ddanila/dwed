@@ -1,4 +1,4 @@
-# Undo journal and remaining integration
+# Undo and redo
 
 `SRC/UNREDO.PAS` implements a bounded, per-document journal of line insertions,
 deletions and replacements. Each group represents one editor command. It
@@ -7,11 +7,22 @@ copies of the complete document or pointers into mutable editor storage.
 The limits and working-memory reserve are defined in the unit; strings occupy
 only their actual payload length plus record overhead.
 
-Conventional-memory storage can apply recorded groups atomically. Live
-editing is not yet recorded into this journal, so undo/redo are not available
-editor commands yet. The old startup/shutdown scaffold that created unused
-temporary databases has been removed. Command integration must cover all
-mutation paths before menu items and shortcuts are enabled.
+In conventional-memory mode, the Edit menu and Ctrl-Z / Ctrl-Shift-Z provide
+Undo and Redo. Each document owns its history. Typing records one character per
+group; compound commands such as a selection cut, paste or line split record
+all their component changes in one group. Navigation and no-op edits preserve
+redo and allocate no journal group. Menu entries are disabled when the
+corresponding history is unavailable. The legacy Ctrl-Y cut-line shortcut is
+preserved.
+
+Successful saves establish a checkpoint. Undoing back to it clears the dirty
+marker, and redoing away from it makes the document dirty again. Saving after
+undo establishes the checkpoint at the current state. Closing a document frees
+its history. External-command launch saves/reloads documents using the existing
+session mechanism and starts new histories on return.
+
+Swap and XMS modes do not yet have undo/redo support; their menu entries remain
+disabled. This milestone does not complete the EDIT release qualification.
 
 ## Transaction contract
 
@@ -67,9 +78,28 @@ cursor/viewport pointers from the group's saved positions. The storage API
 supports empty chains; the editor controller must preserve its own invariant
 that an empty document contains an empty line.
 
-The existing live `put`/`create`/`delete` editing paths do not yet record groups
-or use this transaction mechanism. Swap and XMS replay remain unimplemented
-and unqualified. Atomic replay does not by itself make live edits atomic.
+## Live edit capture
+
+`DWEDHNDL.run_action` places command callbacks inside an edit boundary.
+`DWEDUNDO.PAS` snapshots the active file context and commits cached typing
+before finishing the group. File lifecycle, saving, window switching and
+undo/redo use their own paths. Conventional-memory `put`, `create` and deletion
+capture deltas before changing links; merge, split and append use those same
+entry points. The live transaction retains removed nodes until commit.
+
+A history-capacity or working-memory failure aborts the command, restores all
+original nodes without allocation, cancels its journal group and restores the
+file context, including selection, cursor, dirty state and existing history.
+The error dialog reports that the document is unchanged. Large compound edits
+that cannot fit in a whole history group are cancelled rather than partially
+retained. The clipboard is separate from document undo history.
+
+The abort boundary uses the pinned FPC RTL's `setjmp`/`longjmp`, including
+returns across far editor callbacks. Mutation callbacks use short-string
+locals. Any future heap-owning resource inside that boundary needs explicit
+cleanup before an abort can bypass its normal return path. The DOS storage
+probe tests an allocation failure inside a far callback after a live mutation,
+then verifies byte/node/heap restoration and preserved redo history.
 
 ## Evidence and remaining work
 
@@ -90,8 +120,14 @@ also assert original pointer identities. Parent LOW/HIGH QEMU results and a
 negative control with rollback disabled are recorded in
 `undo-storage-milestone.json`.
 
-Remaining integration includes atomic live mutation capture, per-file
-history ownership, edit boundaries including cached typing and bulk edits,
-save checkpoints, user-visible undo/redo commands and enabled states, and
-real editor tests for every mutation path and low-memory failure. The model
-probe alone does not establish those editor behaviors.
+The parent `dwed_undo_scenarios.py` exercises real editor commands and disk
+outputs, including typing, split/join, cut and restored selection, multi-line
+cut, paste, indentation, line movement, save checkpoints, branching, independent
+windows and cancellation of an oversized edit. The generated
+`undo-live-milestone.json` records the build and runtime evidence.
+
+Remaining qualification includes search/replace and optional addon/table
+commands, constrained-memory editor runs beyond the tested capacity failure,
+legacy CPUs and modifier-key queues under delayed input, and swap/XMS support.
+The broader text-format, clipboard, mouse, display and safe-save recovery gates
+in `EDIT-PLAN.md` also remain open.

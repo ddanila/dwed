@@ -62,6 +62,10 @@ will use own internal clipboard.
    ~DOWN~
 ~HOME~/~END~
 
+~Ctrl~+~Z~ - Undo last edit (DOS memory mode).
+~Ctrl~+~Shift~+~Z~ - Redo last undone edit.
+The Edit menu also provides Undo and Redo.
+
 ~Ctrl~+~X~/~C~/~V~ - Cut/Copy/Paste selected text.
 ~Ctrl~+~Y~     - Cut current line.
 ~Ctrl~+~U~     - Paste clipboard.

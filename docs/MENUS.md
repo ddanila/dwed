@@ -17,7 +17,9 @@ The dispatcher adapts command options to the legacy callbacks and restores
 the menu bar after their temporary input prompts. Its near declarations must
 match the implementations; editor callback procedures remain far.
 
-Opening and cancelling a menu preserves text selection. Cut and Copy are
+Opening and cancelling a menu preserves text selection. Undo and Redo use
+per-document history in conventional-memory mode; see [UNDO.md](UNDO.md).
+Unavailable history entries are disabled. Cut and Copy are
 disabled without selection, and Paste is disabled when no clipboard source is
 available. New creates an unnamed document; its Save command asks for a name.
 Find/Replace currently uses the inherited combined input flow. The menu
@@ -25,10 +27,9 @@ structure is present, but this is not completion of the EDIT release gates.
 
 Save, Save As, Save All, Close and Exit now share the
 [save outcome and cancellation rules](SAVE-DIALOGS.md), including unnamed
-documents. Remaining work includes undo/redo, tab-stop display,
-clipboard fidelity, mouse qualification, monochrome/accessibility checks and
-the remaining command/dialog tests. No inactive Undo command is presented as
-working functionality.
+documents. Remaining work includes broader undo qualification, tab-stop
+display, clipboard fidelity, mouse qualification, monochrome/accessibility
+checks and the remaining command/dialog tests.
 
 The parent QEMU suite checks Save via menu navigation and Alt-F, selection
 retention through Copy/Paste and cancellation, and restoration of the menu bar

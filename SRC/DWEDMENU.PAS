@@ -6,22 +6,23 @@ procedure draw_menu_bar(var ctx:TEditorContext; active:integer);
 function menu_request(var e:TEvent):integer;
 function choose_menu(var ctx:TEditorContext; group:integer):TEditorCommand;
 implementation
-uses scr,scrui,kminput;
+uses scr,scrui,kminput,unredo,strs;
 const
 MenuX:array[0..4] of integer=(0,7,14,23,34);
 MenuTitle:array[0..4] of string[9]=(' File ',' Edit ',' Search ',' Options ',' Help ');
-MenuCount:array[0..4] of integer=(8,3,3,2,2);
+MenuCount:array[0..4] of integer=(8,5,3,2,2);
 Captions:array[0..4,0..7] of string[28]=(
  ('New','Open...             F3','Save                F2','Save as...    Shift-F2',
   'Save all','Close           Alt-F4','Windows...      Alt-F6','Exit               Esc'),
- ('Cut             Ctrl-X','Copy            Ctrl-C','Paste           Ctrl-V','','','','',''),
+ ('Undo            Ctrl-Z','Redo      Ctrl-Shift-Z','Cut             Ctrl-X',
+  'Copy            Ctrl-C','Paste           Ctrl-V','','',''),
  ('Find / Replace... Ctrl-F','Next match      Ctrl-K','Go to line...   Ctrl-L','','','','',''),
  ('Syntax highlighting...','Insert / Overwrite','','','','','',''),
  ('Contents            F1','About','','','','','',''));
-Mnemonics:array[0..4] of string[8]=('NOSALCWX','TCP','FNG','SI','CA');
+Mnemonics:array[0..4] of string[8]=('NOSALCWX','URTCP','FNG','SI','CA');
 Commands:array[0..4,0..7] of TEditorCommand=(
  (CMD_NEW,CMD_OPEN,CMD_SAVE,CMD_SAVE_AS,CMD_SAVE_ALL,CMD_CLOSE,CMD_WINDOWS,CMD_EXIT),
- (CMD_CUT,CMD_COPY,CMD_PASTE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE),
+ (CMD_UNDO,CMD_REDO,CMD_CUT,CMD_COPY,CMD_PASTE,CMD_NONE,CMD_NONE,CMD_NONE),
  (CMD_FIND,CMD_FIND_NEXT,CMD_GOTO,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE),
  (CMD_HIGHLIGHT,CMD_INSERT_MODE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE),
  (CMD_HELP,CMD_ABOUT,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE));
@@ -68,6 +69,8 @@ end;
 function enabled(var ctx:TEditorContext; command:TEditorCommand):boolean;
 begin
         enabled:=true;
+        if command=CMD_UNDO then enabled:=strs.supports_undo and (undo_previous(ctx.current^.history)<>nil);
+        if command=CMD_REDO then enabled:=strs.supports_undo and (undo_next(ctx.current^.history)<>nil);
         if command in [CMD_CUT,CMD_COPY] then enabled:=ctx.current^.editor.selection;
         if command=CMD_PASTE then
                 enabled:=(ctx.clipboard[0]<>#0) or ctx.has_wincb;

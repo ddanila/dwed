@@ -34,6 +34,15 @@ const REPLAY_NO_MEMORY = 8;
 function replay_group(var root:pointer; group:PUndoGroup; forward:boolean;
                       reserve:longint; var errCode:integer):boolean;
 
+var transaction_jump:jmp_buf;
+    transaction_error:integer;
+    transaction_structure:boolean;
+procedure transaction_bind(var history:TUndoHistory; root:pointer;
+                           position:TUndoPosition);
+procedure transaction_abort(errCode:integer);
+procedure transaction_cancel;
+procedure transaction_commit(position:TUndoPosition);
+
 procedure init;
 procedure done;
 
@@ -82,6 +91,24 @@ TDosStringRec = record
         body       : array[1..1] of char;
 end;
 
+PReplayStep = ^TReplayStep;
+TReplayStep = record
+        previous, next : PReplayStep;
+        change : PUndoChange;
+        prepared, removed, left, right : PDosStringRec;
+        kind : TUndoKind;
+        applied : boolean;
+end;
+
+PLiveHistory = ^TUndoHistory;
+const live_history:PLiveHistory = nil;
+var live_root:PDosStringRec;
+    live_first,live_last:PReplayStep;
+    live_position:TUndoPosition;
+
+function live_change(kind:TUndoKind; node,left,right:PDosStringRec;
+                     body:string):pointer;forward;
+
 {$F-}
 
 function norm_len(len : word) : word;
@@ -97,6 +124,9 @@ function create(next, prev : pointer; body : string) : pointer;
 var len, nlen : word;
         r : PDosStringRec;
 begin
+        if live_history<>nil then begin
+                create:=live_change(UNDO_INSERT,nil,prev,next,body); exit;
+        end;
         len := length(body);
         nlen := norm_len(len);
         getmem(r, sizeof(TDosStringRec) + nlen - 1);
@@ -120,6 +150,9 @@ function put(r : pointer; var body : string) : pointer;
 var len : word;
         old : PDosStringRec;
 begin
+        if live_history<>nil then begin
+                put:=live_change(UNDO_REPLACE,r,PDosStringRec(r)^.prev,PDosStringRec(r)^.next,body); exit;
+        end;
         len := norm_len(length(body));
         if len = PDosStringRec(r)^.allocated then begin
                 len := length(body);
@@ -215,6 +248,9 @@ end;
 function del_str(r : PDosStringRec) : PDosStringRec;
 var t : PDosStringRec;
 begin
+        if (r<>nil) and (live_history<>nil) then begin
+                del_str:=live_change(UNDO_DELETE,r,r^.prev,r^.next,''); exit;
+        end;
         if r <> nil then begin
                 t := r;
                 r := r^.next;
@@ -246,6 +282,7 @@ begin
                 t^.num := n; inc(n);
                 t := t^.next;
         end;
+        if live_history<>nil then r:=live_root;
         delete := r;
 end;
 
@@ -260,6 +297,11 @@ begin
                 strsdos.get(t1, s1);
                 strsdos.get(t2, s2);
                 if length(s1) + length(s2) <= 255 then begin
+                        if live_history<>nil then begin
+                                s1:=s1+s2; r:=strsdos.put(r,s1);
+                                t2:=del_str(PDosStringRec(r)^.next);
+                                merged:=true; merge:=r; exit;
+                        end;
                         r := strsdos.create(t2^.next, t1^.prev, s1 + s2);
                         free_str(t1);
                         free_str(t2);
@@ -323,16 +365,6 @@ end;
 { Apply a journal group without publishing a partial document. Every node and
   replay record is allocated before the first link changes. Removed nodes are
   retained until commit, so rollback never needs to allocate. }
-type
-PReplayStep = ^TReplayStep;
-TReplayStep = record
-        previous, next : PReplayStep;
-        change : PUndoChange;
-        prepared, removed, left, right : PDosStringRec;
-        kind : TUndoKind;
-        applied : boolean;
-end;
-
 function replay_allocate(size:word; reserve:longint):pointer;
 var p:pointer;
 begin
@@ -352,6 +384,93 @@ begin
                 if left=nil then head:=right else left^.next:=right;
                 if right<>nil then right^.prev:=left;
         end;
+end;
+
+procedure transaction_bind(var history:TUndoHistory; root:pointer;
+                           position:TUndoPosition);
+begin
+        live_history:=@history; live_root:=root; live_position:=position;
+        live_first:=nil; live_last:=nil; transaction_error:=0;
+        transaction_structure:=false;
+end;
+
+procedure transaction_abort(errCode:integer);
+begin
+        transaction_error:=errCode;
+        longjmp(transaction_jump,1);
+end;
+
+function live_change(kind:TUndoKind; node,left,right:PDosStringRec;
+                     body:string):pointer;
+var step:PReplayStep; oldtext:string; number:longint;
+    p:PDosStringRec; size:word;
+begin
+        oldtext:='';
+        if node<>nil then strsdos.get(node,oldtext);
+        if (kind=UNDO_REPLACE) and (body=oldtext) then begin
+                live_change:=node; exit;
+        end;
+        if live_history^.pending=nil then
+                if not undo_begin(live_history^,live_position) then transaction_abort(1004);
+        step:=replay_allocate(sizeof(TReplayStep),live_history^.reserve);
+        if step=nil then transaction_abort(1004);
+        FillChar(step^,sizeof(TReplayStep),0);
+        step^.kind:=kind; step^.left:=left; step^.right:=right;
+        step^.removed:=node; step^.previous:=live_last;
+        if live_last=nil then live_first:=step else live_last^.next:=step;
+        live_last:=step;
+        if kind<>UNDO_DELETE then begin
+                size:=norm_len(length(body));
+                p:=replay_allocate(sizeof(TDosStringRec)+size-1,live_history^.reserve);
+                if p=nil then transaction_abort(1004);
+                p^.next:=nil; p^.prev:=nil; p^.num:=0;
+                if node<>nil then p^.num:=node^.num;
+                p^.allocated:=size; p^.len:=length(body);
+                Move(body[1],p^.body[1],length(body)); step^.prepared:=p;
+        end;
+        if (not transaction_structure) and (node<>nil) then number:=node^.num
+        else begin
+                number:=1; p:=left;
+                while p<>nil do begin inc(number); p:=p^.prev end;
+        end;
+        if kind<>UNDO_REPLACE then transaction_structure:=true;
+        if not undo_record(live_history^,kind,number,oldtext,body) then
+                transaction_abort(1004);
+        replay_link(live_root,left,right,step^.prepared);
+        if node<>nil then begin node^.prev:=nil; node^.next:=nil end;
+        step^.applied:=true;
+        if kind=UNDO_DELETE then live_change:=right else live_change:=step^.prepared;
+end;
+
+procedure transaction_cancel;
+var step,previous:PReplayStep; number:longint;
+begin
+        step:=live_last;
+        while step<>nil do begin
+                if step^.applied then replay_link(live_root,step^.left,step^.right,step^.removed);
+                step:=step^.previous;
+        end;
+        step:=live_last;
+        while step<>nil do begin
+                previous:=step^.previous;
+                free_str(step^.prepared); FreeMem(step,sizeof(TReplayStep)); step:=previous;
+        end;
+        number:=strsdos.renum(live_root);
+        undo_cancel(live_history^);
+        live_history:=nil; live_first:=nil; live_last:=nil;
+end;
+
+procedure transaction_commit(position:TUndoPosition);
+var step,next:PReplayStep;
+begin
+        if live_history^.pending<>nil then
+                if not undo_finish(live_history^,position) then transaction_abort(1004);
+        step:=live_first;
+        while step<>nil do begin
+                next:=step^.next; free_str(step^.removed);
+                FreeMem(step,sizeof(TReplayStep)); step:=next;
+        end;
+        live_history:=nil; live_first:=nil; live_last:=nil;
 end;
 
 function replay_group(var root:pointer; group:PUndoGroup; forward:boolean;
