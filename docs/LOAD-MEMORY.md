@@ -34,3 +34,6 @@ refusal under fragmentation is covered separately in
 guarantee a large contiguous block for every later UI operation. There is no fixed maximum file
 size: line overhead, open documents, undo history and available DOS memory all
 affect capacity.
+
+Runtime open-files and Pascal source-list allocation failures are covered in
+[LIST-MEMORY.md](LIST-MEMORY.md).

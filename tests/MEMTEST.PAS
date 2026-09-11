@@ -1,9 +1,9 @@
 { SPDX-License-Identifier: MIT }
 program memtest;
-uses dwedtype,dwedutil,dwedrcv,strs,unredo,saveinfo,scr,dwedmenu,dwedcmd;
+uses dwedtype,dwedutil,dwedrcv,strs,unredo,saveinfo,scr,dwedmenu,dwedcmd,dwedhl;
 var output:text; checks:longint; ctx:TEditorContext;
     original,previous,p:PFileContext; info:TSaveRecord;
-    before_heap:longint; error,i,count:integer; s:string; screen_probe:boolean;
+    before_heap:longint; error,i,count:integer; s:string; screen_probe,list_probe:boolean;
 procedure check(ok:boolean; message:string);
 begin
         inc(checks);
@@ -17,6 +17,69 @@ begin
         check(ctx.current^.editor.line='unsaved text','working line retained');
         check(not ctx.file_reader.opened,'input handle closed');
         check(MemAvail=before_heap,'failed load releases all allocations');
+end;
+procedure list_memory;
+type PLink=^pointer;
+var blocks:array[0..511] of pointer; n:integer;
+    tail,spare,small:pointer; tree:pfast_jmp_list;
+    fragmented,total:longint; line:EditorStr;
+    procedure exhaust;
+    begin
+        FillChar(blocks,sizeof(blocks),0); n:=0; tail:=nil;
+        while (MaxAvail>=1024) and (n<512) do begin
+                GetMem(blocks[n],1024); inc(n);
+        end;
+        check(n<512,'list probe exhausts heap within block bound');
+        while MaxAvail>=8 do begin
+                GetMem(small,8); PLink(small)^:=tail; tail:=small;
+        end;
+        check(MaxAvail<12,'list probe leaves no usable menu block');
+    end;
+    procedure release_heap;
+    var j:integer;
+    begin
+        while tail<>nil do begin small:=PLink(tail)^; FreeMem(tail,8); tail:=small end;
+        for j:=0 to n-1 do FreeMem(blocks[j],1024);
+    end;
+begin
+        s:='procedure first;'; line:=strs.create(nil,ctx.current^.rline,s);
+        s:='procedure second;'; line:=strs.create(nil,line,s);
+        ctx.current^.st:=SRC_PAS;
+        before_heap:=MemAvail;
+        exhaust; fragmented:=MemAvail;
+        go_win_list(ctx);
+        check(MemAvail=fragmented,'failed windows list releases temporary data');
+        release_heap; preserved;
+        tree:=create_fast_jmp_list(ctx);
+        check((tree<>nil) and (tree^.next<>nil),'source list contains both procedures');
+        exhaust;
+        check(fast_jmp(ctx,tree)=SCRU_NONE,'source menu refuses exhausted heap');
+        release_heap; preserved;
+        GetMem(spare,128); exhaust; FreeMem(spare,128);
+        check(MaxAvail>=sizeof(fast_jmp_list),'partial list can allocate its first node');
+        check(MaxAvail<2*sizeof(fast_jmp_list),'partial list cannot hold both nodes');
+        fragmented:=MemAvail;
+        tree:=create_fast_jmp_list(ctx);
+        check(tree=nil,'partial source list is not published');
+        check(MemAvail=fragmented,'partial source list releases all nodes');
+        release_heap; preserved;
+        { A successful rebuild proves refusal did not leave stale list state. }
+        tree:=create_fast_jmp_list(ctx);
+        check((tree<>nil) and (tree^.next<>nil),'source list retries after release');
+        while tree<>nil do begin spare:=tree; tree:=tree^.next; FreeMem(spare,sizeof(fast_jmp_list)) end;
+        preserved;
+        tree:=nil; total:=0; s:='';
+        for n:=1 to 80 do s:=s+'x';
+        while total<=65535 do begin
+                check(MaxAvail>=sizeof(fast_jmp_list),'oversized source-list fixture fits');
+                GetMem(spare,sizeof(fast_jmp_list));
+                pfast_jmp_list(spare)^.text:=s;
+                pfast_jmp_list(spare)^.line:=1;
+                pfast_jmp_list(spare)^.next:=tree; tree:=spare;
+                inc(total,length(s)+1);
+        end;
+        check(fast_jmp(ctx,tree)=SCRU_NONE,'source menu rejects size before word wrap');
+        preserved;
 end;
 procedure screen_memory;
 var blocks:array[0..511] of pointer; n,j,k:integer; free_fragmented:longint;
@@ -52,7 +115,8 @@ begin
 end;
 begin
         { FPC parses and retains argv on the first ParamCount/ParamStr call. }
-        screen_probe:=System.ParamCount>0;
+        screen_probe:=System.ParamStr(1)='/SCREEN';
+        list_probe:=System.ParamStr(1)='/LIST';
         System.Assign(output,'A:\MEM.LOG'); System.Rewrite(output); checks:=0;
         FillChar(ctx,sizeof(ctx),0); ctx.config.width:=80; ctx.config.height:=24;
         ctx.config.tab_size:=8; strs.init(MT_DOS);
@@ -63,6 +127,7 @@ begin
         load_ed(ctx); ctx.current^.chg:=true;
         before_heap:=MemAvail;
         if screen_probe then screen_memory;
+        if list_probe then list_memory;
         for i:=1 to 3 do begin
                 load_file(ctx,'C:\HUGE.TXT',error,nil);
                 check(error=8,'oversized ordinary load reports memory exhaustion'); preserved;

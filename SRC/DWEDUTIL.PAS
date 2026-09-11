@@ -651,11 +651,11 @@ end;
 procedure go_win_list(var ctx:TEditorContext);
 var r : PFileContext;
         i, sitem, cctx  : integer;
-        memlen          : integer;
+        memlen          : longint;
         p               : pchar;
         e               : TEvent;
 begin
-        scr.cursor_off;
+        if ctx.all=nil then exit;
         i := 0;
         memlen := 0; sitem := 0; cctx := 0;
         r := ctx.all;
@@ -665,7 +665,11 @@ begin
                 inc(i);
                 r := r^.next;
         end;
+        if (memlen>32767) or (MaxAvail<memlen) then begin
+                scr.notice('Not enough memory for this window. Press Enter or Esc.'); exit;
+        end;
         getmem(p, memlen);
+        scr.cursor_off;
         i := 0;
         r := ctx.all;
         while r <> nil do begin
@@ -870,6 +874,14 @@ begin
         scr.pop;
 end;
 
+procedure free_fast_jmp_list(var root:pfast_jmp_list);
+var p:pfast_jmp_list;
+begin
+        while root<>nil do begin
+                p:=root; root:=p^.next; FreeMem(p,sizeof(fast_jmp_list));
+        end;
+end;
+
 function create_fast_jmp_list(var ctx:TEditorContext) : pfast_jmp_list;
 var     r, l, c  : pfast_jmp_list;
         rline    : EditorStr;
@@ -926,6 +938,12 @@ begin
                                 need_add := true;
                         end;
                         if need_add then begin
+                                if MaxAvail<sizeof(fast_jmp_list) then begin
+                                        free_fast_jmp_list(r);
+                                        create_fast_jmp_list:=nil;
+                                        scr.notice('Not enough memory for this window. Press Enter or Esc.');
+                                        exit;
+                                end;
                                 getmem(c, sizeof(fast_jmp_list));
                                 t := ltoa(lnum);
                                 while length(t) < 6 do t := ' ' + t;
@@ -947,22 +965,28 @@ end;
 function fast_jmp(var ctx:TEditorContext; fjl : pfast_jmp_list) : integer;
 var     r         : integer;
         f         : pfast_jmp_list;
-        size, ofs : word;
+        size      : longint;
+        ofs       : word;
         p         : pchar;
         i, sitem  : integer;
         rline     : EditorStr;
         e         : TEvent;
         clnum     : dword;
 begin
-        r := SCRU_NONE;
-        scr.cursor_off;
+        r := SCRU_NONE; fast_jmp:=r;
+        if fjl=nil then exit;
         f := fjl; size := 0;
         clnum := strs.get_num(ctx.current^.cline);
         while f <> nil do begin
                 inc(size, length(f^.text) + 1);
                 f := f^.next;
         end;
+        if (size>32767) or (MaxAvail<size) then begin
+                free_fast_jmp_list(fjl);
+                scr.notice('Not enough memory for this window. Press Enter or Esc.'); exit;
+        end;
         getmem(p, size);
+        scr.cursor_off;
         f := fjl; ofs := 0; sitem := 0; i := 0;
         while f <> nil do begin
                 if f^.line <= clnum  then sitem := i;
@@ -1003,11 +1027,7 @@ begin
         r := SCRU_FULL;
         freemem(p, size);
         scr.cursor_on;
-        while fjl <> nil do begin
-                f := fjl;
-                fjl := fjl^.next;
-                freemem(f, sizeof(fast_jmp_list));
-        end;
+        free_fast_jmp_list(fjl);
         fast_jmp := r;
 end;
 
