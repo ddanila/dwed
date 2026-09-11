@@ -1,0 +1,607 @@
+{
+  "scope": "Current source-built editor startup, first-edit refusal and successful small edit/save at constrained contiguous DOS memory budgets",
+  "dwed_revision": "dd44fbb7280d0df9fa0b34faf143356173a9e93f",
+  "parent_base_revision": "85b4fb5340afcf9576748fe8826b4a356e123de2",
+  "inventory_sha256": "f7c5f3bb03e99ed6708af3b8f6518f92cd2f86756d2f9f57d1e21feda7223edc",
+  "test_source_sha256": {
+    "tests/test_dwed_startup_memory.py": "42a0ebc2a70ac6ddbae005d5284aa402970baa8f936b1698f2eac60bca97f60c",
+    "tests/dwed_memory_cap.asm": "f10fa3927441e96321181a74c1befb69580e1e38c04bd186f974a0536b3c7b3a"
+  },
+  "broad_matrix_test_sha256": "ffe14d140581fab45328da02e5e428ee4830ebd1fa55e8b1861a42c167b06b84",
+  "broad_matrices": [
+    {
+      "run_directory": "out/dwed-startup-kgb6m4xg",
+      "mode": "low",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 304,
+          "outcome": "EDIT: Not enough memory for clipboard.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 328,
+          "outcome": "EDIT: Not enough memory for configuration buffer.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 336,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 340,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 344,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 348,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 352,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 360,
+          "outcome": "edited",
+          "completed": true
+        }
+      ]
+    },
+    {
+      "run_directory": "out/dwed-startup-wcbq35wn",
+      "mode": "high",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 304,
+          "outcome": "EDIT: Not enough memory for clipboard.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 328,
+          "outcome": "EDIT: Not enough memory for configuration buffer.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 336,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 340,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 344,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 348,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 352,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 360,
+          "outcome": "edited",
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "qualified_boundaries": [
+    {
+      "run_directory": "out/dwed-startup-ogvvw1l2",
+      "mode": "low",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 350,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 351,
+          "outcome": "opened; edit refused safely (#1004)",
+          "completed": true
+        },
+        {
+          "free_block_kib": 352,
+          "outcome": "edited",
+          "completed": true
+        }
+      ]
+    },
+    {
+      "run_directory": "out/dwed-startup-k5wl_6_9",
+      "mode": "high",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 350,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 351,
+          "outcome": "opened; edit refused safely (#1004)",
+          "completed": true
+        },
+        {
+          "free_block_kib": 352,
+          "outcome": "edited",
+          "completed": true
+        }
+      ]
+    }
+  ],
+  "superseded_boundary_attempts": [
+    {
+      "run_directory": "out/dwed-startup-wdbaxhwd",
+      "mode": "low",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 349,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 350,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 351,
+          "completed": false,
+          "error": "Command '['qemu-system-i386', '-machine', 'pc', '-cpu', '486', '-m', '16', '-accel', 'tcg,thread=single', '-display', 'none', '-monitor', 'none', '-serial', 'none', '-no-reboot', '-nic', 'none', '-boot', 'a', '-qmp', 'unix:/home/ddanila/fun/msdos/out/dwed-startup-wdbaxhwd/351/qmp,server=on,wait=off', '-drive', 'if=floppy,format=raw,file=/home/ddanila/fun/msdos/out/dwed-startup-wdbaxhwd/351/boot.img', '-drive', 'if=ide,format=raw,file=/home/ddanila/fun/msdos/out/dwed-startup-wdbaxhwd/351/disk.img', '-device', 'isa-debug-exit,iobase=0xf4,iosize=0x04']' timed out after 5 seconds"
+        }
+      ]
+    },
+    {
+      "run_directory": "out/dwed-startup-w8x2zaqf",
+      "mode": "high",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 349,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 350,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 351,
+          "completed": false,
+          "error": "Command '['qemu-system-i386', '-machine', 'pc', '-cpu', '486', '-m', '16', '-accel', 'tcg,thread=single', '-display', 'none', '-monitor', 'none', '-serial', 'none', '-no-reboot', '-nic', 'none', '-boot', 'a', '-qmp', 'unix:/home/ddanila/fun/msdos/out/dwed-startup-w8x2zaqf/351/qmp,server=on,wait=off', '-drive', 'if=floppy,format=raw,file=/home/ddanila/fun/msdos/out/dwed-startup-w8x2zaqf/351/boot.img', '-drive', 'if=ide,format=raw,file=/home/ddanila/fun/msdos/out/dwed-startup-w8x2zaqf/351/disk.img', '-device', 'isa-debug-exit,iobase=0xf4,iosize=0x04']' timed out after 5 seconds"
+        }
+      ]
+    }
+  ],
+  "harness_correction": "Observe dirty state or error 1004 before Save. A prequeued Save followed by Esc only dismissed the refusal dialog and was previously misreported as a timeout.",
+  "observed_kib_boundary": {
+    "startup_refused": 350,
+    "opens_but_first_edit_refused": 351,
+    "edit_and_save_succeed": 352
+  },
+  "qualification_limits": [
+    "Not a physical RAM requirement",
+    "Only default DOS backend, current configuration and a small edit/save scenario",
+    "Not a guarantee for all commands at the first successful budget",
+    "Final memory profile, legacy CPU and distribution qualification remain open"
+  ]
+}

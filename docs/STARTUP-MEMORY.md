@@ -32,3 +32,13 @@ other backing stores and displays, additional files, undo history and different
 configurations affect available memory. Runtime screen and list allocation
 refusal are covered in [SCREEN-MEMORY.md](SCREEN-MEMORY.md) and
 [LIST-MEMORY.md](LIST-MEMORY.md). Distribution qualification remains open.
+
+The current executable was remeasured after table editing changes; see
+[current-memory-milestone.json](current-memory-milestone.json) for the new
+source/build identity and observed boundary. Historical milestone budgets
+apply only to their recorded builds.
+
+The boundary harness distinguishes startup refusal, opening followed by safe
+first-edit refusal, and successful editing/saving. It waits for the edit result
+before sending Save or Exit; a memory dialog must be acknowledged separately.
+Safe first-edit refusal preserves both the source and the preexisting backup.
