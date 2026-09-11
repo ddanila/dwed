@@ -43,6 +43,7 @@ DBBFile = RECORD
         header     : DBB_HDR;
 END;
 
+{ Initialize the owner to zero before its first use; close before reuse. }
 PROCEDURE dbb_Reset(VAR f : DBBFile; fname : STRING; blk_size : WORD);
 PROCEDURE dbb_ReWrite(VAR f : DBBFile; fname : STRING; blk_size : WORD);
 PROCEDURE dbb_ReWriteTemp(VAR f : DBBFile; blk_size : WORD);
@@ -79,6 +80,7 @@ END;
 PROCEDURE dbb_Reset(VAR f : DBBFile; fname : STRING; blk_size : WORD);
 BEGIN
         IF blk_size < SizeOf(LONGINT) THEN blk_size := SizeOf(LONGINT);
+        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBBFile), #0);
         Assign(f.f, fname);
         Reset(f.f);
@@ -113,6 +115,7 @@ END;
 
 PROCEDURE dbb_ReWrite(VAR f : DBBFile; fname : STRING; blk_size : WORD);
 BEGIN
+        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBBFile), #0);
         Assign(f.f, fname);
         ReWrite(f.f);
@@ -121,6 +124,7 @@ END;
 
 PROCEDURE dbb_ReWriteTemp(VAR f : DBBFile; blk_size : WORD);
 BEGIN
+        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBBFile), #0);
         ReWriteTemp(f.f);
         _rewrite(f, blk_size);
@@ -133,15 +137,16 @@ END;
 
 PROCEDURE dbb_Close(VAR f : DBBFile);
 BEGIN
-        IF NOT IsOpen(f.f) THEN EXIT;
-        Seek(f.f, 0);
-        IF f.f.ioresult <> 0 THEN EXIT;
-        BlockWrite(f.f, f.header, DBB_HDR_SIZE);
-        IF f.f.ioresult <> 0 THEN EXIT;
+        IF NOT IsOpen(f.f) AND NOT f.f.delete_pending THEN EXIT;
+        IF IsOpen(f.f) THEN BEGIN
+                Seek(f.f,0);
+                IF f.f.ioresult<>0 THEN EXIT;
+                BlockWrite(f.f,f.header,DBB_HDR_SIZE);
+                IF f.f.ioresult<>0 THEN EXIT;
+        END;
         Close(f.f);
-        { Failed flush/close retains the header, handle, buffers and caches for retry. }
-        IF IsOpen(f.f) THEN EXIT;
-        FillChar(f, SizeOf(DBBFile), #0);
+        IF IsOpen(f.f) OR f.f.delete_pending THEN EXIT;
+        FillChar(f,SizeOf(DBBFile),0);
 END;
 
 PROCEDURE dbb_Free(VAR f : DBBFile; rec : LONGINT);

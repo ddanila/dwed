@@ -43,14 +43,14 @@
     "SRC/UNREDO.PAS": "e3ae9e7f50c77ff90219f22d2be1c4c37ce7736676349a5370984acf716cb19e",
     "vendor/system2/ANSI.PAS": "dcb87317ace6b875aead528d139e74bab1a37fd816e800edabab9e5a87ef0de4",
     "vendor/system2/CSTRING.PAS": "cf78b1b4bcbda44422f5283d01a39e940984c1b310f5890e68e57e99ea4653b7",
-    "vendor/system2/DBB.PAS": "b21dd7f47f17606dbe546c1cf75c177cbba8e85493f6c952e05c480f0c0f2167",
-    "vendor/system2/DBM.PAS": "67e5a28853d2e4b20d24b0e5707b400ea24acdc25ef7cfc3f08fa8e5188da6ba",
+    "vendor/system2/DBB.PAS": "0385281fa858ee545081029c7d8cc9ea77db75b9c100dd77ce70f4bdb5f9884d",
+    "vendor/system2/DBM.PAS": "c30943a847bfbec0d13e43fed4d8b205ea56eda2456764a5eded87ebbbcdc711",
     "vendor/system2/DETECT.PAS": "ae81be855f8c7a00ba43c0cb5e54c981992d95c52908ae96a439f644ca07ee26",
     "vendor/system2/EXCACHE.PAS": "43a4c12b1fe98d5a98da22408593e98b4b64dd183b9731e912dc9c0b7002e687",
     "vendor/system2/EXMS.PAS": "809f8e47e6240bfa1c534540d94165dfac221c06e32345c42216533484616cb0",
     "vendor/system2/KMINPUT.PAS": "142a50bfa3a9755e3938c7bb4cc198294080a2d394dfe669549e24639aba850e",
     "vendor/system2/STR.PAS": "8810c6e77a7a087863e91b10f99e51e5a96689bdc12ec1dcf179dd6e2ed53664",
-    "vendor/system2/SYSTEM2.PAS": "2372afe9d84251067a9467d4abbae2c4cb4fa532c17bca248faa9235cb5bb9f7",
+    "vendor/system2/SYSTEM2.PAS": "9fd2017f18c5cec934687b014125035553d002824ac9d098af18048b0deb311f",
     "vendor/system2/WINCB.PAS": "af27829d65fe6fabe66bfb4561206345a338522be0a59df732b1d671daf17c07"
   },
   "unit_dependencies": {
@@ -885,12 +885,11 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 642,
+      "line": 651,
       "allocator": "getmem",
       "preceding_routine_declaration": "ReWrite",
-      "context_start_line": 630,
+      "context_start_line": 639,
       "context": [
-        "PROCEDURE Assign(VAR f : BFILE; fname : STRING);",
         "BEGIN",
         "        FillChar(f, SizeOf(BFILE), #0);",
         "        f.filename := fname;",
@@ -899,6 +898,7 @@
         "",
         "PROCEDURE ReWrite(VAR f : BFILE);",
         "BEGIN",
+        "        IF f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;",
         "        IF f.is_open THEN EXIT;",
         "        f.buf := NIL; f.ioresult := 8;",
         "        IF MaxAvail < SizeOf(BFILE_BUF) THEN EXIT;",
@@ -911,12 +911,11 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 670,
+      "line": 680,
       "allocator": "getmem",
       "preceding_routine_declaration": "ResetMode",
-      "context_start_line": 658,
+      "context_start_line": 668,
       "context": [
-        "                f.rcache := excache_create(READ_CACHE_SIZE);",
         "                f.wcache := excache_create(WRITE_CACHE_SIZE);",
         "        END;",
         "{$ENDIF}",
@@ -925,6 +924,7 @@
         "",
         "PROCEDURE ResetMode(VAR f : BFILE; access : WORD);",
         "BEGIN",
+        "        IF f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;",
         "        IF f.is_open THEN EXIT;",
         "        f.buf := NIL; f.ioresult := 8;",
         "        IF MaxAvail < SizeOf(BFILE_BUF) THEN EXIT;",
@@ -937,10 +937,36 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 782,
+      "line": 741,
+      "allocator": "getmem",
+      "preceding_routine_declaration": "ReWriteTemp",
+      "context_start_line": 729,
+      "context": [
+        "        IF f.is_open OR f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;",
+        "        FillChar(f,SizeOf(BFILE),0);",
+        "        tmp:=GetEnv('TMP');",
+        "        IF Length(tmp)=0 THEN tmp:=GetEnv('TEMP');",
+        "        IF Length(tmp)=0 THEN tmp:=GetEnv('HOME');",
+        "        IF Length(tmp)=0 THEN GetDir(0,tmp);",
+        "        IF Length(tmp)<>0 THEN",
+        "                IF NOT (tmp[Length(tmp)] IN ['\\','/']) THEN tmp:=tmp+'\\';",
+        "        { Reserve the full DOS basename and the terminating NUL. }",
+        "        IF Length(tmp)>242 THEN BEGIN f.ioresult:=3; EXIT END;",
+        "        f.ioresult:=8;",
+        "        IF MaxAvail<SizeOf(BFILE_BUF) THEN EXIT;",
+        "        GetMem(f.buf,SizeOf(BFILE_BUF));",
+        "        f.filetype:=FS_FILE;",
+        "        FOR attempt:=1 TO 256 DO BEGIN",
+        "                FOR i:=1 TO 8 DO name[i]:=CHARS[1+Random(Length(CHARS))];",
+        "                name[0]:=#8; name:=name+'.TMP';"
+      ]
+    },
+    {
+      "path": "vendor/system2/SYSTEM2.PAS",
+      "line": 804,
       "allocator": "getmem",
       "preceding_routine_declaration": "FsSwitchPage",
-      "context_start_line": 770,
+      "context_start_line": 792,
       "context": [
         "PROCEDURE FsSwitchPage(VAR f:BFILE; new_page:DWORD);",
         "VAR scratch:^BFILE_BUF; count:WORD; status:INTEGER; dirty,stored:BOOLEAN;",
@@ -963,10 +989,10 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 972,
+      "line": 994,
       "allocator": "getmem",
       "preceding_routine_declaration": "Flush",
-      "context_start_line": 960,
+      "context_start_line": 982,
       "context": [
         "        END;",
         "END;",
@@ -988,5 +1014,5 @@
       ]
     }
   ],
-  "heap_call_count": 23
+  "heap_call_count": 24
 }

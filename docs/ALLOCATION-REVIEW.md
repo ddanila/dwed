@@ -58,7 +58,10 @@ buffers after use. `SYSTEM2.ReWrite` and `ResetMode` check their buffered-file
 allocation before opening a file; failure leaves the reader/writer closed.
 `EXCACHE.excache_Create` checks its conventional-memory descriptor before
 requesting optional extended memory. Refused optional cache creation returns
-nil. These checks are present in the vendored code as well as editor sources.
+nil. Temporary creation checks its buffer before exclusive DOS creation and
+releases it on refusal; a closed file awaiting deletion releases its buffer
+and caches while retaining its cleanup name. See [TEMPORARY-FILES.md](TEMPORARY-FILES.md).
+These checks are present in the vendored code as well as editor sources.
 
 ## Exclusions and remaining work
 

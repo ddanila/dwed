@@ -55,6 +55,7 @@ INTERFACE
 
 CONST
 BFILE_BUF_SIZE = $4000;
+BFILE_PENDING = 1010;
 
 TYPE
 TFILETYPE = (FS_FILE);
@@ -79,6 +80,7 @@ BFILE = RECORD
         wcache      : POINTER;
 {$ENDIF}
         delonclose  : BOOLEAN;
+        delete_pending : BOOLEAN;
 END;
 
 PROCEDURE Assign (VAR f : BFILE; fname : STRING);
@@ -87,7 +89,7 @@ PROCEDURE Reset (VAR f : BFILE);
 PROCEDURE ReWrite (VAR f : BFILE);
 PROCEDURE Append (VAR f : BFILE);
 
-{ ReWriteTemp does not requre call to Assign }
+{ ReWriteTemp requires a zero-initialized or successfully closed owner. }
 PROCEDURE ReWriteTemp (VAR f : BFILE);
 
 { Console EOF, for case when input is redirected }
@@ -218,6 +220,23 @@ ASM
         POP  DS
 END;
 
+FUNCTION lCreateNew : WORD;ASSEMBLER;
+ASM
+        PUSH DS
+        MOV RES,0
+        MOV DX,offset fname + 1
+        MOV AX,seg fname
+        MOV DS,AX
+        XOR CX,CX
+        MOV AH,$5B
+        INT $21
+        JNC @ok
+        MOV RES,AX
+        XOR AX,AX
+@ok:
+        POP DS
+END;
+
 FUNCTION lReset(access : WORD):WORD;ASSEMBLER;
 ASM
         PUSH DS
@@ -328,37 +347,26 @@ END;
 
 PROCEDURE lErase;ASSEMBLER;
 ASM
-        XOR  AX, AX
-        MOV  RES, AX
         PUSH DS
-        MOV  DI, offset fname + 1
-        XOR  CX, CX
-        MOV  AX, seg fname
-        MOV  DS, AX
-        XOR  SI, SI
+        MOV RES,0
+        MOV DI,offset fname + 1
+        MOV DX,DI
+        XOR CX,CX
+        MOV AX,seg fname
+        MOV DS,AX
+        XOR SI,SI
         STC
-        MOV  AX, $7141
-        INT  $21
-        MOV  AL, 1
-        JC   @cont
-        DEC  AL
-@cont:
-        OR   AL, AL
-        JZ   @end
-        XOR  CX, CX
-        MOV  DX, offset fname + 1
-        MOV  AX, seg fname
-        MOV  DS, AX
-        STC
-        MOV  AH, $41
-        INT  $21
-        MOV  AL, 1
-        JC   @end
-        DEC  AL
-@end:
-        POP  DS
-        XOR  AH, AH
-        MOV  RES, AX
+        MOV AX,$7141
+        INT $21
+        JNC @ok
+        XOR CX,CX
+        MOV DX,offset fname + 1
+        MOV AH,$41
+        INT $21
+        JNC @ok
+        MOV RES,AX
+@ok:
+        POP DS
 END;
 
 PROCEDURE ChDir(s : STRING);
@@ -636,6 +644,7 @@ END;
 
 PROCEDURE ReWrite(VAR f : BFILE);
 BEGIN
+        IF f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;
         IF f.is_open THEN EXIT;
         f.buf := NIL; f.ioresult := 8;
         IF MaxAvail < SizeOf(BFILE_BUF) THEN EXIT;
@@ -664,6 +673,7 @@ END;
 
 PROCEDURE ResetMode(VAR f : BFILE; access : WORD);
 BEGIN
+        IF f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;
         IF f.is_open THEN EXIT;
         f.buf := NIL; f.ioresult := 8;
         IF MaxAvail < SizeOf(BFILE_BUF) THEN EXIT;
@@ -713,27 +723,39 @@ BEGIN
 END;
 
 PROCEDURE ReWriteTemp(VAR f : BFILE);
-CONST
-CHARS : string = '0123456789-_QWERTYUIOPASDFGHJKLZXCVBNM';
-VAR     tmp  : STRING;
-        name : STRING[12];
-        i    : INTEGER;
+CONST CHARS : STRING = '0123456789-_QWERTYUIOPASDFGHJKLZXCVBNM';
+VAR tmp:STRING; name:STRING[12]; i,attempt:INTEGER;
 BEGIN
-        FillChar(f, SizeOf(BFILE), #0);
-        tmp := GetEnv('TMP');
-        IF Length(tmp) = 0 THEN tmp := GetEnv('TEMP');
-        IF Length(tmp) = 0 THEN tmp := GetEnv('HOME');
-        IF Length(tmp) = 0 THEN GetDir(0, tmp);
-        IF Length(tmp) <> 0 THEN BEGIN
-                IF NOT (tmp[ORD(tmp[0])] IN ['\', '/']) THEN tmp := tmp + '\';
+        IF f.is_open OR f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;
+        FillChar(f,SizeOf(BFILE),0);
+        tmp:=GetEnv('TMP');
+        IF Length(tmp)=0 THEN tmp:=GetEnv('TEMP');
+        IF Length(tmp)=0 THEN tmp:=GetEnv('HOME');
+        IF Length(tmp)=0 THEN GetDir(0,tmp);
+        IF Length(tmp)<>0 THEN
+                IF NOT (tmp[Length(tmp)] IN ['\','/']) THEN tmp:=tmp+'\';
+        { Reserve the full DOS basename and the terminating NUL. }
+        IF Length(tmp)>242 THEN BEGIN f.ioresult:=3; EXIT END;
+        f.ioresult:=8;
+        IF MaxAvail<SizeOf(BFILE_BUF) THEN EXIT;
+        GetMem(f.buf,SizeOf(BFILE_BUF));
+        f.filetype:=FS_FILE;
+        FOR attempt:=1 TO 256 DO BEGIN
+                FOR i:=1 TO 8 DO name[i]:=CHARS[1+Random(Length(CHARS))];
+                name[0]:=#8; name:=name+'.TMP';
+                f.filename:=tmp+name; fname:=f.filename+#0;
+                f.f:=lCreateNew; f.ioresult:=res;
+                IF res=0 THEN BEGIN f.is_open:=TRUE; BREAK END;
+                IF res<>80 THEN BREAK;
         END;
-        FOR i := 1 TO 8 DO name[i] := CHARS[1 + Random(ORD(CHARS[0]))];
-        name[0] := #8;
-        name := name + '.TMP';
-        Assign(f, tmp + name);
-        ReWrite(f);
-        Truncate(f);
-        SetDeleteOnClose(f, TRUE);
+        IF NOT f.is_open THEN BEGIN
+                FreeMem(f.buf,SizeOf(BFILE_BUF)); f.buf:=NIL; EXIT;
+        END;
+        f.delonclose:=TRUE;
+{$IFDEF USE_CACHE}
+        f.rcache:=excache_create(READ_CACHE_SIZE);
+        f.wcache:=excache_create(WRITE_CACHE_SIZE);
+{$ENDIF}
 END;
 
 PROCEDURE UpdateFileSize(VAR f : BFILE);
@@ -999,25 +1021,33 @@ BEGIN
         f.buf_pos := 0;
         f.buf_page := 0;
         f.fsize := 0;
-        IF f.delonclose THEN Erase(f);
+        IF f.delonclose THEN f.delete_pending:=TRUE;
 END;
 
 PROCEDURE Close(VAR f : BFILE);
 BEGIN
-        res := 0;
-        f.ioresult := 0;
-
-        IF NOT f.is_open THEN EXIT;
-        IF NOT f.delonclose THEN Flush(f);
-        IF f.ioresult<>0 THEN EXIT;
-        IF f.filetype = FS_FILE THEN FsClose(f);
-        IF f.is_open THEN EXIT;
+        res:=0; f.ioresult:=0;
+        IF NOT f.is_open AND NOT f.delete_pending THEN EXIT;
+        IF f.is_open THEN BEGIN
+                IF NOT f.delonclose THEN Flush(f);
+                IF f.ioresult<>0 THEN EXIT;
+                IF f.filetype=FS_FILE THEN FsClose(f);
+                IF f.is_open THEN EXIT;
+        END;
+        IF f.delete_pending THEN BEGIN
+                Erase(f);
+                { A missing file has already been cleaned up. }
+                IF f.ioresult=2 THEN f.ioresult:=0;
+                IF f.ioresult=0 THEN f.delete_pending:=FALSE;
+        END;
 {$IFDEF USE_CACHE}
-        excache_free(PEXCACHE(f.rcache));
-        excache_free(PEXCACHE(f.wcache));
+        excache_free(PEXCACHE(f.rcache)); f.rcache:=NIL;
+        excache_free(PEXCACHE(f.wcache)); f.wcache:=NIL;
 {$ENDIF}
-        IF f.buf <> NIL THEN FreeMem(f.buf, SizeOf(BFILE_BUF));
-        FillChar(f, SizeOf(BFILE), #0);
+        IF f.buf<>NIL THEN BEGIN FreeMem(f.buf,SizeOf(BFILE_BUF)); f.buf:=NIL END;
+        { Once the handle is closed, only the deletion owner is needed. }
+        IF f.delete_pending THEN EXIT;
+        FillChar(f,SizeOf(BFILE),0);
 END;
 
 PROCEDURE Write(VAR f : BFILE; s : STRING);
@@ -1112,11 +1142,10 @@ END;
 
 PROCEDURE Erase (VAR f : BFILE);
 BEGIN
-        IF f.is_open THEN EXIT;
+        IF f.is_open THEN BEGIN f.ioresult:=5; EXIT END;
         fname := f.filename + #0;
         lErase;
         f.ioresult := res;
-        IF f.ioresult = 0 THEN f.ioresult := 2 ELSE f.ioresult := 0;
 END;
 
 FUNCTION BlockCopy (VAR src, dst : BFILE; count : DWORD) : DWORD;

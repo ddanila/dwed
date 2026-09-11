@@ -13,7 +13,10 @@ storage. The optional XMS cache in `SYSTEM2` is a separate layer.
 They preserve the database object when buffered-file flush or handle close
 fails. Callers can inspect `f.f.ioresult`, retain the object, and retry close.
 The object is cleared only after the underlying file is closed, preserving the
-header, record geometry, handle, working buffer, and cache owners on refusal.
+header, record geometry, handle, working buffer, and cache owners on handle-close
+refusal. A closed temporary file with deletion pending retains its filename and
+database metadata while releasing unused buffers and caches; see
+[TEMPORARY-FILES.md](TEMPORARY-FILES.md).
 
 The DOS probe covers repeated write, short-write, seek, and close failures,
 then reads and appends records and verifies them after retry and reopening.
@@ -38,7 +41,8 @@ instead of treating an empty result as successful input or output.
 
 The alternative stores also need edit transaction and undo/redo integration,
 exact-text and clipboard tests, and end-to-end disk-full, allocation, transfer,
-and cleanup failures. Temporary-file creation and deletion failures need their
-own ownership review. The intended SXMS implementation must be distinguished
+and cleanup failures. Temporary-file creation and deletion ownership is covered by
+[TEMPORARY-FILES.md](TEMPORARY-FILES.md); editor-level error propagation and
+cleanup interaction still need qualification. The intended SXMS implementation must be distinguished
 from the present disk-backed stub during that work. Keep these release gates
 open; successful low-level cache or close tests do not satisfy them.

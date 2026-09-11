@@ -44,6 +44,7 @@ DBMFile = RECORD
         rblk_size  : WORD;
 END;
 
+{ Initialize the owner to zero before its first use; close before reuse. }
 PROCEDURE dbm_Reset(VAR f : DBMFile; fname : STRING; blk_size : WORD);
 PROCEDURE dbm_ReWrite(VAR f : DBMFile; fname : STRING; blk_size : WORD);
 PROCEDURE dbm_ReWriteTemp(VAR f : DBMFile; blk_size : WORD);
@@ -87,6 +88,7 @@ END;
 PROCEDURE dbm_Reset(VAR f : DBMFile; fname : STRING; blk_size : WORD);
 VAR     rblk_size : WORD;
 BEGIN
+        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBMFile), #0);
         Assign(f.f, fname);
         Reset(f.f);
@@ -119,6 +121,7 @@ END;
 
 PROCEDURE dbm_ReWrite(VAR f : DBMFile; fname : STRING; blk_size : WORD);
 BEGIN
+        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBMFile), #0);
         Assign(f.f, fname);
         ReWrite(f.f);
@@ -129,6 +132,7 @@ END;
 
 PROCEDURE dbm_ReWriteTemp(VAR f : DBMFile; blk_size : WORD);
 BEGIN
+        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBMFile), #0);
         ReWriteTemp(f.f);
         f.header.size := _norm_blk_size(blk_size);
@@ -143,15 +147,16 @@ END;
 
 PROCEDURE dbm_Close(VAR f : DBMFile);
 BEGIN
-        IF NOT IsOpen(f.f) THEN EXIT;
-        Seek(f.f, 0);
-        IF f.f.ioresult <> 0 THEN EXIT;
-        BlockWrite(f.f, f.header, SizeOf(DBM_HDR));
-        IF f.f.ioresult <> 0 THEN EXIT;
+        IF NOT IsOpen(f.f) AND NOT f.f.delete_pending THEN EXIT;
+        IF IsOpen(f.f) THEN BEGIN
+                Seek(f.f,0);
+                IF f.f.ioresult<>0 THEN EXIT;
+                BlockWrite(f.f,f.header,SizeOf(DBM_HDR));
+                IF f.f.ioresult<>0 THEN EXIT;
+        END;
         Close(f.f);
-        { Failed flush/close retains the header, handle, buffers and caches for retry. }
-        IF IsOpen(f.f) THEN EXIT;
-        FillChar(f, SizeOf(DBMFile), #0);
+        IF IsOpen(f.f) OR f.f.delete_pending THEN EXIT;
+        FillChar(f,SizeOf(DBMFile),0);
 END;
 
 PROCEDURE dbm_Free(VAR f : DBMFile; rec : LONGINT);
