@@ -33,7 +33,7 @@ SOFTWARE. }
 
 uses system2, dos, str, strutil, wincb, kminput, event,
 strs, dwedtype, dwedhndl, dwedutil, dwedhl, dwedscru, dwedlnch,
-scr, ansi;
+scr, ansi, dwedrcv;
         
 procedure edit(var ctx : TEditorContext; show_welcome_msg : boolean);
 var     scru, prev_scru, i : integer;
@@ -332,6 +332,7 @@ begin
                 end;
         end;
         if ctx.all = nil then new_file(ctx, DEFAULT_FILE_NAME);
+        discover_recovery(ctx);
         edit(ctx, show_welcome_msg);
         scr.pop;
         scr.show;

@@ -24,7 +24,7 @@ allocate a saved-screen copy.
 - **Enter/Esc Return** keeps the transaction pending and returns to editing.
   Save and Save Clipboard remain guarded until cleanup succeeds.
 - **K Keep files and leave** is available when leaving the editor and both
-  owned handles are closed. This explicitly leaves the displayed recovery
+  writer and reader handles are closed. This explicitly leaves the displayed recovery
   files on disk. An open handle prevents that choice.
 
 Exit, closing the last document and handing control to an external command
@@ -51,8 +51,13 @@ preceding editor fails the recovery-screen negative control. Results and
 reproducibility evidence are in `save-lifecycle-milestone.json`.
 
 The writer now leaves a [persistent recovery record](SAVE-JOURNAL.md), with
-DOS-call boundary interruption tests. Editor recovery is still in-process:
-keeping files and leaving currently requires manual inspection of the displayed
-paths. Startup discovery, verified recovery into an editor document, read-only
-media, low memory and broader platform qualification remain release gates.
+DOS-call boundary interruption tests. [Startup discovery](STARTUP-RECOVERY.md)
+can open verified contents as an unsaved document after restarting. Retained
+generations still require manual inspection and cleanup. Read-only media,
+low memory and broader platform qualification remain release gates.
 The recovery screen currently uses keyboard controls; mouse interaction remains unqualified.
+
+The context also owns the shared loader's read handle. A failed close keeps
+that ownership after a rejected load. The same guarded operations show a
+Read cleanup screen and allow retry; leaving with an open reader is blocked.
+Returning to editing preserves the handle and does not adopt partial input.

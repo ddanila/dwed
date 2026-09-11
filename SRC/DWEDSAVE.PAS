@@ -9,7 +9,7 @@ uses dwedtype;
 function pending_save_dialog(var ctx:TEditorContext; leaving:boolean):boolean;
 
 implementation
-uses safesave, scr, kminput, str, dwedscru;
+uses safesave, scr, kminput, str, dwedscru, dosread;
 
 function pending_save_dialog(var ctx:TEditorContext; leaving:boolean):boolean;
 var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
@@ -31,13 +31,24 @@ var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
                 line(label_text); line(name);
         end;
 
+        function pending:boolean;
+        begin pending:=save_pending_files(ctx.pending_save) or ctx.file_reader.opened end;
+
         procedure draw;
         begin
                 scr.cls(ctx.config.color.text);
-                if ctx.pending_save.published then
+                if ctx.file_reader.opened then
+                        scr.print(1,0,ctx.config.color.top,'Read cleanup')
+                else if ctx.pending_save.published then
                         scr.print(1,0,ctx.config.color.top,'Saved; cleanup pending')
                 else scr.print(1,0,ctx.config.color.top,'Save recovery');
                 row:=0;
+                if ctx.file_reader.opened then begin
+                        line('A read handle is still open.');
+                        path('Read file:',ctx.file_reader.name);
+                        line('Close error: #'+itoa(ctx.file_reader.close_error));
+                end;
+                if save_pending_files(ctx.pending_save) then begin
                 line('These files belong to the previous save.');
                 if ctx.pending_save.opened then line('Temporary file is still open.');
                 if ctx.pending_save.journal_opened then line('Recovery record is still open.');
@@ -53,9 +64,10 @@ var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
                 path('Previous backup retained:',ctx.pending_save.previous_backup);
                 if not ctx.pending_save.published then
                         line('Retry restores old files and removes the temporary.');
-                line('Return to editing to keep these files pending.');
+                end;
+                line('Return to editing to keep cleanup pending.');
                 scr.print(1,height-3,ctx.config.color.top,'R Retry cleanup   Enter/Esc Return');
-                if leaving and not ctx.pending_save.opened and not ctx.pending_save.journal_opened then
+                if leaving and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then
                         scr.print(1,height-2,ctx.config.color.top,'K Keep files and leave');
                 scr.print(1,height-1,ctx.config.color.top,'Up/Down Scroll');
                 scr.cursor_off; scr.show;
@@ -63,7 +75,7 @@ var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
 
 begin
         pending_save_dialog:=true;
-        if not save_pending_files(ctx.pending_save) then exit;
+        if not pending then exit;
         pending_save_dialog:=false; scroll:=0; finished:=false;
         width:=scr.getwidth-4; if width<1 then width:=1;
         height:=scr.getheight; visible:=height-6;
@@ -76,13 +88,14 @@ begin
                 SCAN_UP:if scroll>0 then dec(scroll);
                 SCAN_DOWN:if scroll+visible<row then inc(scroll);
                 SCAN_R:begin
-                        retry_save_cleanup(ctx.pending_save);
-                        if not save_pending_files(ctx.pending_save) then begin
+                        close_read(ctx.file_reader);
+                        if save_pending_files(ctx.pending_save) then retry_save_cleanup(ctx.pending_save);
+                        if not pending then begin
                                 pending_save_dialog:=true; finished:=true;
                         end;
                         scroll:=0;
                 end;
-                SCAN_K:if leaving and not ctx.pending_save.opened and not ctx.pending_save.journal_opened then begin
+                SCAN_K:if leaving and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then begin
                         pending_save_dialog:=true; finished:=true;
                 end;
                 end;

@@ -44,7 +44,8 @@ selected successful DOS operations, inspects the retained files independently
 on the host, then boots DOS again from the same private disk images. RECVTEST
 reads and validates the record and checks every surviving file generation after
 the reboot. Its format checks reject damaged records, unsupported versions and
-sizes, unrelated paths and aliases. The host uses an independent CRC
+sizes and unrelated paths. Startup discovery also accepts normalized directory
+aliases while rejecting paths containing control characters. The host uses an independent CRC
 implementation. Generated results and artifact hashes are in
 `save-journal-milestone.json`.
 
@@ -52,7 +53,7 @@ implementation. Generated results and artifact hashes are in
 
 The interruption tests cover boundaries after completed DOS calls. They do not
 simulate a torn filesystem-sector write, host power loss or faulty hardware
-write caches. Restart tests inspect the data with a DOS probe; the editor does
-not yet discover records on startup or offer a verified payload as a recovered
-document. That startup UI, safe resolution of retained generations, additional
-record-read failures and broader platform qualification remain release gates.
+write caches. [Startup discovery](STARTUP-RECOVERY.md) offers verified payloads
+as unsaved documents, with a subsequent editor boot in the interruption tests.
+Safe resolution of retained generations and broader platform qualification
+remain release gates.

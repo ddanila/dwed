@@ -86,7 +86,7 @@ function get_ticks : longint;
 
 implementation
 
-uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo, cliptext, safesave, textcell;
+uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo, cliptext, safesave, textcell, dosread;
 
 function get_ticks : longint;
 begin
@@ -753,7 +753,7 @@ begin
         r := SCRU_FULL;
         getmem(p, sizeof(TFileContext));
         p^.fname := fname;
-        p^.rline := strs.from_file(fname, p^.format, errCode, percent_proc);
+        p^.rline := strs.from_file(ctx.file_reader,fname,false,0,0,p^.format,errCode,percent_proc);
         if errCode = 2 then begin
                 freemem(p, sizeof(TFileContext));
                 new_file(ctx, fname);
@@ -782,6 +782,10 @@ var     errMsg : string;
 begin
         case errCode of
         SAVE_PENDING: errMsg := 'Resolve the previous save before saving again';
+        READ_PENDING: errMsg := 'A previous read handle is still open';
+        READ_CHANGED: errMsg := 'File changed during read';
+        RECORD_INVALID: errMsg := 'Invalid recovery record';
+        RECOVERY_MISMATCH: errMsg := 'Recovery contents do not match the record';
         1005: errMsg := 'Text exceeds clipboard capacity';
         1006: errMsg := 'Resulting line exceeds 255 bytes';
         1007: errMsg := 'Unsupported control byte in clipboard';

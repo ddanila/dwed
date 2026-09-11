@@ -17,6 +17,7 @@ type TSaveFile = record
         cleanup_error, recovery_error : integer;
 end;
 
+function absolute_name(var name:string):integer;
 procedure start_save(var f:TSaveFile; name:string; var error:integer);
 procedure write_save(var f:TSaveFile; var data; count:word; var error:integer);
 procedure finish_save(var f:TSaveFile; var error:integer);

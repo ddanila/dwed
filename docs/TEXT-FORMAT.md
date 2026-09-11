@@ -37,3 +37,11 @@ held Shift navigation and direct mouse-event mapping are covered in
 `TEXT-CELLS.md`.
 
 Real-driver and monochrome qualification is scoped in `DISPLAY-MOUSE.md`.
+
+The shared loader uses an editor-owned read handle and checks the byte count
+against the size observed on open. Positive short reads continue; premature EOF
+and read errors reject the partial document. A failed close retains its handle
+for [cleanup retry](SAVE-RECOVERY.md). Recovery additionally checks the size and
+CRC of the exact bytes passed through the parser before adopting the document.
+These checks detect size changes and accidental recovery-copy corruption;
+ordinary loads do not promise a snapshot against concurrent same-size writes.

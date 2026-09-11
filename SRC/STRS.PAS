@@ -26,7 +26,7 @@ unit strs;
 
 interface
 
-uses safesave;
+uses safesave, dosread;
 
 type
 MemoryType = (MT_DOS, MT_SWAP, MT_SXMS);
@@ -42,7 +42,7 @@ procedure done;
 
 function new : EditorStr;
 
-function from_file(fname : string; var format : TTextFormat; var errCode : integer; scrupdate : pointer) : EditorStr;
+function from_file(var f:TReadFile; fname:string; checked:boolean; expected_size,expected_crc:longword; var format:TTextFormat; var errCode:integer; scrupdate:pointer):EditorStr;
 procedure to_file(var f:TSaveFile; fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
 
 function create(next, prev : EditorStr; var body : string) : EditorStr;
@@ -76,7 +76,7 @@ function is_nil(r : EditorStr) : boolean;
 
 implementation
 
-uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, dwedutil;
+uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, dwedutil, saveinfo;
 
 const
 memType : MemoryType = MT_DOS;
@@ -113,12 +113,10 @@ begin
         else create := EditorStr(strsdos.create(pointer(next), pointer(prev), body));
 end;
 
-function from_file(fname : string; var format : TTextFormat; var errCode : integer; scrupdate : pointer) : EditorStr;
-var     f : file;
-        buffer : array[0..4095] of byte;
+function from_file(var f:TReadFile; fname:string; checked:boolean; expected_size,expected_crc:longword; var format:TTextFormat; var errCode:integer; scrupdate:pointer):EditorStr;
+var     buffer : array[0..4095] of byte;
         count, i : word;
-        previous_mode : byte;
-        close_error : integer;
+        actual_size,actual_crc:longword;
         root, last : EditorStr;
         body : string;
         pending_cr : boolean;
@@ -144,21 +142,21 @@ begin
         spinner_start;
         errCode := 0; root := nil; last := nil;
         body := ''; pending_cr := false; format.newline := '';
-        system.assign(f, fname);
-        previous_mode := system.FileMode; system.FileMode := 0;
-        {$I-} system.reset(f, 1); {$I+}
-        errCode := system.IOResult;
-        system.FileMode := previous_mode;
+        actual_size:=0; actual_crc:=$FFFFFFFF;
+        open_read(f,fname,errCode);
         if errCode = 0 then begin
-                {$I-} total := system.filesize(f); {$I+}
-                errCode := system.IOResult;
+                total:=f.size;
                 current := 0; start_date := get_ticks;
                 scrup := TPercentUpdateProc(scrupdate);
                 repeat
                         count := 0;
                         if errCode = 0 then begin
-                                {$I-} system.blockread(f, buffer, sizeof(buffer), count); {$I+}
-                                errCode := system.IOResult;
+                                read_bytes(f,buffer,sizeof(buffer),count,errCode);
+                                if errCode=0 then begin
+                                        inc(actual_size,count);
+                                        if actual_size>f.size then errCode:=READ_CHANGED;
+                                        if checked then actual_crc:=crc_update(actual_crc,buffer,count);
+                                end;
                         end;
                         i := 0;
                         while (i < count) and (errCode = 0) do begin
@@ -184,11 +182,14 @@ begin
                         if (scrupdate <> nil) and (errCode = 0) then
                                 scrup(current,total,start_date);
                 until (count = 0) or (errCode <> 0);
+                if (errCode=0) and (actual_size<>f.size) then errCode:=READ_CHANGED;
+                if (errCode=0) and checked then
+                        if (actual_size<>expected_size) or
+                           ((actual_crc xor $FFFFFFFF)<>expected_crc) then errCode:=RECOVERY_MISMATCH;
                 if (errCode = 0) and pending_cr then emit(#13);
                 if errCode = 0 then emit('');
-                {$I-} system.close(f); {$I+}
-                close_error := system.IOResult;
-                if errCode = 0 then errCode := close_error;
+                close_read(f);
+                if errCode=0 then errCode:=f.close_error;
         end;
         if format.newline = '' then format.newline := #13#10;
         if errCode <> 0 then begin

@@ -75,6 +75,7 @@ function undo_next(var h:TUndoHistory):PUndoGroup;
 { Acknowledge only after the whole group has been applied successfully. }
 function undo_accept(var h:TUndoHistory; group:PUndoGroup; forward:boolean):boolean;
 procedure undo_saved(var h:TUndoHistory);
+procedure undo_unsaved(var h:TUndoHistory);
 function undo_dirty(var h:TUndoHistory):boolean;
 procedure undo_text(change:PUndoChange; var before_text,after_text:string);
 
@@ -237,6 +238,9 @@ begin
         end;
         undo_accept:=true;
 end;
+
+procedure undo_unsaved(var h:TUndoHistory);
+begin h.saved_state:=-1 end;
 
 procedure undo_saved(var h:TUndoHistory);
 begin
