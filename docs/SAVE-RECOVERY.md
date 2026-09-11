@@ -53,8 +53,8 @@ reproducibility evidence are in `save-lifecycle-milestone.json`.
 The writer now leaves a [persistent recovery record](SAVE-JOURNAL.md), with
 DOS-call boundary interruption tests. [Startup discovery](STARTUP-RECOVERY.md)
 can open verified contents as an unsaved document after restarting. Retained
-generations still require manual inspection and cleanup. Read-only media,
-low memory and broader platform qualification remain release gates.
+generations still require manual inspection and cleanup. [Write-protected floppy saves](CRITICAL-ERRORS.md) are qualified separately.
+Broader media failures, low memory and platform qualification remain release gates.
 The recovery screen currently uses keyboard controls; mouse interaction remains unqualified.
 
 The context also owns the shared loader's read handle. A failed close keeps

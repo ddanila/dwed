@@ -26,7 +26,7 @@ function save_pending_files(var f:TSaveFile):boolean;
 procedure retry_save_cleanup(var f:TSaveFile);
 
 implementation
-uses dos;
+uses dos,dosfail;
 
 type TName = array[0..255] of char;
 

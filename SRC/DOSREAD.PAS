@@ -18,7 +18,7 @@ procedure read_bytes(var f:TReadFile; var data; requested:word; var count:word; 
 procedure close_read(var f:TReadFile);
 
 implementation
-uses dos;
+uses dos,dosfail;
 
 function result_code(var r:registers):integer;
 begin
