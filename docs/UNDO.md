@@ -129,5 +129,5 @@ windows and cancellation of an oversized edit. The generated
 Remaining qualification includes search/replace and optional addon/table
 commands, constrained-memory editor runs beyond the tested capacity failure,
 legacy CPUs and modifier-key queues under delayed input, and swap/XMS support.
-The broader text-format, clipboard, mouse, display and safe-save recovery gates
+The broader whitespace-editing, host clipboard, mouse, display and safe-save recovery gates
 in `EDIT-PLAN.md` also remain open.

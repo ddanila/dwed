@@ -56,6 +56,7 @@ function go_word_right(var ctx : TEditorContext) : integer;
 function go_page_up(var ctx : TEditorContext) : integer;
 function go_page_down(var ctx : TEditorContext) : integer;
 
+function change_indent(var ctx:TEditorContext; reverse:boolean):boolean;
 function copy_selected(var ctx : TEditorContext):boolean;
 function delete_selected(var ctx : TEditorContext):boolean;
 function selection_fits(var ctx:TEditorContext):boolean;
@@ -85,7 +86,7 @@ function get_ticks : longint;
 
 implementation
 
-uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo, cliptext, safesave;
+uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo, cliptext, safesave, textcell;
 
 function get_ticks : longint;
 begin
@@ -108,12 +109,11 @@ procedure load_ed(var ctx : TEditorContext);
 begin
         with ctx.current^ do begin
                 strs.get(cline, editor.line);
-                if scrx > length(editor.line) then scrx := 0;
         end;
 end;
 
 function norm_xy(var ctx : TEditorContext; r : integer) : integer;
-var i, x, old_scrx: integer;
+var i, x, old_scrx, cell: integer;
 begin
         old_scrx := ctx.current^.scrx;
         with ctx.current^ do begin
@@ -137,8 +137,9 @@ begin
                                 dec(i);
                         end;
                 end;
-                if scrx >= editor.x then scrx := editor.x - 1;
-                if config^.width <= (editor.x - scrx - 1) then scrx := editor.x - config^.width;
+                cell:=cell_of(editor.line,editor.x,config^.tab_size);
+                if scrx>cell then scrx:=cell;
+                if cell>=scrx+config^.width then scrx:=cell-config^.width+1;
         end;
         if old_scrx <> ctx.current^.scrx then r := SCRU_FULL;
         norm_xy := r;
@@ -170,6 +171,8 @@ function go_line_up(var ctx : TEditorContext) : integer;
 var r : integer;
 begin
         r := SCRU_NONE;
+        if ctx.current^.editor.desired_cell<0 then with ctx.current^ do
+                editor.desired_cell:=cell_of(editor.line,editor.x,config^.tab_size);
         commit(ctx);
         with ctx.current^ do begin
                 if not strs.is_first(cline) then begin
@@ -184,6 +187,8 @@ begin
                 end;
         end;
         load_ed(ctx);
+        with ctx.current^ do
+                editor.x:=byte_at_cell(editor.line,editor.desired_cell,config^.tab_size);
         go_line_up := r;
 end;
 
@@ -191,6 +196,8 @@ function go_line_down(var ctx : TEditorContext) : integer;
 var r : integer;
 begin
         r := SCRU_NONE;
+        if ctx.current^.editor.desired_cell<0 then with ctx.current^ do
+                editor.desired_cell:=cell_of(editor.line,editor.x,config^.tab_size);
         commit(ctx);
         with ctx.current^ do begin
                 if not strs.is_last(cline) then begin
@@ -205,6 +212,8 @@ begin
                 end;
         end;
         load_ed(ctx);
+        with ctx.current^ do
+                editor.x:=byte_at_cell(editor.line,editor.desired_cell,config^.tab_size);
         go_line_down := r;
 end;
 
@@ -463,6 +472,52 @@ begin
         load_clipboard:=error;
 end;
 
+function change_indent(var ctx:TEditorContext; reverse:boolean):boolean;
+var first_row,last_row,number,current_row:longint;
+    first_col,last_col,width,delta,i:integer; line:EditorStr; body,prefix:string;
+begin
+        change_indent:=true; commit(ctx);
+        current_row:=strs.get_num(ctx.current^.cline);
+        first_row:=current_row; last_row:=current_row;
+        if ctx.current^.editor.selection then begin
+                get_sel_coord(ctx,first_col,first_row,last_col,last_row);
+                if last_col=1 then dec(last_row);
+        end;
+        width:=tab_width(ctx.current^.config^.tab_size);
+        if not reverse then begin
+                { Preflight the whole range before publishing any indentation. }
+                line:=strs.find_num(ctx.current^.rline,first_row);
+                for number:=first_row to last_row do begin
+                        strs.get(line,body);
+                        if length(body)+width>255 then begin
+                                handle_error(ctx,CLIP_LONG_LINE); change_indent:=false; exit;
+                        end;
+                        line:=strs.go_next(line);
+                end;
+        end;
+        prefix:=''; for i:=1 to width do prefix:=prefix+' ';
+        for number:=first_row to last_row do begin
+                line:=strs.find_num(ctx.current^.rline,number); strs.get(line,body);
+                if reverse then begin
+                        delta:=-indent_bytes(body,width);
+                        System.delete(body,1,-delta);
+                end else begin delta:=width; body:=prefix+body end;
+                if delta<>0 then with ctx.current^ do begin
+                        line:=strs.put(line,body);
+                        if number=1 then rline:=line;
+                        if number=current_row then begin
+                                cline:=line; inc(editor.x,delta);
+                                if editor.x<1 then editor.x:=1;
+                        end;
+                        if editor.selection and (number=editor.sel_row) then begin
+                                inc(editor.sel_x,delta); if editor.sel_x<1 then editor.sel_x:=1;
+                        end;
+                        chg:=true;
+                end;
+        end;
+        load_ed(ctx);
+end;
+
 function copy_selected(var ctx:TEditorContext):boolean;
 var sb_y,se_y,number,total:longint; sb_x,se_x,first,last,pass,error:integer;
     line:EditorStr; body,part:string; position,size:word; dest:pchar;
@@ -665,6 +720,7 @@ begin
                 scrline := rline;
                 editor.chg := false;
                 editor.x := 1;
+                editor.desired_cell := -1;
                 editor.selection := false;
                 scrline := rline;
                 scrx := 0;

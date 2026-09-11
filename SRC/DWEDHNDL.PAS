@@ -33,7 +33,7 @@ implementation
 
 uses dwedhelp, scr, kminput, cstring, scrui, strs, str, dwedscru, dwedutil,
 dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu,
-unredo, strsdos, dwedundo;
+unredo, strsdos, dwedundo, textcell;
 
 {$F+}
 const
@@ -87,8 +87,12 @@ var     h         : PEventHandler;
         proc      : TEventProc;
         command   : TEditorCommand;
         group     : integer;
+        vertical  : boolean;
 begin
         r := SCRU_NONE;
+        vertical:=(e.etype=KEYBOARD) and (e.scancode in [SCAN_UP,SCAN_DOWN])
+                  and ((e.ctrl_keys and (key_ctrl or key_alt))=0);
+        if not vertical then ctx.current^.editor.desired_cell:=-1;
         group := menu_request(e);
         if group >= 0 then begin
                 command := choose_menu(ctx,group);
@@ -117,6 +121,7 @@ begin
                 if (e.mouse_y > 0) and (e.mouse_y < ctx.config.height) then
                         r := handle_mouse(ctx, @e);
         end;
+        if not vertical then ctx.current^.editor.desired_cell:=-1;
         if r <> SCRU_NONE then r := norm_xy(ctx, r);
         process_event := r;
 end;
@@ -138,10 +143,13 @@ begin
                 ctx.current^.cline := line;
                 inc(ctx.current^.scry, step);
         end;
-        ctx.current^.editor.x := event^.mouse_x + ctx.current^.scrx + 1;
         if steps = 0 then r := SCRU_CLINE else begin
                 load_ed(ctx);
                 r := SCRU_FULL;
+        end;
+        with ctx.current^ do begin
+                editor.x:=byte_at_cell(editor.line,event^.mouse_x+scrx,config^.tab_size);
+                editor.desired_cell:=-1;
         end;
         goto_mouse := r;
 end;
@@ -175,12 +183,9 @@ begin
                         end;
                 end;
         end else if (event^.etype = MOUSE_MOVE) and event^.mouse_left then begin
-                if not ctx.current^.editor.selection then begin
-                        check_begin_selection(ctx);
-                end else begin
-                        r := goto_mouse(ctx, event);
-                        r := SCRU_FULL;
-                end;
+                if not ctx.current^.editor.selection then check_begin_selection(ctx);
+                r := goto_mouse(ctx, event);
+                r := SCRU_FULL;
         end else if event^.etype = MOUSE_PRESS_B2 then begin
                 mt := -1;
                 have_cb := strlen(ctx.clipboard) <> 0;
@@ -217,15 +222,15 @@ begin
                                 if ((mt = 1) and (selItem = 0))
                                 or ((mt = 3) and (selItem = 2))
                                 then begin
-                                        hk_cb_paste(ctx, event)
+                                        r:=run_action(ctx,event^,CMD_PASTE,nil,false)
                                 end else if ((mt = 2) and (selItem = 0))
                                 or ((mt = 3) and (selItem = 0))
                                 then begin
-                                        hk_cb_cut(ctx, event)
+                                        r:=run_action(ctx,event^,CMD_CUT,nil,false)
                                 end else if ((mt = 2) and (selItem = 1))
                                 or ((mt = 3) and (selItem = 1))
                                 then begin
-                                        hk_cb_copy(ctx, event)
+                                        r:=run_action(ctx,event^,CMD_COPY,nil,false)
                                 end;
                         end;
                         r := SCRU_FULL;
@@ -743,98 +748,33 @@ begin
 end;
 
 function hk_tab(var ctx:TEditorContext; event:PEvent):integer;
-var     i, r       : integer;
-        sb_y, se_y, clinenum : longint;
-        sb_x, se_x : integer;
-        line       : EditorStr;
-        content    : string;
+const tab_text:pchar=#9;
+var r:integer;
 begin
-        r := SCRU_NONE;
-        if is_in_table(ctx, event) then r := tbl_next_column(ctx, event)
+        r:=SCRU_FULL;
+        if is_in_table(ctx,event) then r:=tbl_next_column(ctx,event)
         else if ctx.current^.editor.selection then begin
-                get_sel_coord(ctx, sb_x, sb_y, se_x, se_y);
-                if se_x = 1 then dec(se_y);
-                commit(ctx);
-                clinenum := strs.get_num(ctx.current^.cline);
-                while sb_y <= se_y do begin
-                        line := strs.find_num(ctx.current^.rline, sb_y);
-                        if line <> nil then begin
-                                strs.get(line, content);
-                                i := 1;
-                                while (i <= ctx.current^.config^.tab_size) and (length(content) <> 255) do begin
-                                        content := ' ' + content;
-                                        ctx.current^.chg := true;
-                                        inc(i);
-                                end;
-                                line := strs.put(line, content);
-                                if strs.is_first(line) then ctx.current^.rline := line;
-                                if sb_y = clinenum then ctx.current^.cline := line;
-                        end;
-                        inc(sb_y);
-                end;
-                load_ed(ctx);
-                r := SCRU_FULL;
+                if not change_indent(ctx,false) then begin hk_tab:=SCRU_FULL; exit end;
         end else begin
-                with event^ do begin
-                        ascii := ' ';
-                        scancode := SCAN_SPACE;
-                        ctrl_keys := 0;
-                end;
-                for i := 1 to ctx.current^.config^.tab_size do hk_default(ctx, event);
-                ctx.current^.editor.chg := true;
-                r := SCRU_CLINE;
+                commit(ctx);
+                with ctx.current^ do
+                        if (not ctx.ins) and (editor.x<=length(editor.line)) then begin
+                                editor.selection:=true;
+                                editor.sel_row:=strs.get_num(cline);
+                                editor.sel_x:=editor.x+1;
+                        end;
+                if not replace_text(ctx,tab_text,2,false) then begin hk_tab:=SCRU_FULL; exit end;
         end;
-        hk_tab := r;
+        hk_tab:=r;
 end;
 
 function hk_shift_tab(var ctx:TEditorContext; event:PEvent):integer;
-var     i, r       : integer;
-        sb_y, se_y, clinenum : longint;
-        sb_x, se_x : integer;
-        line       : EditorStr;
-        content    : string;
 begin
-        r := SCRU_NONE;
-        if is_in_table(ctx, event) then r := tbl_prev_column(ctx, event)
-        else if ctx.current^.editor.selection then begin
-                get_sel_coord(ctx, sb_x, sb_y, se_x, se_y);
-                if se_x = 1 then dec(se_y);
-                commit(ctx);
-                clinenum := strs.get_num(ctx.current^.cline);
-                while sb_y <= se_y do begin
-                        line := strs.find_num(ctx.current^.rline, sb_y);
-                        if line <> nil then begin
-                                strs.get(line, content);
-                                i := 1;
-                                while (i <= ctx.current^.config^.tab_size) and (length(content) <> 0) do begin
-                                        if content[1] <> ' ' then break;
-                                        System.delete(content, 1, 1);
-                                        ctx.current^.chg := true;
-                                        inc(i);
-                                end;
-                                line := strs.put(line, content);
-                                if strs.is_first(line) then ctx.current^.rline := line;
-                                if sb_y = clinenum then ctx.current^.cline := line;
-                        end;
-                        inc(sb_y);
-                end;
-                load_ed(ctx);
-                r := SCRU_FULL;
-        end else begin
-                with ctx.current^ do begin
-                i := config^.tab_size;
-                while (i > 0)
-                         and (editor.line[1] = ' ')
-                         and (length(editor.line) > 0) do begin
-                                System.delete(editor.line, 1, 1);
-                                editor.chg := true;
-                                if editor.x <> 1 then dec(editor.x);
-                                dec(i);
-                        end;
-                end;
-                r := SCRU_CLINE;
+        if is_in_table(ctx,event) then hk_shift_tab:=tbl_prev_column(ctx,event)
+        else begin
+                if not change_indent(ctx,true) then begin hk_shift_tab:=SCRU_FULL; exit end;
+                hk_shift_tab:=SCRU_FULL;
         end;
-        hk_shift_tab := r;
 end;
 
 function hk_default(var ctx:TEditorContext; event:PEvent):integer;

@@ -157,7 +157,7 @@ begin
         else if key = CFG_HL_ENABLE then ctx.config.hl_enable := (ahtob(value) <> 0)
         else if key = CFG_MEMORY then ctx.config.memory := value
         else begin writelnerr('Unknown parameter ' + key + '. Press Enter...'); system.readln; end;
-        if ctx.config.tab_size > 32 then ctx.config.tab_size := 8;
+        if (ctx.config.tab_size < 1) or (ctx.config.tab_size > 32) then ctx.config.tab_size := 8;
 end;
 
 procedure split(var param, key, value : string);

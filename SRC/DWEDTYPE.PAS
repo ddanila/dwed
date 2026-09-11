@@ -107,6 +107,7 @@ end;
 
 TLineEditorContext = record
         x         : integer;
+        desired_cell : integer;
         line      : string;
         chg       : boolean;
         selection : boolean;

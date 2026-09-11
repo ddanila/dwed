@@ -14,13 +14,12 @@ freed, and an existing current document stays current. Rejection is an explicit
 limit, not permission to normalize or split the source. A missing filename
 opens a new document with that name; other open/read errors remain errors.
 
-Tabs currently appear as a one-cell arrow while remaining literal TAB bytes in
-storage. This keeps byte positions and selection consistent during this stage
-of the port. Normal tab-stop display, tab-aware cursor/mouse positioning and
-insertion behavior still need implementation and qualification. Clipboard
-byte preservation and rejection behavior are described in `CLIPBOARD.md`.
-Automatic indentation and commands that intentionally change whitespace also
-need their own behavioral coverage.
+Tabs display at configured tab stops while remaining literal bytes in storage.
+Cursor movement, selection highlighting and horizontal scrolling share the
+byte-to-cell mapping described in `TEXT-CELLS.md`. Clipboard byte preservation
+and rejection behavior are described in `CLIPBOARD.md`. Automatic indentation
+and commands that intentionally change whitespace still need their own
+behavioral coverage.
 
 The parent QEMU gate checks exact bytes after editing and saving each supported
 newline style, absent final newlines, tabs and high-bit characters; it checks
@@ -33,4 +32,6 @@ the alternate backing stores still need runtime qualification. Raw metadata
 does not establish undo correctness or clipboard fidelity. The event decoder
 now recovers modifiers encoded in BIOS key words, fixing queued Ctrl-End and
 Ctrl-S after key release. BIOS entries do not encode every modifier combination;
-Shift navigation and mouse selection still need qualification during menu work.
+Delayed modifier queues and real mouse drivers still need qualification;
+held Shift navigation and direct mouse-event mapping are covered in
+`TEXT-CELLS.md`.

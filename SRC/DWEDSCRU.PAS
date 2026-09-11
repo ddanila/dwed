@@ -30,137 +30,61 @@ procedure update(var ctx : TEditorContext; scru : integer);
 
 implementation
 
-uses scr, kminput, str, strutil, strs, dwedhndl, dwedutil, dwedhl, dwedmenu;
+uses scr, kminput, str, strutil, strs, dwedhndl, dwedutil, dwedhl, dwedmenu, textcell;
 
-function line_full_in_sel(num : longint; y1 : longint; y2 : longint) : boolean;
-begin
-        line_full_in_sel := (num > y1) and (num < y2);
-end;
-
-procedure get_str_part(var ctx : TEditorContext; var s : string);
-var len, w, nl, sc, i  : integer;
-begin
-        len := ord(s[0]);
-        w := ctx.current^.config^.width;
-        sc := ctx.current^.scrx;
-        nl:= len - sc;
-        if nl < 0 then nl := 0;
-        if nl > w then nl := w;
-        if (nl <> 0) and (sc<> 0) then move(s[sc + 1], s[1], nl);
-        s[0] := chr(nl);
-        { Keep tab bytes in storage; display their positions explicitly. }
-        for i := 1 to nl do if s[i] = #9 then s[i] := #26;
-end;
-
-procedure update_full(var ctx : TEditorContext);
-var     h, w, i, x1, len     : integer;
-        p                    : EditorStr;
-        s                    : string;
-        sb_y, se_y, clinenum : longint;
-        sb_x, se_x, scrx     : integer;
-        text_color           : byte;
-        text_sel_color       : byte;
-        selection            : boolean;
-        scrbufofs            : pchar;
+procedure paint_line(var ctx:TEditorContext; const body:string; row:integer;
+                     number:longint; selected:boolean;
+                     first_col,last_col:integer; first_row,last_row:longint);
+var visible:string; left,width,start_cell,end_cell:integer;
 begin
         with ctx.current^ do begin
-                h := config^.height;
-                w := config^.width;
-                p := scrline;
-                text_sel_color := config^.color.text_sel;
-                text_color := config^.color.text;
-                selection := editor.selection;
-        end;
-        scrx := ctx.current^.scrx;
-        if selection then get_sel_coord(ctx, sb_x, sb_y, se_x, se_y);
-
-        scrbufofs := scr.screen + w shl 1;
-        for i := 1 to h - 1 do begin
-                clinenum := strs.get_num(p);
-                strs.get(p, s);
-                get_str_part(ctx, s);
-                scr.print(0, i, text_color, s);
-                scr.cln(ord(s[0]), i, text_color);
-                if selection then begin
-                        if p = ctx.current^.cline then begin
-                        end else if line_full_in_sel(clinenum, sb_y, se_y) then scr.chcolor(0, i, text_sel_color, w)
-                        else  if (sb_y = clinenum) and (sb_x - 1 <= scrx + w) then begin
-                                x1 := sb_x - 1;
-                                if x1 < scrx then x1 := scrx;
-                                dec(x1, scrx);
-                                scr.chcolor(x1, i, text_sel_color, w - x1);
-                        end else if (se_y = clinenum) and (se_x - 1 >= scrx) then begin
-                                len := se_x - 1 - scrx;
-                                if len > w then len := w;
-                                scr.chcolor(0, i, text_sel_color, len);
-                        end;
+                left:=scrx; width:=config^.width;
+                visible:=cell_slice(body,left,width,config^.tab_size);
+                scr.print(0,row,config^.color.text,visible);
+                scr.cln(length(visible),row,config^.color.text);
+                if selected and (number>=first_row) and (number<=last_row) then begin
+                        start_cell:=left; end_cell:=left+width;
+                        if number=first_row then
+                                start_cell:=cell_of(body,first_col,config^.tab_size);
+                        if number=last_row then
+                                end_cell:=cell_of(body,last_col,config^.tab_size);
+                        if start_cell<left then start_cell:=left;
+                        if end_cell>left+width then end_cell:=left+width;
+                        if end_cell>start_cell then
+                                scr.chcolor(start_cell-left,row,config^.color.text_sel,
+                                            end_cell-start_cell);
                 end;
-
-                high_light(ctx.current^.st, w
-                        , ctx.config.color.text_hl
-                        , text_color
-                        , scrbufofs);
-                inc(scrbufofs, w shl 1);
-                p := strs.go_next(p);
+                high_light(st,width,config^.color.text_hl,config^.color.text,
+                           @scr.screen[(width*row) shl 1]);
         end;
 end;
 
-procedure update_cline(var ctx : TEditorContext);
-var
-        sb_y, se_y, clinenum : longint;
-        sb_x, se_x           : integer;
-        x, xe, len           : integer;
-        scrx, width          : integer;
-        line                 : string;
+procedure update_full(var ctx:TEditorContext);
+var row,first_col,last_col:integer; first_row,last_row:longint;
+    line:EditorStr; body:string; selected:boolean;
 begin
-        with ctx.current^ do begin
-                scr.cln(0, scry + 1, config^.color.text);
-                scr.locate(editor.x - 1 - scrx, scry + 1);
+        selected:=ctx.current^.editor.selection;
+        first_col:=0; last_col:=0; first_row:=0; last_row:=0;
+        if selected then get_sel_coord(ctx,first_col,first_row,last_col,last_row);
+        line:=ctx.current^.scrline;
+        for row:=1 to ctx.current^.config^.height-1 do begin
+                strs.get(line,body);
+                paint_line(ctx,body,row,strs.get_num(line),selected,
+                           first_col,last_col,first_row,last_row);
+                line:=strs.go_next(line);
         end;
-        x := 0;
-        line := ctx.current^.editor.line;
-        get_str_part(ctx, line);
-        scr.cln(0, ctx.current^.scry + 1, ctx.current^.config^.color.text);
-        scr.print(0, ctx.current^.scry + 1, ctx.current^.config^.color.text, line);
-        scrx := ctx.current^.scrx;
-        width := ctx.current^.config^.width;
+end;
 
-        if ctx.current^.editor.selection then begin
-                get_sel_coord(ctx, sb_x, sb_y, se_x, se_y);
-                clinenum := strs.get_num(ctx.current^.cline);
-                len := -1;
-                if (sb_y = se_y) and (clinenum = sb_y) then begin
-                        if ( sb_x - 1 < scrx + width)
-                         and (se_x - 1 >= scrx) then begin
-                                x := sb_x - 1;
-                                xe := se_x - 1;
-                                if x < scrx then x := scrx;
-                                dec(x, scrx);
-                                dec(xe, scrx);
-                                if xe > width then xe := width;
-                                len := xe - x;
-                        end;
-                end else if (clinenum = sb_y) then begin
-                                x := sb_x - 1;
-                                if x < scrx + width then begin
-                                        if x < scrx then x := 0 else dec(x, scrx);
-                                        len := width - x;
-                                end;
-                end else if (clinenum = se_y) then begin
-                        x := 0;
-                        if se_x - 1 > scrx then begin
-                                len := se_x - 1 - scrx;
-                                if len > width then len := width;
-                        end;
-                end;
-                if len > 0 then scr.chcolor(x, ctx.current^.scry + 1, ctx.current^.config^.color.text_sel, len);
-        end;
-
+procedure update_cline(var ctx:TEditorContext);
+var first_col,last_col:integer; first_row,last_row:longint; selected:boolean;
+begin
+        selected:=ctx.current^.editor.selection;
+        first_col:=0; last_col:=0; first_row:=0; last_row:=0;
+        if selected then get_sel_coord(ctx,first_col,first_row,last_col,last_row);
         with ctx.current^ do begin
-                high_light(st, config^.width
-                , config^.color.text_hl
-                , config^.color.text
-                , @scr.screen[(config^.width * (scry + 1)) shl 1]);
+                paint_line(ctx,editor.line,scry+1,strs.get_num(cline),selected,
+                           first_col,last_col,first_row,last_row);
+                scr.locate(cell_of(editor.line,editor.x,config^.tab_size)-scrx,scry+1);
         end;
 end;
 
@@ -187,7 +111,8 @@ begin
         total := ltoa(ctx.current^.total);
         endline := concat(
                 char_code, '  ',
-                lpad(itoa(ctx.current^.editor.x), 3), ' ',
+                lpad(itoa(cell_of(ctx.current^.editor.line,ctx.current^.editor.x,
+                                  ctx.current^.config^.tab_size)+1), 3), ' ',
                 lpad(ltoa(strs.get_num(ctx.current^.cline)), length(total)),
                 '/', total, ' ', ch, i,' ');   
 
