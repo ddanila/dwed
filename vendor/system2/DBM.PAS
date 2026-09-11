@@ -29,6 +29,8 @@ INTERFACE
 
 USES System2;
 
+CONST DBM_INVALID=1019;
+
 TYPE
 DBM_HDR = RECORD
         sign       : WORD;
@@ -41,6 +43,7 @@ END;
 DBMFile = RECORD
         f          : BFILE;
         header     : DBM_HDR;
+        ready      : BOOLEAN;
         rblk_size  : WORD;
 END;
 
@@ -71,6 +74,7 @@ ADDED_DATA = SizeOf(LONGINT) + SizeOf(WORD);
 
 FUNCTION _norm_blk_size(blk_size : WORD) : WORD;
 BEGIN
+        IF blk_size>65526 THEN BEGIN _norm_blk_size:=0; EXIT END;
         blk_size := blk_size + ADDED_DATA;
         IF blk_size < SizeOf(DBM_HDR) THEN blk_size := SizeOf(DBM_HDR);
         IF (blk_size AND 3) <> 0 THEN blk_size := ((blk_size SHR 2) + 1) SHL 2;
@@ -86,27 +90,36 @@ BEGIN
 END;
 
 PROCEDURE dbm_Reset(VAR f : DBMFile; fname : STRING; blk_size : WORD);
-VAR     rblk_size : WORD;
+VAR candidate:DBM_HDR; count:WORD; error:INTEGER;
 BEGIN
         IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
-        FillChar(f, SizeOf(DBMFile), #0);
-        Assign(f.f, fname);
-        Reset(f.f);
-        rblk_size := _norm_blk_size(blk_size);
-        IF NOT IsOpen(f.f) THEN dbm_rewrite(f, fname, blk_size)
-        ELSE IF SizeOf(DBM_HDR) <> BlockRead(f.f, f.header, SizeOf(DBM_HDR)) THEN BEGIN
-                Close(f.f);
-                dbm_ReWrite(f, fname, blk_size);
-        END ELSE IF (f.header.sign = DBM_SIGN) AND (f.header.size = rblk_size) THEN BEGIN
-                f.rblk_size := f.header.size - ADDED_DATA;
+        blk_size:=_norm_blk_size(blk_size);
+        FillChar(f,SizeOf(DBMFile),0);
+        IF blk_size=0 THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
+        Assign(f.f,fname); Reset(f.f); error:=f.f.ioresult;
+        IF error=0 THEN BEGIN
+                count:=BlockRead(f.f,candidate,SizeOf(candidate)); error:=f.f.ioresult;
+                IF (error=0) AND (count<>SizeOf(candidate)) THEN error:=DBM_INVALID;
+        END;
+        IF error=0 THEN BEGIN
+                IF (candidate.sign<>DBM_SIGN) OR (candidate.size<>blk_size) OR
+                   (candidate.records<0) OR (candidate.next<0) OR (candidate.next>candidate.records) OR
+                   (candidate.root<0) OR (candidate.root>candidate.records) THEN error:=DBM_INVALID
+                ELSE IF (f.f.fsize<candidate.size) OR
+                        (candidate.records>f.f.fsize DIV candidate.size-1) THEN error:=DBM_INVALID;
+        END;
+        IF error=0 THEN BEGIN
+                f.header:=candidate; f.ready:=TRUE;
+                f.rblk_size:=candidate.size-ADDED_DATA;
         END ELSE BEGIN
-                Close(f.f);
-                dbm_ReWrite(f, fname, blk_size);
+                { Close the read handle without writing an unvalidated header. }
+                IF IsOpen(f.f) THEN Close(f.f);
+                f.f.ioresult:=error;
         END;
 END;
 
 PROCEDURE _rewrite(VAR f : DBMFile);
-VAR     i : INTEGER;
+VAR     i : WORD;
 BEGIN
         IF IsOpen(f.f) THEN BEGIN
                 f.header.sign := DBM_SIGN;
@@ -114,8 +127,13 @@ BEGIN
                 f.header.records := 0;
                 f.header.root := 0;
                 Seek(f.f, 0);
+                IF f.f.ioresult<>0 THEN EXIT;
                 BlockWrite(f.f, f.header, SizeOf(DBM_HDR));
-                FOR i := 1 TO f.header.size - SizeOf(DBM_HDR) DO WriteByte(f.f, 0);
+                IF f.f.ioresult<>0 THEN EXIT;
+                FOR i := 1 TO f.header.size - SizeOf(DBM_HDR) DO BEGIN
+                        WriteByte(f.f,0); IF f.f.ioresult<>0 THEN EXIT;
+                END;
+                f.ready:=f.f.ioresult=0;
         END;
 END;
 
@@ -123,6 +141,8 @@ PROCEDURE dbm_ReWrite(VAR f : DBMFile; fname : STRING; blk_size : WORD);
 BEGIN
         IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBMFile), #0);
+        f.header.size:=_norm_blk_size(blk_size);
+        IF f.header.size=0 THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
         Assign(f.f, fname);
         ReWrite(f.f);
         f.header.size := _norm_blk_size(blk_size);
@@ -134,6 +154,8 @@ PROCEDURE dbm_ReWriteTemp(VAR f : DBMFile; blk_size : WORD);
 BEGIN
         IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBMFile), #0);
+        f.header.size:=_norm_blk_size(blk_size);
+        IF f.header.size=0 THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
         ReWriteTemp(f.f);
         f.header.size := _norm_blk_size(blk_size);
         f.rblk_size := f.header.size - ADDED_DATA;
@@ -142,13 +164,13 @@ END;
 
 FUNCTION dbm_IsOpen(VAR f : DBMFile) : BOOLEAN;
 BEGIN
-        dbm_IsOpen := IsOpen(f.f);
+        dbm_IsOpen := f.ready AND IsOpen(f.f);
 END;
 
 PROCEDURE dbm_Close(VAR f : DBMFile);
 BEGIN
         IF NOT IsOpen(f.f) AND NOT f.f.delete_pending THEN EXIT;
-        IF IsOpen(f.f) THEN BEGIN
+        IF f.ready AND IsOpen(f.f) THEN BEGIN
                 Seek(f.f,0);
                 IF f.f.ioresult<>0 THEN EXIT;
                 BlockWrite(f.f,f.header,SizeOf(DBM_HDR));
@@ -162,7 +184,7 @@ END;
 PROCEDURE dbm_Free(VAR f : DBMFile; rec : LONGINT);
 VAR     n : LONGINT;
 BEGIN
-        IF NOT IsOpen(f.f) THEN EXIT;
+        IF NOT dbm_IsOpen(f) THEN EXIT;
         WHILE rec <> 0 DO BEGIN
                 _go(f, rec);
                 n := ReadDWord(f.f);
@@ -193,7 +215,7 @@ FUNCTION dbm_Size(VAR f : DBMFile; rec : LONGINT) : LONGINT;
 VAR     r : LONGINT;
 BEGIN
         r := 0;
-        IF IsOpen(f.f) THEN BEGIN 
+        IF dbm_IsOpen(f) THEN BEGIN
                 WHILE rec <> 0 DO BEGIN
                         _go(f, rec);
                         rec := ReadDWord(f.f);
@@ -207,7 +229,7 @@ PROCEDURE dbm_Get(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD);
 VAR     p : PCHAR;
         g : WORD;
 BEGIN
-        IF NOT IsOpen(f.f) THEN EXIT;
+        IF NOT dbm_IsOpen(f) THEN EXIT;
         p := @b;
         WHILE (size <> 0) AND (rec <> 0) DO BEGIN
                 _go(f, rec);
@@ -227,7 +249,7 @@ VAR     root, prec, crec : LONGINT;
         i        : WORD;
 BEGIN
         root := 0;
-        IF IsOpen(f.f) THEN BEGIN
+        IF dbm_IsOpen(f) THEN BEGIN
                 p := @b;
                 prec := 0;
                 WHILE size <> 0 DO BEGIN
@@ -265,7 +287,7 @@ END;
 PROCEDURE dbm_Put(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD);
 VAR     crec : LONGINT;
 BEGIN
-        IF NOT IsOpen(f.f) THEN EXIT;
+        IF NOT dbm_IsOpen(f) THEN EXIT;
         _go(f, rec);
         crec := ReadDWord(f.f);
         _go(f, rec);

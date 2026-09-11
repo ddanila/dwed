@@ -33,8 +33,10 @@ record mutation or complete editor behavior with these stores.
 
 ## Remaining qualification
 
-Database allocation, free-list updates, reads, replacement, and initialization
-still need checked status propagation and failure-safe publication. Existing
+[Database initialization](DATABASE-INITIALIZATION.md) validates headers without
+rewriting failed input and retains cleanup ownership. Database allocation,
+free-list traversal and updates, record reads, and replacement still need
+checked status propagation and failure-safe publication. Existing
 string-store replacement frees the old payload before installing its
 replacement. Shared loading and saving must receive backing-store failures
 instead of treating an empty result as successful input or output.

@@ -800,6 +800,7 @@ begin
         1016: errMsg := 'Search and replacement must be single-line text';
         1017: errMsg := 'Session entry cannot be represented';
         1018: errMsg := 'Invalid configuration or resume record';
+        1019: errMsg := 'Invalid backing database';
         1005: errMsg := 'Text exceeds clipboard capacity';
         1006: errMsg := 'Resulting line exceeds 255 bytes';
         1007: errMsg := 'Unsupported control byte in inserted text';

@@ -29,6 +29,8 @@ INTERFACE
 
 USES System2;
 
+CONST DBB_INVALID=1019;
+
 TYPE
 DBB_HDR = RECORD
         sign       : WORD;
@@ -41,6 +43,7 @@ END;
 DBBFile = RECORD
         f          : BFILE;
         header     : DBB_HDR;
+        ready      : BOOLEAN;
 END;
 
 { Initialize the owner to zero before its first use; close before reuse. }
@@ -78,24 +81,30 @@ BEGIN
 END;
 
 PROCEDURE dbb_Reset(VAR f : DBBFile; fname : STRING; blk_size : WORD);
+VAR candidate:DBB_HDR; count:WORD; error:INTEGER;
 BEGIN
-        IF blk_size < SizeOf(LONGINT) THEN blk_size := SizeOf(LONGINT);
         IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
-        FillChar(f, SizeOf(DBBFile), #0);
-        Assign(f.f, fname);
-        Reset(f.f);
-        IF NOT IsOpen(f.f) THEN BEGIN
-                dbb_rewrite(f, fname, blk_size);
-                EXIT;
+        IF blk_size<SizeOf(LONGINT) THEN blk_size:=SizeOf(LONGINT);
+        FillChar(f,SizeOf(DBBFile),0);
+        IF blk_size=0 THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
+        Assign(f.f,fname); Reset(f.f); error:=f.f.ioresult;
+        IF error=0 THEN BEGIN
+                count:=BlockRead(f.f,candidate,SizeOf(candidate)); error:=f.f.ioresult;
+                IF (error=0) AND (count<>SizeOf(candidate)) THEN error:=DBB_INVALID;
         END;
-        IF SizeOf(DBB_HDR) <> BlockRead(f.f, f.header, SizeOf(DBB_HDR)) THEN BEGIN
-                Close(f.f);
-                dbb_ReWrite(f, fname, blk_size);
-                EXIT;
+        IF error=0 THEN BEGIN
+                IF (candidate.sign<>DBB_SIGN) OR (candidate.size<>blk_size) OR
+                   (candidate.records<0) OR (candidate.next<0) OR (candidate.next>candidate.records) OR
+                   (candidate.root<0) OR (candidate.root>candidate.records) THEN error:=DBB_INVALID
+                ELSE IF (f.f.fsize<SizeOf(DBB_HDR)) OR
+                        (candidate.records>(f.f.fsize-SizeOf(DBB_HDR)) DIV candidate.size) THEN error:=DBB_INVALID;
         END;
-        IF (f.header.sign <> DBB_SIGN) OR (f.header.size <> blk_size) THEN BEGIN
-                Close(f.f);
-                dbb_ReWrite(f, fname, blk_size);
+        IF error=0 THEN BEGIN
+                f.header:=candidate; f.ready:=TRUE;
+        END ELSE BEGIN
+                { Close the read handle without writing an unvalidated header. }
+                IF IsOpen(f.f) THEN Close(f.f);
+                f.f.ioresult:=error;
         END;
 END;
 
@@ -109,7 +118,9 @@ BEGIN
                 f.header.root := 0;
                 f.header.size := blk_size;
                 Seek(f.f, 0);
+                IF f.f.ioresult<>0 THEN EXIT;
                 BlockWrite(f.f, f.header, DBB_HDR_SIZE);
+                f.ready:=f.f.ioresult=0;
         END;
 END;
 
@@ -132,13 +143,13 @@ END;
 
 FUNCTION dbb_IsOpen(VAR f : DBBFile) : BOOLEAN;
 BEGIN
-        dbb_IsOpen := IsOpen(f.f);
+        dbb_IsOpen := f.ready AND IsOpen(f.f);
 END;
 
 PROCEDURE dbb_Close(VAR f : DBBFile);
 BEGIN
         IF NOT IsOpen(f.f) AND NOT f.f.delete_pending THEN EXIT;
-        IF IsOpen(f.f) THEN BEGIN
+        IF f.ready AND IsOpen(f.f) THEN BEGIN
                 Seek(f.f,0);
                 IF f.f.ioresult<>0 THEN EXIT;
                 BlockWrite(f.f,f.header,DBB_HDR_SIZE);
@@ -151,7 +162,7 @@ END;
 
 PROCEDURE dbb_Free(VAR f : DBBFile; rec : LONGINT);
 BEGIN
-        IF (NOT IsOpen(f.f)) OR (rec = 0) THEN EXIT;
+        IF (NOT dbb_IsOpen(f)) OR (rec = 0) THEN EXIT;
         _go(f, rec);
         WriteDWord(f.f, f.header.next);
         f.header.next := rec;
@@ -173,7 +184,7 @@ END;
 
 PROCEDURE dbb_Get(VAR f : DBBFile; rec : LONGINT; VAR b);
 BEGIN
-        IF (NOT IsOpen(f.f)) OR (rec = 0) THEN EXIT;
+        IF (NOT dbb_IsOpen(f)) OR (rec = 0) THEN EXIT;
         _go(f, rec);
         BlockRead(f.f, b, f.header.size);
 END;
@@ -182,7 +193,7 @@ FUNCTION dbb_Add(VAR f : DBBFile; VAR b) : LONGINT;
 VAR     res : LONGINT;
 BEGIN
         res := 0;
-        IF IsOpen(f.f) THEN BEGIN
+        IF dbb_IsOpen(f) THEN BEGIN
                 res := _alloc(f);
                 _go(f, res);
                 BlockWrite(f.f, b, f.header.size);
@@ -192,7 +203,7 @@ END;
 
 PROCEDURE dbb_Put(VAR f : DBBFile; rec : LONGINT; VAR b);
 BEGIN
-        IF (NOT IsOpen(f.f)) OR (rec = 0) THEN EXIT;
+        IF (NOT dbb_IsOpen(f)) OR (rec = 0) THEN EXIT;
         _go(f, rec);
         BlockWrite(f.f, b, f.header.size);
 END;

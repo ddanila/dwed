@@ -325,13 +325,19 @@ ASM
 @ok:
 END;
 
-FUNCTION lTell(h : word) : DWORD;ASSEMBLER;
+FUNCTION lTell(h : WORD) : DWORD;ASSEMBLER;
 ASM
-        MOV  BX, h
-        XOR  DX, DX
-        MOV  CX, DX
-        MOV  AX, $4201
-        INT  $21
+        MOV RES,0
+        MOV BX,h
+        XOR DX,DX
+        XOR CX,CX
+        MOV AX,$4201
+        INT $21
+        JNC @ok
+        MOV RES,AX
+        XOR AX,AX
+        XOR DX,DX
+@ok:
 END;
 
 PROCEDURE lClose(h : WORD);ASSEMBLER;
@@ -672,6 +678,7 @@ BEGIN
 END;
 
 PROCEDURE ResetMode(VAR f : BFILE; access : WORD);
+VAR wanted,got:WORD;
 BEGIN
         IF f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;
         IF f.is_open THEN EXIT;
@@ -682,7 +689,7 @@ BEGIN
         f.ioresult := 0;
         fname := f.filename + #0;
         f.f := lReset(access);
-        IF f.f = 0 THEN f.ioresult := 2;
+        f.ioresult := res;
         f.is_open := f.ioresult = 0;
         f.buf_count := 0;
         f.buf_pos := 0;
@@ -691,14 +698,27 @@ BEGIN
         f.delonclose := FALSE;
         f.filetype := FS_FILE;
         IF f.is_open THEN BEGIN
-                lSeek(f.f, SEEK_END, 0);
-                f.fsize := lTell(f.f);
-                lSeek(f.f, SEEK_BEG, 0);
-                f.buf_count := lRead(f.f, f.buf^, SizeOf(BFILE_BUF));
-                if res <> 0 THEN f.ioresult := 100;
+                lSeek(f.f,SEEK_END,0); f.ioresult:=res;
+                IF f.ioresult=0 THEN BEGIN
+                        f.fsize:=lTell(f.f); f.ioresult:=res;
+                        IF (f.ioresult=0) AND (f.fsize<0) THEN f.ioresult:=13;
+                END;
+                IF f.ioresult=0 THEN BEGIN lSeek(f.f,SEEK_BEG,0); f.ioresult:=res END;
+                IF f.ioresult=0 THEN BEGIN
+                        wanted:=SizeOf(BFILE_BUF);
+                        IF f.fsize<wanted THEN wanted:=f.fsize;
+                        WHILE (f.buf_count<wanted) AND (f.ioresult=0) DO BEGIN
+                                got:=lRead(f.f,f.buf^[f.buf_count],wanted-f.buf_count);
+                                f.ioresult:=res;
+                                IF f.ioresult=0 THEN BEGIN
+                                        IF (got=0) OR (got>wanted-f.buf_count) THEN f.ioresult:=100
+                                        ELSE Inc(f.buf_count,got);
+                                END;
+                        END;
+                END;
         END;
 {$IFDEF USE_CACHE}
-        IF f.is_open THEN BEGIN
+        IF f.is_open AND (f.ioresult=0) THEN BEGIN
                 f.rcache := excache_create(READ_CACHE_SIZE);
                 f.wcache := excache_create(WRITE_CACHE_SIZE);
         END;
