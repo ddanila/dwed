@@ -32,6 +32,10 @@ TYPE
 MEM_COPY_DIRECTION = (DOS2EXT, EXT2DOS);
 DWORD = LONGINT;
 
+{ Checked copies return zero on success and a nonzero driver status on
+  failure. A failed driver may have partly changed the destination. Legacy
+  copy procedures discard status; ownership-sensitive callers must use try_copy. }
+
 { --- EMS -------------------------------------------------------- }
 
 FUNCTION ems_check_driver : BOOLEAN;
@@ -39,6 +43,7 @@ FUNCTION ems_get_status : BYTE;
 FUNCTION ems_maxavail : WORD;
 FUNCTION ems_malloc(pages : WORD) : WORD;
 FUNCTION ems_realloc(handle : WORD; old_page_count, new_page_count : WORD) : WORD;
+FUNCTION ems_try_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION):BYTE;
 PROCEDURE ems_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
 PROCEDURE ems_free(handle : WORD);
 
@@ -49,6 +54,7 @@ FUNCTION xms_version : WORD;
 FUNCTION xms_maxavail : DWORD;
 FUNCTION xms_malloc(pages : WORD) : WORD;
 FUNCTION xms_realloc(handle : WORD; old_page_count, new_page_count : WORD) : WORD;
+FUNCTION xms_try_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION):BYTE;
 PROCEDURE xms_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
 PROCEDURE xms_free(handle : WORD);
 
@@ -58,6 +64,7 @@ FUNCTION exms_check_driver : BOOLEAN;
 FUNCTION exms_maxavail : DWORD;
 FUNCTION exms_malloc(pages : WORD) : WORD;
 FUNCTION exms_realloc(handle : WORD; old_page_count, new_page_count : WORD) : WORD;
+FUNCTION exms_try_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION):BYTE;
 PROCEDURE exms_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
 PROCEDURE exms_free(handle : WORD);
 
@@ -171,7 +178,8 @@ BEGIN
         ems_check_driver := dev_name = EMMDEVNAME;
 END;
 
-PROCEDURE ems_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
+FUNCTION ems_try_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION):BYTE;
+VAR status:BYTE;
 BEGIN
         FillChar(emsrec, SizeOf(TEMSCOPYREC), #0);
         emsrec.len := EXT_PAGE_SIZE;
@@ -190,9 +198,16 @@ BEGIN
         END;
         ASM
                 MOV  SI, offset emsrec
-                MOV  AX, $5701
+                MOV  AX, $5700
                 INT  $67
+                MOV  status,AH
         END;
+        ems_try_copy:=status;
+END;
+
+PROCEDURE ems_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
+BEGIN
+        ems_try_copy(handle,page,buf,dir);
 END;
 
 FUNCTION _ems_realloc(handle : WORD; new_page_count : WORD) : BOOLEAN;ASSEMBLER;
@@ -313,8 +328,8 @@ ASM
         MOV  BYTE PTR [xmsrec.dst_hi], DH
 END;
 
-PROCEDURE xms_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
-VAR     buf_ptr : LONGINT;
+FUNCTION xms_try_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION):BYTE;
+VAR     buf_ptr : LONGINT; status:BYTE; ok:WORD;
 BEGIN
         FillChar(xmsrec, SizeOf(TXMSCOPYREC), #0);
         xmsrec.len := EXT_PAGE_SIZE;
@@ -334,7 +349,16 @@ BEGIN
                 MOV  SI, offset xmsrec
                 MOV  AH, xmsCopyFn
                 CALL [xmshandler]
+                MOV ok,AX
+                MOV status,BL
         END;
+        IF ok<>0 THEN status:=0 ELSE IF status=0 THEN status:=$ff;
+        xms_try_copy:=status;
+END;
+
+PROCEDURE xms_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
+BEGIN
+        xms_try_copy(handle,page,buf,dir);
 END;
 
 FUNCTION _xms_realloc(handle : WORD; pcount : WORD) : BOOLEAN; ASSEMBLER;
@@ -416,10 +440,16 @@ BEGIN
         ELSE exms_realloc := 0;
 END;
 
+FUNCTION exms_try_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION):BYTE;
+BEGIN
+        IF mtype = EMS THEN exms_try_copy:=ems_try_copy(handle, page, buf, dir)
+        ELSE IF mtype = XMS THEN exms_try_copy:=xms_try_copy(handle, page, buf, dir)
+        ELSE exms_try_copy:=$ff;
+END;
+
 PROCEDURE exms_copy(handle : WORD; page : WORD; VAR buf; dir : MEM_COPY_DIRECTION);
 BEGIN
-        IF mtype = EMS THEN ems_copy(handle, page, buf, dir)
-        ELSE IF mtype = XMS THEN xms_copy(handle, page, buf, dir);
+        exms_try_copy(handle,page,buf,dir);
 END;
 
 PROCEDURE exms_free(handle : WORD);

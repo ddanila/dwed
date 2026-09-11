@@ -3,6 +3,7 @@
 unit xmsshim;
 interface
 var requested:longint; called_function:byte; refuse:boolean; classic:boolean;
+var transfer:array[0..19] of byte;
 procedure restore_driver;
 implementation
 uses dos;
@@ -19,6 +20,10 @@ asm
         cmp ah,0
         je @version
         mov called_function,ah
+        cmp ah,$0b
+        je @transfer
+        cmp ah,$cb
+        je @transfer
         cmp ah,$09
         je @ordinary
         cmp ah,$c9
@@ -26,6 +31,22 @@ asm
         mov word ptr requested,dx
         db $66,$c1,$ea,$10 { SHR EDX,16 }
         mov word ptr [requested+2],dx
+        jmp @allocated
+@transfer:
+        push si
+        push di
+        push cx
+        push es
+        push ds
+        pop es
+        mov di,offset transfer
+        mov cx,20
+        cld
+        rep movsb
+        pop es
+        pop cx
+        pop di
+        pop si
         jmp @allocated
 @ordinary:
         mov word ptr requested,dx
