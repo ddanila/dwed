@@ -1,0 +1,330 @@
+{
+  "scope": "Checked commit guards before document creation, opening and window switching",
+  "dwed_base_revision": "a3c38be55bb7bf22537b1563431b12d2080a9c26",
+  "parent_base_revision": "6e5f988efa56570705b78674b3baba50cc714af6",
+  "source_sha256": {
+    "SRC/DWEDHNDL.PAS": "11a76457c62b9ce2a0c007fff0832d7f1cee545a7ff5880da580174ef5ae8377",
+    "SRC/DWEDUTIL.PAS": "f6a1c383007be99059a552e0f6f0a85dbbddfff7b0e5a8445353a94670f516bd",
+    "tests/STRPUT.PAS": "67af97adb9aaf5b42c58daae9a98d01abbbca765ecceeee640e7dd8da4256144",
+    "tools/build.py": "783d442db2c872b5e77447bfa2ca755584f57de8d42e478eeddd5ea8e71fa50a"
+  },
+  "test_source_sha256": {
+    "tests/test_dwed_qemu.py": "15e5b4b153a0163b9e93e647c270d2c1b4f6a9f469ac7dc6686c5eb0bf71e67a"
+  },
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 253366,
+        "sha256": "22ce45d363dec85f5efdf34e9a71f767d46c10d70142b0940c407c4b2805dd67"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 10752,
+        "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "XMSTEST.exe": {
+        "bytes": 29516,
+        "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+      },
+      "XFERTEST.exe": {
+        "bytes": 30670,
+        "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+      },
+      "MEMXFER.exe": {
+        "bytes": 28982,
+        "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+      },
+      "CACHETEST.exe": {
+        "bytes": 55514,
+        "sha256": "1e05655d6ecf6934a2fe1b23dad0c805a182d133de205f283dbafe3a9d512470"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37604,
+        "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+      },
+      "STORTEST.exe": {
+        "bytes": 175408,
+        "sha256": "c6d825b0f7fe299310dd72e9c592d5e58fd9eafd539f2a0be0abc8dabcf1c33f"
+      },
+      "CLIPTEST.exe": {
+        "bytes": 175948,
+        "sha256": "07355c5ddae375481e63f6db1a24ba99b2ad7627a570599ed49e926522792498"
+      },
+      "TABTEST.exe": {
+        "bytes": 252164,
+        "sha256": "19c75f8a7b81fd7f9c8da612fe77abc2e6a428b57b2765f73c1f6fd19ad9cf52"
+      },
+      "SESSPROB.exe": {
+        "bytes": 249516,
+        "sha256": "dc968a352e9425adb62c5ddcdc1236ba6249e788ab6f17591695d788e1abb376"
+      },
+      "INITPROB.exe": {
+        "bytes": 181968,
+        "sha256": "1371701f71b9970ba57928cb03f22f2916439eb3bc3ceba8006140abcb0a7c71"
+      },
+      "DBPROBE.exe": {
+        "bytes": 64334,
+        "sha256": "dac53c2d9c4b9d6217e88128d2269229eba9bba6a6198ce7ad90e02a40e8aa95"
+      },
+      "DBOPEN.exe": {
+        "bytes": 65758,
+        "sha256": "803ffdef61b6b8b02eca291fa80137b509fdecb57d63365d3cc416d4c90bcb6c"
+      },
+      "DBREAD.exe": {
+        "bytes": 66450,
+        "sha256": "5263a4c8a88a8517647fa7912bdbe01e2d36ab688f44088e4528d298e8a78e74"
+      },
+      "DBAPPEND.exe": {
+        "bytes": 67668,
+        "sha256": "ad6ebf2e7bcf9237de5cf41caf96a475a953c830d3d0b87011a6ec051dc823ba"
+      },
+      "DBUPDATE.exe": {
+        "bytes": 63022,
+        "sha256": "e1d099db7a027e7810b69809580f701a1d70e467cdf9bc545013419714f62d53"
+      },
+      "STRSAVE.exe": {
+        "bytes": 174360,
+        "sha256": "a2713ee90fd4fdd408a401257d90c35d548c202c05ae5ef256b600ccc2de5997"
+      },
+      "STRPUT.exe": {
+        "bytes": 253500,
+        "sha256": "384cfbf074d85a3259eca242b040dfedccf4258988c01a4f596b199c333b3e33"
+      },
+      "TMPPROBE.exe": {
+        "bytes": 68084,
+        "sha256": "75ff53da9d2fa3f9eb18ac5fb7b68b99b14991c68947578a080fdaf46f049bba"
+      },
+      "SAVETEST.exe": {
+        "bytes": 183958,
+        "sha256": "1553f9258a189b574665c4ad92612c1dcde31ba40fcaa005867793a251d1b0c3"
+      },
+      "RECVTEST.exe": {
+        "bytes": 37584,
+        "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+      },
+      "MEMTEST.exe": {
+        "bytes": 251876,
+        "sha256": "71cfefa8948e6ae35efca6828efa4322417a04bc62c99f074f9db89677b971db"
+      }
+    }
+  },
+  "reproducibility": {
+    "build_directories": [
+      "dwed/out/document-commit-b",
+      "dwed/out/document-commit-c"
+    ],
+    "all_declared_artifacts_and_manifests_identical": true,
+    "package_bytes": 288422,
+    "package_sha256": "ea1176c5476ba2b74f7ebad592516b7b3157ffa18927ef5c335098d8e88c8356",
+    "packages_identical": true,
+    "package_validation": "tests/test_dwed_package.py passed deterministic package, notices, and rejection checks"
+  },
+  "regression": {
+    "run_directory": "out/dwed-qemu-npdyoh2u",
+    "case_count": 9,
+    "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+    "boot_file_sha256": {
+      "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+      "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+    },
+    "results_sha256": "546e088800275b2e3855d119a453ff406e1610f59cda77fcaf911bb8f3ae4463",
+    "cases": [
+      {
+        "case": "new-file-low",
+        "mode": "low",
+        "original_hex": "",
+        "completed": true,
+        "actual_hex": "7a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "menu-save-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "menu-save-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "menu-open-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "shortcut-open-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-storage-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "storage_probe": "PASS 77608 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "undo-storage-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "storage_probe": "PASS 77608 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "line-update-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "line_update": "backend 1 fixtures\r\nbackend 1 commit case 1\r\nbackend 1 commit case 2\r\nbackend 1 commit case 3\r\nbackend 1 commit case 4\r\nbackend 1 commit case 5\r\nbackend 1 commit case 6\r\nbackend 1 commit case 7\r\nbackend 1 commit case 8\r\nbackend 1 commit case 9\r\nbackend 1 commit case 10\r\nbackend 2 fixtures\r\nbackend 2 commit case 1\r\nbackend 2 commit case 2\r\nbackend 2 commit case 3\r\nbackend 2 commit case 4\r\nbackend 2 commit case 5\r\nbackend 2 commit case 6\r\nbackend 2 commit case 7\r\nbackend 2 commit case 8\r\nbackend 2 commit case 9\r\nbackend 2 commit case 10\r\nPASS 90730 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "line-update-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "line_update": "backend 1 fixtures\r\nbackend 1 commit case 1\r\nbackend 1 commit case 2\r\nbackend 1 commit case 3\r\nbackend 1 commit case 4\r\nbackend 1 commit case 5\r\nbackend 1 commit case 6\r\nbackend 1 commit case 7\r\nbackend 1 commit case 8\r\nbackend 1 commit case 9\r\nbackend 1 commit case 10\r\nbackend 2 fixtures\r\nbackend 2 commit case 1\r\nbackend 2 commit case 2\r\nbackend 2 commit case 3\r\nbackend 2 commit case 4\r\nbackend 2 commit case 5\r\nbackend 2 commit case 6\r\nbackend 2 commit case 7\r\nbackend 2 commit case 8\r\nbackend 2 commit case 9\r\nbackend 2 commit case 10\r\nPASS 90730 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "microsoft_622": {
+    "run_directory": "out/dwed-qemu-1txtbdnb",
+    "case_count": 2,
+    "boot_image_sha256": "ca2c5347a0ab34a8b49774887eee2c74130acc493bccc57d87643e6ac323706f",
+    "boot_file_sha256": {
+      "HIMEM.SYS": "615b656d0d094a31cb10ab56ab31273062c535d819e8208d412ad5d022847c93",
+      "EMM386.EXE": "d4a011769db9415402d7be129fffb762fa7d174096bcc921aa5ce85734072635"
+    },
+    "results_sha256": "07c72b8c78c508915b485f252dd983e4859851f668e01495523521af4c29dc50",
+    "cases": [
+      {
+        "case": "line-update-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "line_update": "backend 1 fixtures\r\nbackend 1 commit case 1\r\nbackend 1 commit case 2\r\nbackend 1 commit case 3\r\nbackend 1 commit case 4\r\nbackend 1 commit case 5\r\nbackend 1 commit case 6\r\nbackend 1 commit case 7\r\nbackend 1 commit case 8\r\nbackend 1 commit case 9\r\nbackend 1 commit case 10\r\nbackend 2 fixtures\r\nbackend 2 commit case 1\r\nbackend 2 commit case 2\r\nbackend 2 commit case 3\r\nbackend 2 commit case 4\r\nbackend 2 commit case 5\r\nbackend 2 commit case 6\r\nbackend 2 commit case 7\r\nbackend 2 commit case 8\r\nbackend 2 commit case 9\r\nbackend 2 commit case 10\r\nPASS 90730 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "line-update-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "line_update": "backend 1 fixtures\r\nbackend 1 commit case 1\r\nbackend 1 commit case 2\r\nbackend 1 commit case 3\r\nbackend 1 commit case 4\r\nbackend 1 commit case 5\r\nbackend 1 commit case 6\r\nbackend 1 commit case 7\r\nbackend 1 commit case 8\r\nbackend 1 commit case 9\r\nbackend 1 commit case 10\r\nbackend 2 fixtures\r\nbackend 2 commit case 1\r\nbackend 2 commit case 2\r\nbackend 2 commit case 3\r\nbackend 2 commit case 4\r\nbackend 2 commit case 5\r\nbackend 2 commit case 6\r\nbackend 2 commit case 7\r\nbackend 2 commit case 8\r\nbackend 2 commit case 9\r\nbackend 2 commit case 10\r\nPASS 90730 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "command_probe": {
+    "commands": [
+      "Save",
+      "Save As",
+      "Save All",
+      "Close",
+      "Exit",
+      "New",
+      "Open",
+      "Windows",
+      "Next Window"
+    ],
+    "disk_stores": [
+      "SWAP",
+      "current disk-backed SXMS stub"
+    ],
+    "disk_faults": [
+      "payload write refusal",
+      "partial index write"
+    ],
+    "memory_fault": "DOS-store line growth allocation refusal",
+    "checks": [
+      "Failure reports one error dialog and returns to the editor",
+      "Current document and list-root pointers remain unchanged",
+      "Entire current file context remains byte-identical after failure",
+      "Entire separate document remains byte-identical after disk failure",
+      "Old target text and neighboring links remain readable",
+      "Index rollback is retained after partial index write",
+      "Successful Next Window retry commits the source line and selects the other document"
+    ],
+    "constraints": [
+      "Command failure cases call execute_command directly; normal menu and keyboard opening are exercised separately in QEMU.",
+      "The BIOS hook acknowledges the error dialog. Optional cache allocation is refused during disk-store fixture setup.",
+      "The current SXMS unit still duplicates the disk store and does not establish an actual SXMS backend.",
+      "These guards preserve the source document when committing its edited line fails; they do not qualify later loading, rendering, or navigation reads."
+    ]
+  },
+  "remaining": [
+    "Checked commit migration for navigation, editing, external-command handoff and remaining legacy callers",
+    "Checked loading and rendering with ownership-preserving error propagation",
+    "Safe old/orphaned payload reclamation and checked free-list mutation",
+    "Alternative-store multi-record transactions and undo/redo",
+    "Actual SXMS document store",
+    "Application-level cleanup retry ownership",
+    "Full-command low-memory and final runtime qualification",
+    "Distribution promotion as EDIT"
+  ]
+}

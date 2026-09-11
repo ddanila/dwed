@@ -2,13 +2,14 @@
 program strput;
 uses cachehook,dos,strs,dwedtype,dwedutil,system2,dwedhndl,dwedcmd;
 const lines=1100; target_number=910;
-      commands:array[1..5] of TEditorCommand=(CMD_SAVE,CMD_SAVE_AS,CMD_SAVE_ALL,CMD_CLOSE,CMD_EXIT);
+      commands:array[1..9] of TEditorCommand=(CMD_SAVE,CMD_SAVE_AS,CMD_SAVE_ALL,CMD_CLOSE,CMD_EXIT,
+          CMD_NEW,CMD_OPEN,CMD_WINDOWS,CMD_NEXT_WINDOW);
 var output:text; checks:longint; backend,kind,i,j,error:integer;
     old21,old60,old16:pointer; collect:boolean; handles:word; source_handles:array[1..2] of word;
     selected,fault,hits,reads,writes,payload_writes,payload_closes:word;
     root,last,target,added,n,p,other:EditorStr; body,oldbody,actual:string;
-    ctx:TEditorContext; filectx,snapshot:TFileContext; ok:boolean; baseline:longint;
-    held:array[0..63] of pointer; held_count:integer; amount:word; command_index,result_code,key_reads:integer;
+    ctx:TEditorContext; filectx,snapshot,secondctx,second_snapshot:TFileContext; ok:boolean; baseline:longint;
+    held:array[0..63] of pointer; held_count:integer; amount:word; command_index,command_fault,result_code,key_reads:integer;
 procedure intercept(flags,cs,ip,ax,bx,cx,dx,si,di,ds,es,bp:word); interrupt;
 var r:registers; service:byte; matching,reject:boolean;
 begin
@@ -154,17 +155,33 @@ begin
                         neighbors;
                 end;
 {$IFNDEF LEGACY_LINE}
-                for command_index:=1 to 5 do begin
+                for command_fault:=1 to 2 do
+                for command_index:=1 to 9 do begin
                         kind:=20+command_index;
+                        check(strs.retry_update(error),'settle previous command rollback');
                         check(strs.try_put(target,oldbody,error),'restore command fixture'); evict;
                         body:='unsaved command text'; prepare_context; ctx.all:=@filectx;
-                        selected:=1; fault:=1; key_reads:=0; SetIntVec($16,@acknowledge); arm;
+                        FillChar(secondctx,sizeof(secondctx),0); secondctx.rline:=last;
+                        secondctx.cline:=last; secondctx.scrline:=last; second_snapshot:=secondctx;
+                        filectx.next:=@secondctx; snapshot:=filectx;
+                        selected:=1; fault:=1;
+                        if command_fault=2 then begin selected:=2; fault:=4 end;
+                        key_reads:=0; SetIntVec($16,@acknowledge); arm;
                         result_code:=execute_command(ctx,commands[command_index]); disarm; SetIntVec($16,old16);
                         check((hits>0) and (key_reads=1),'command reports commit refusal in one error dialog');
                         check(result_code=SCRU_FULL,'failed command returns to editor');
                         check((ctx.current=@filectx) and (ctx.all=@filectx),'failed command retains document ownership');
                         unchanged; expect_target(oldbody);
+                        for i:=0 to sizeof(secondctx)-1 do
+                                check(Mem[Seg(secondctx):Ofs(secondctx)+i]=Mem[Seg(second_snapshot):Ofs(second_snapshot)+i],
+                                      'failed command preserves other document');
+                        if command_fault=2 then check(strs.pending_update,'failed command retains index rollback');
                 end;
+                { A successful retry publishes the pending line before switching. }
+                result_code:=execute_command(ctx,CMD_NEXT_WINDOW);
+                check((result_code=SCRU_FULL) and (ctx.current=@secondctx),'window switch retries after failure');
+                check(filectx.chg and not filectx.editor.chg,'window switch commits source line');
+                expect_target(body); ctx.current:=@filectx;
                 kind:=11; check(strs.retry_update(error),'settle before discard test');
                 check(strs.try_put(target,oldbody,error),'discard fixture'); evict;
                 body:='unsaved replacement'; prepare_context; selected:=2; fault:=3; arm;
@@ -196,6 +213,12 @@ begin
         while (MaxAvail>=17000) and (held_count<64) do begin GetMem(held[held_count],16384); inc(held_count) end;
         amount:=MaxAvail-512; GetMem(other,amount);
         check(not checked_commit,'DOS growth allocation refusal'); check(error=8,'DOS allocation status'); unchanged;
+        for command_index:=1 to 9 do begin
+                key_reads:=0; SetIntVec($16,@acknowledge);
+                result_code:=execute_command(ctx,commands[command_index]); SetIntVec($16,old16);
+                check((result_code=SCRU_FULL) and (key_reads=1),'command reports DOS growth allocation refusal');
+                check((ctx.current=@filectx) and (ctx.all=@filectx),'DOS command retains document ownership'); unchanged;
+        end;
         FreeMem(other,amount); while held_count>0 do begin dec(held_count); FreeMem(held[held_count],16384) end;
         check(checked_commit,'DOS growth retry'); target:=filectx.cline; root:=filectx.rline;
         check((root=target) and (filectx.scrline=target),'DOS relocation updates root and scroll aliases');

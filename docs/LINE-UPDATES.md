@@ -15,9 +15,11 @@ The retained index image is an in-memory runtime safeguard, not crash recovery.
 failure. Success updates current/root/scroll aliases after a DOS-store relocation
 and publishes dirty flags. The DOS store checks growth allocation before changing
 links; edits inside an active undo transaction retain its existing rollback
-mechanism. Save, Save As, Save All, Close, and Exit use the checked entry and
-report an error before proceeding when replacement fails. Save All stops on the
-failing document so the user can retry it.
+mechanism. Save, Save As, Save All, Close, Exit, New, Open, Windows, and Next
+Window use the checked entry and report an error before proceeding when
+replacement fails. Creating or selecting another document must wait until the
+current edited line is committed. Save All stops on the failing document so the
+user can retry it.
 
 `STRS.try_done` discards the index before releasing payload ownership. Refused
 index close retains the payload store; refused deletion retains its cleanup
@@ -29,8 +31,12 @@ The [qualification report](line-update-milestone.json) records build identities,
 fault cases, and reference-DOS results. The probe compares the entire editor file
 context after refusal, verifies target text and neighboring links, retries
 replacement and cleanup, and exercises the real save/close/exit command dispatch
-with injected payload write failure. A BIOS keyboard hook acknowledges only the
-error dialog; filesystem failures use real DOS file handles with optional cache
+with injected payload write failure. The subsequent
+[document-command report](document-commit-milestone.json) extends these checks
+to document creation and switching, partial index writes with retained rollback,
+a separate unchanged document, and conventional-memory allocation refusal.
+Next Window is retried successfully after the failure to verify publication
+before switching. A BIOS keyboard hook acknowledges only the error dialog; filesystem failures use real DOS file handles with optional cache
 allocation refused during fixture setup.
 
 Remaining command callers still use legacy `commit`/`put`, whose own updates

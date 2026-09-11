@@ -1031,8 +1031,10 @@ begin
 end;
 
 function hk_nextwin(var ctx:TEditorContext; event:PEvent):integer;
+var error:integer;
 begin
-        commit(ctx);
+        hk_nextwin:=SCRU_FULL;
+        if not try_commit(ctx,error) then begin handle_error(ctx,error); exit end;
         with ctx do begin
                 current := current^.next;
                 if current = nil then current := all;
@@ -1041,8 +1043,10 @@ begin
 end;
 
 function hk_winlist(var ctx:TEditorContext; event:PEvent):integer;
+var error:integer;
 begin
-        commit(ctx);
+        hk_winlist:=SCRU_FULL;
+        if not try_commit(ctx,error) then begin handle_error(ctx,error); exit end;
         go_win_list(ctx);
         hk_winlist := SCRU_FULL;
 end;
@@ -1150,7 +1154,8 @@ var     r, errCode : integer;
         fname      : string;
         start_load : boolean;
 begin
-        commit(ctx);
+        hk_load:=SCRU_FULL;
+        if not try_commit(ctx,errCode) then begin handle_error(ctx,errCode); exit end;
         r := SCRU_CLINE;
         fname := '';
         msg := ' Load file :';
@@ -1377,7 +1382,8 @@ begin
         case command of
         CMD_UNDO:r:=hk_undo(ctx,@e);
         CMD_REDO:r:=hk_redo(ctx,@e);
-        CMD_NEW:begin commit(ctx); error:=new_file(ctx,'');
+        CMD_NEW:begin
+                if try_commit(ctx,error) then error:=new_file(ctx,'');
                 if error<>0 then handle_error(ctx,error); r:=SCRU_FULL end;
         CMD_SAVE:r:=hk_save(ctx,@e);
         CMD_SAVE_ALL:begin e.ctrl_keys:=key_shift; r:=hk_save(ctx,@e) end;
