@@ -33,7 +33,7 @@ implementation
 
 uses dwedhelp, scr, kminput, cstring, scrui, strs, str, dwedscru, dwedutil,
 dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu,
-unredo, strsdos, dwedundo, textcell, dwedsave, startmem, dwedrcv;
+unredo, strsdos, dwedundo, textcell, dwedsave, startmem, dwedrcv, dwedsess, safesave;
 
 {$F+}
 const
@@ -1188,23 +1188,9 @@ begin
         end else hk_fast_jmp := SCRU_NONE;
 end;
 
-procedure serialize_fctx(var t : bfile; current : PFileContext);
-begin
-        if current = nil then exit;
-        if current^.next <> nil then serialize_fctx(t, current^.next);
-        writeln(t, System.concat(itoa(current^.editor.x),
-        ',', itoa(current^.scrx),
-        ',', itoa(current^.scry),
-        ',', ltoa(strs.get_num(current^.cline)),
-        ',', current^.fname) 
-        );
-end;
-
 function hk_userdef(var ctx:TEditorContext; event:PEvent):integer;
 var     cmd        : string;
         r, errCode : integer;
-        writed     : word;
-        t          : bfile;
         can_run    : boolean;
         srcctx     : PFileContext;
 begin
@@ -1242,12 +1228,11 @@ begin
 
         if can_run then can_run:=pending_save_dialog(ctx,true);
         if can_run then begin
-                assign(t, ctx.temp);
-                rewrite(t);
-                if not isopen(t) then begin handle_error(ctx, 105); can_run := false; end else begin
-                        serialize_fctx(t, ctx.all);
-                        close(t);
-                end;
+                errCode:=store_session(ctx);
+                if errCode<>0 then begin
+                        handle_error(ctx,errCode); can_run:=false; r:=SCRU_FULL;
+                end else if save_pending_files(ctx.session_save) then
+                        can_run:=pending_save_dialog(ctx,true);
         end;
 
         if can_run then begin

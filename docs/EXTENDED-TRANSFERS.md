@@ -53,8 +53,8 @@ for exact build identity, scope, and old-implementation controls.
 These guarantees apply to cache and buffered-file operations whose callers
 check their results and retain the file object on failure. Higher-level caller
 review remains necessary: `DWEDOVL.load_config` and `parse_temp` do not check
-each buffered read result, while `DWEDHNDL.serialize_fctx` / `hk_userdef` do not
-check every context write and close before releasing the session. Their error
-paths must be fixed and tested before release. Optional document stores also
+each buffered read result. Their error paths must be fixed and tested before
+release. External-command checkpoints use the checked transaction described in
+[SESSION-SAFETY.md](SESSION-SAFETY.md). Optional document stores also
 need end-to-end qualification of their buffered-I/O failures. A successful
 cache operation alone does not establish safe behavior for those callers.

@@ -143,6 +143,7 @@ end;
 PEditorContext =^ TEditorContext;
 TEditorContext = record
         pending_save   : TSaveFile;
+        session_save   : TSaveFile;
         file_reader    : TReadFile;
         ins            : boolean;
         exit_code      : byte;

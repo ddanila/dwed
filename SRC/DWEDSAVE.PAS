@@ -32,13 +32,50 @@ var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
         end;
 
         function pending:boolean;
-        begin pending:=save_pending_files(ctx.pending_save) or ctx.file_reader.opened end;
+        begin pending:=save_pending_files(ctx.pending_save) or
+                save_pending_files(ctx.session_save) or ctx.file_reader.opened end;
+
+        function all_closed:boolean;
+        begin
+                all_closed:=not ctx.file_reader.opened and
+                        not ctx.pending_save.opened and not ctx.pending_save.journal_opened and
+                        not ctx.pending_save.verification.opened and
+                        not ctx.session_save.opened and not ctx.session_save.journal_opened and
+                        not ctx.session_save.verification.opened;
+        end;
+
+        procedure details(var transaction:TSaveFile; description:string);
+        begin
+                if save_pending_files(transaction) then begin
+                line(description);
+                if transaction.opened then line('Temporary file is still open.');
+                if transaction.journal_opened then line('Recovery record is still open.');
+                if transaction.verification.opened then begin
+                        line('Backup verification handle is still open.');
+                        path('Backup being verified:',transaction.verification.name);
+                end;
+                if transaction.cleanup_error<>0 then
+                        line('Close/cleanup error: #'+itoa(transaction.cleanup_error));
+                if transaction.recovery_error<>0 then
+                        line('Rollback error: #'+itoa(transaction.recovery_error));
+                path('Recovery record:',transaction.journal);
+                path('Destination:',transaction.destination);
+                path('Temporary retained:',transaction.temporary);
+                if transaction.original_moved then
+                        path('Original retained:',transaction.backup);
+                path('Previous backup retained:',transaction.previous_backup);
+                if not transaction.published then
+                        line('Retry restores old files and removes the temporary.');
+                end;
+        end;
 
         procedure draw;
         begin
                 scr.cls(ctx.config.color.text);
                 if ctx.file_reader.opened then
                         scr.print(1,0,ctx.config.color.top,'Read cleanup')
+                else if save_pending_files(ctx.session_save) then
+                        scr.print(1,0,ctx.config.color.top,'Session cleanup')
                 else if ctx.pending_save.published then
                         scr.print(1,0,ctx.config.color.top,'Saved; cleanup pending')
                 else scr.print(1,0,ctx.config.color.top,'Save recovery');
@@ -48,30 +85,11 @@ var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
                         path('Read file:',ctx.file_reader.name);
                         line('Close error: #'+itoa(ctx.file_reader.close_error));
                 end;
-                if save_pending_files(ctx.pending_save) then begin
-                line('These files belong to the previous save.');
-                if ctx.pending_save.opened then line('Temporary file is still open.');
-                if ctx.pending_save.journal_opened then line('Recovery record is still open.');
-                if ctx.pending_save.verification.opened then begin
-                        line('Backup verification handle is still open.');
-                        path('Backup being verified:',ctx.pending_save.verification.name);
-                end;
-                if ctx.pending_save.cleanup_error<>0 then
-                        line('Close/cleanup error: #'+itoa(ctx.pending_save.cleanup_error));
-                if ctx.pending_save.recovery_error<>0 then
-                        line('Rollback error: #'+itoa(ctx.pending_save.recovery_error));
-                path('Recovery record:',ctx.pending_save.journal);
-                path('Destination:',ctx.pending_save.destination);
-                path('Temporary retained:',ctx.pending_save.temporary);
-                if ctx.pending_save.original_moved then
-                        path('Original retained:',ctx.pending_save.backup);
-                path('Previous backup retained:',ctx.pending_save.previous_backup);
-                if not ctx.pending_save.published then
-                        line('Retry restores old files and removes the temporary.');
-                end;
+                details(ctx.pending_save,'These files belong to the previous save.');
+                details(ctx.session_save,'These files belong to the session checkpoint.');
                 line('Return to editing to keep cleanup pending.');
                 scr.print(1,height-3,ctx.config.color.top,'R Retry cleanup   Enter/Esc Return');
-                if leaving and not ctx.pending_save.verification.opened and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then
+                if leaving and all_closed then
                         scr.print(1,height-2,ctx.config.color.top,'K Keep files and leave');
                 scr.print(1,height-1,ctx.config.color.top,'Up/Down Scroll');
                 scr.cursor_off; scr.show;
@@ -94,12 +112,13 @@ begin
                 SCAN_R:begin
                         close_read(ctx.file_reader);
                         if save_pending_files(ctx.pending_save) then retry_save_cleanup(ctx.pending_save);
+                        if save_pending_files(ctx.session_save) then retry_save_cleanup(ctx.session_save);
                         if not pending then begin
                                 pending_save_dialog:=true; finished:=true;
                         end;
                         scroll:=0;
                 end;
-                SCAN_K:if leaving and not ctx.pending_save.verification.opened and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then begin
+                SCAN_K:if leaving and all_closed then begin
                         pending_save_dialog:=true; finished:=true;
                 end;
                 end;
