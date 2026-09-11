@@ -38,6 +38,7 @@ unpublished and retry preserves both old and new payloads.
 See [record-append-milestone.json](record-append-milestone.json) for observed
 results, build identities, and the legacy append control. These are new APIs for
 staging future replacements. Legacy `Add`, `Put`, free-list mutations, and editor
-line replacement have not been switched to them. Publishing a replacement index
-entry, retiring its old payload, and coordinating multi-record edits still need
-transactional failure handling before the alternative stores can be qualified.
+line replacement have not been switched to them. The [checked fixed-record update](DATABASE-UPDATES.md) retains an old-record
+view during rollback of one index entry. Editor callers still need to coordinate
+index publication, retirement of old payloads, and multi-record edits before
+the alternative stores can be qualified.

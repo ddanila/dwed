@@ -70,13 +70,13 @@ def main():
         with (output / 'compiler.log').open('wb') as log:
             subprocess.run(command, cwd=output, stdout=log, stderr=subprocess.STDOUT, check=True)
             if args.tests:
-                for probe in ('KEYTEST', 'XMSTEST', 'XFERTEST', 'MEMXFER', 'CACHETEST', 'UNDOTEST', 'STORTEST', 'CLIPTEST', 'TABTEST', 'SESSPROB', 'INITPROB', 'DBPROBE', 'DBOPEN', 'DBREAD', 'DBAPPEND', 'STRSAVE', 'TMPPROBE', 'SAVETEST', 'RECVTEST', 'MEMTEST'):
+                for probe in ('KEYTEST', 'XMSTEST', 'XFERTEST', 'MEMXFER', 'CACHETEST', 'UNDOTEST', 'STORTEST', 'CLIPTEST', 'TABTEST', 'SESSPROB', 'INITPROB', 'DBPROBE', 'DBOPEN', 'DBREAD', 'DBAPPEND', 'DBUPDATE', 'STRSAVE', 'TMPPROBE', 'SAVETEST', 'RECVTEST', 'MEMTEST'):
                     subprocess.run(command[:-1] + [str(ROOT / ('tests/' + probe + '.PAS'))],
                                    cwd=output, stdout=log, stderr=subprocess.STDOUT, check=True)
     shutil.copyfile(ROOT / 'BIN/DWED.CFG', output / 'DWED.CFG')
     artifacts = ['DWED.COM', 'DWEDOVL.exe', 'DWED.CFG', 'dwedhelp.hlp']
     if args.tests:
-        artifacts.extend(['KEYTEST.exe', 'XMSTEST.exe', 'XFERTEST.exe', 'MEMXFER.exe', 'CACHETEST.exe', 'UNDOTEST.exe', 'STORTEST.exe', 'CLIPTEST.exe', 'TABTEST.exe', 'SESSPROB.exe', 'INITPROB.exe', 'DBPROBE.exe', 'DBOPEN.exe', 'DBREAD.exe', 'DBAPPEND.exe', 'STRSAVE.exe', 'TMPPROBE.exe', 'SAVETEST.exe', 'RECVTEST.exe', 'MEMTEST.exe'])
+        artifacts.extend(['KEYTEST.exe', 'XMSTEST.exe', 'XFERTEST.exe', 'MEMXFER.exe', 'CACHETEST.exe', 'UNDOTEST.exe', 'STORTEST.exe', 'CLIPTEST.exe', 'TABTEST.exe', 'SESSPROB.exe', 'INITPROB.exe', 'DBPROBE.exe', 'DBOPEN.exe', 'DBREAD.exe', 'DBAPPEND.exe', 'DBUPDATE.exe', 'STRSAVE.exe', 'TMPPROBE.exe', 'SAVETEST.exe', 'RECVTEST.exe', 'MEMTEST.exe'])
     report = {'toolchain': PIN, 'target': '8086-msdos-large',
               'assembler': assembler_version,
               'scope': 'source-built launcher, editor overlay and help',

@@ -44,6 +44,9 @@ DBBFile = RECORD
         f          : BFILE;
         header     : DBB_HDR;
         ready      : BOOLEAN;
+        rollback_data : POINTER;
+        rollback_rec,rollback_pos : LONGINT;
+        rollback_size : WORD;
 END;
 
 { Initialize the owner to zero before its first use; close before reuse. }
@@ -53,6 +56,9 @@ PROCEDURE dbb_ReWriteTemp(VAR f : DBBFile; blk_size : WORD);
 
 FUNCTION dbb_IsOpen(VAR f : DBBFile) : BOOLEAN;
 
+FUNCTION dbb_PendingWrite(VAR f:DBBFile):BOOLEAN;
+FUNCTION dbb_RetryRollback(VAR f:DBBFile):BOOLEAN;
+FUNCTION dbb_TryPut(VAR f:DBBFile; rec:LONGINT; VAR b):BOOLEAN;
 FUNCTION dbb_TryAppend(VAR f:DBBFile; VAR b; VAR rec:LONGINT):BOOLEAN;
 FUNCTION dbb_Add(VAR f : DBBFile; VAR b) : LONGINT;
 PROCEDURE dbb_Put(VAR f : DBBFile; rec : LONGINT; VAR b);
@@ -60,6 +66,7 @@ FUNCTION dbb_TryGet(VAR f : DBBFile; rec : LONGINT; VAR b):BOOLEAN;
 PROCEDURE dbb_Get(VAR f : DBBFile; rec : LONGINT; VAR b);
 
 PROCEDURE dbb_Free(VAR f : DBBFile; rec : LONGINT);
+PROCEDURE dbb_Discard(VAR f:DBBFile);
 PROCEDURE dbb_Close(VAR f : DBBFile);
 
 FUNCTION dbb_GetRoot(VAR f : DBBFile):LONGINT;
@@ -85,7 +92,7 @@ END;
 PROCEDURE dbb_Reset(VAR f : DBBFile; fname : STRING; blk_size : WORD);
 VAR candidate:DBB_HDR; count:WORD; error:INTEGER;
 BEGIN
-        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
+        IF IsOpen(f.f) OR f.f.delete_pending OR (f.rollback_data<>NIL) THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         IF blk_size<SizeOf(LONGINT) THEN blk_size:=SizeOf(LONGINT);
         FillChar(f,SizeOf(DBBFile),0);
         IF blk_size=0 THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
@@ -128,7 +135,7 @@ END;
 
 PROCEDURE dbb_ReWrite(VAR f : DBBFile; fname : STRING; blk_size : WORD);
 BEGIN
-        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
+        IF IsOpen(f.f) OR f.f.delete_pending OR (f.rollback_data<>NIL) THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBBFile), #0);
         Assign(f.f, fname);
         ReWrite(f.f);
@@ -137,7 +144,7 @@ END;
 
 PROCEDURE dbb_ReWriteTemp(VAR f : DBBFile; blk_size : WORD);
 BEGIN
-        IF IsOpen(f.f) OR f.f.delete_pending THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
+        IF IsOpen(f.f) OR f.f.delete_pending OR (f.rollback_data<>NIL) THEN BEGIN f.f.ioresult:=BFILE_PENDING; EXIT END;
         FillChar(f, SizeOf(DBBFile), #0);
         ReWriteTemp(f.f);
         _rewrite(f, blk_size);
@@ -148,8 +155,42 @@ BEGIN
         dbb_IsOpen := f.ready AND IsOpen(f.f);
 END;
 
+FUNCTION dbb_PendingWrite(VAR f:DBBFile):BOOLEAN;
+BEGIN dbb_PendingWrite:=f.rollback_data<>NIL END;
+
+PROCEDURE release_rollback(VAR f:DBBFile);
+BEGIN
+        FreeMem(f.rollback_data,f.rollback_size);
+        f.rollback_data:=NIL; f.rollback_rec:=0; f.rollback_pos:=0; f.rollback_size:=0;
+END;
+
+FUNCTION dbb_RetryRollback(VAR f:DBBFile):BOOLEAN;
+BEGIN
+        dbb_RetryRollback:=FALSE;
+        IF NOT dbb_PendingWrite(f) THEN BEGIN f.f.ioresult:=0; dbb_RetryRollback:=TRUE; EXIT END;
+        IF NOT dbb_IsOpen(f) THEN BEGIN f.f.ioresult:=103; EXIT END;
+        Seek(f.f,f.rollback_pos);
+        IF f.f.ioresult=0 THEN BlockWrite(f.f,f.rollback_data^,f.rollback_size);
+        IF f.f.ioresult=0 THEN Flush(f.f);
+        IF f.f.ioresult=0 THEN BEGIN release_rollback(f); dbb_RetryRollback:=TRUE END;
+END;
+
+{ Explicitly abandon a temporary database, including any pending before-image.
+  A refused handle close still retains every owner; deletion can retry later. }
+PROCEDURE dbb_Discard(VAR f:DBBFile);
+BEGIN
+        IF NOT IsOpen(f.f) AND NOT f.f.delete_pending AND NOT dbb_PendingWrite(f) THEN EXIT;
+        IF NOT f.f.delonclose THEN BEGIN f.f.ioresult:=5; EXIT END;
+        Close(f.f);
+        IF IsOpen(f.f) THEN EXIT;
+        IF dbb_PendingWrite(f) THEN release_rollback(f);
+        IF f.f.delete_pending THEN EXIT;
+        FillChar(f,SizeOf(DBBFile),0);
+END;
+
 PROCEDURE dbb_Close(VAR f : DBBFile);
 BEGIN
+        IF dbb_PendingWrite(f) THEN IF NOT dbb_RetryRollback(f) THEN EXIT;
         IF NOT IsOpen(f.f) AND NOT f.f.delete_pending THEN EXIT;
         IF f.ready AND IsOpen(f.f) THEN BEGIN
                 Seek(f.f,0);
@@ -165,6 +206,7 @@ END;
 PROCEDURE dbb_Free(VAR f : DBBFile; rec : LONGINT);
 BEGIN
         IF (NOT dbb_IsOpen(f)) OR (rec = 0) THEN EXIT;
+        IF NOT dbb_RetryRollback(f) THEN EXIT;
         _go(f, rec);
         WriteDWord(f.f, f.header.next);
         f.header.next := rec;
@@ -184,10 +226,10 @@ BEGIN
         _alloc := r;
 END;
 
-FUNCTION dbb_TryGet(VAR f : DBBFile; rec : LONGINT; VAR b):BOOLEAN;
-VAR staged:POINTER; count:WORD; physical:LONGINT;
+FUNCTION valid_record(VAR f:DBBFile; rec:LONGINT):BOOLEAN;
+VAR physical:LONGINT;
 BEGIN
-        dbb_TryGet:=FALSE;
+        valid_record:=FALSE;
         IF NOT dbb_IsOpen(f) THEN BEGIN
                 IF f.f.ioresult=0 THEN f.f.ioresult:=103;
                 EXIT;
@@ -196,6 +238,18 @@ BEGIN
         IF (rec<1) OR (rec>f.header.records) OR (f.header.size<SizeOf(LONGINT)) OR
            (physical<DBB_HDR_SIZE) THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
         IF rec>(physical-DBB_HDR_SIZE) DIV f.header.size THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
+        valid_record:=TRUE;
+END;
+
+FUNCTION dbb_TryGet(VAR f : DBBFile; rec : LONGINT; VAR b):BOOLEAN;
+VAR staged:POINTER; count:WORD;
+BEGIN
+        dbb_TryGet:=FALSE;
+        IF NOT valid_record(f,rec) THEN EXIT;
+        IF dbb_PendingWrite(f) AND (rec=f.rollback_rec) THEN BEGIN
+                IF f.header.size<>f.rollback_size THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
+                CopyFarBytes(f.rollback_data^,b,f.rollback_size); dbb_TryGet:=TRUE; EXIT;
+        END;
         IF MaxAvail<f.header.size THEN BEGIN f.f.ioresult:=8; EXIT END;
         GetMem(staged,f.header.size);
         _go(f,rec);
@@ -214,6 +268,41 @@ BEGIN
         dbb_TryGet(f,rec,b);
 END;
 
+{ The before-image becomes the authoritative record on a failed write.
+  Keep it owned until rollback has reached the backing file successfully. }
+FUNCTION dbb_TryPut(VAR f:DBBFile; rec:LONGINT; VAR b):BOOLEAN;
+VAR candidate,before:POINTER; size,count:WORD; position:LONGINT;
+BEGIN
+        dbb_TryPut:=FALSE;
+        IF NOT dbb_IsOpen(f) THEN BEGIN
+                IF f.f.ioresult=0 THEN f.f.ioresult:=103;
+                EXIT;
+        END;
+        IF NOT dbb_RetryRollback(f) THEN EXIT;
+        IF NOT valid_record(f,rec) THEN EXIT;
+        size:=f.header.size; position:=DBB_HDR_SIZE+(rec-1)*size;
+        IF MaxAvail<size THEN BEGIN f.f.ioresult:=8; EXIT END;
+        GetMem(candidate,size); CopyFarBytes(b,candidate^,size);
+        IF MaxAvail<size THEN BEGIN FreeMem(candidate,size); f.f.ioresult:=8; EXIT END;
+        GetMem(before,size);
+        _go(f,rec);
+        IF f.f.ioresult=0 THEN BEGIN
+                count:=BlockRead(f.f,before^,size);
+                IF (f.f.ioresult=0) AND (count<>size) THEN f.f.ioresult:=100;
+        END;
+        IF f.f.ioresult=0 THEN Flush(f.f);
+        IF f.f.ioresult=0 THEN BEGIN
+                f.rollback_data:=before; before:=NIL;
+                f.rollback_rec:=rec; f.rollback_pos:=position; f.rollback_size:=size;
+                Seek(f.f,position);
+                IF f.f.ioresult=0 THEN BlockWrite(f.f,candidate^,size);
+                IF f.f.ioresult=0 THEN Flush(f.f);
+                IF f.f.ioresult=0 THEN BEGIN release_rollback(f); dbb_TryPut:=TRUE END;
+        END;
+        IF before<>NIL THEN FreeMem(before,size);
+        FreeMem(candidate,size);
+END;
+
 { Copy-on-write callers append an unpublished record instead of consuming
   the free list. Publish its number only after complete buffered writeback. }
 FUNCTION dbb_TryAppend(VAR f:DBBFile; VAR b; VAR rec:LONGINT):BOOLEAN;
@@ -224,6 +313,7 @@ BEGIN
                 IF f.f.ioresult=0 THEN f.f.ioresult:=103;
                 EXIT;
         END;
+        IF NOT dbb_RetryRollback(f) THEN EXIT;
         physical:=FileSize(f.f);
         IF (f.header.size<SizeOf(LONGINT)) OR (f.header.records<0) OR
            (f.header.next<0) OR (f.header.next>f.header.records) OR
@@ -251,6 +341,7 @@ VAR     res : LONGINT;
 BEGIN
         res := 0;
         IF dbb_IsOpen(f) THEN BEGIN
+                IF NOT dbb_RetryRollback(f) THEN BEGIN dbb_Add:=0; EXIT END;
                 res := _alloc(f);
                 _go(f, res);
                 BlockWrite(f.f, b, f.header.size);
@@ -261,6 +352,7 @@ END;
 PROCEDURE dbb_Put(VAR f : DBBFile; rec : LONGINT; VAR b);
 BEGIN
         IF (NOT dbb_IsOpen(f)) OR (rec = 0) THEN EXIT;
+        IF NOT dbb_RetryRollback(f) THEN EXIT;
         _go(f, rec);
         BlockWrite(f.f, b, f.header.size);
 END;
@@ -272,6 +364,7 @@ END;
 
 PROCEDURE dbb_SetRoot(VAR f : DBBFile; new_root : LONGINT);
 BEGIN
+        IF dbb_PendingWrite(f) THEN IF NOT dbb_RetryRollback(f) THEN EXIT;
         f.header.root := new_root;
 END;
 

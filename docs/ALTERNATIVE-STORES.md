@@ -35,7 +35,9 @@ record mutation or complete editor behavior with these stores.
 
 [Database initialization](DATABASE-INITIALIZATION.md) validates headers without
 rewriting failed input and retains cleanup ownership. [Checked append APIs](DATABASE-APPENDS.md)
-write unpublished records for future replacement transactions. Legacy allocation,
+write unpublished records for replacement transactions. [Checked index updates](DATABASE-UPDATES.md)
+retain a before-image through partial-write failure and rollback. Callers still
+need migration to these APIs. Legacy allocation,
 free-list traversal and updates, and replacement still need checked status
 propagation and failure-safe publication. [Checked record reads](DATABASE-READS.md)
 stage output and validate chains. [Checked string-store saves](STORE-SAVES.md)
