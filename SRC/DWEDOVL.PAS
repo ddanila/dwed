@@ -46,14 +46,6 @@ begin
         while scru <> SCRU_QUIT do begin
                 if scru <> SCRU_NONE then begin
                         dwedscru.update(ctx, scru);
-                        if show_welcome_msg then begin
-                                with ctx.current^.config^.color do begin
-                                        scr.cln(0, 0, top);
-                                        scr.printhl(2, 0, top, top_hl, WELCOME_MSG);
-                                end;
-                                scr.show;
-                                show_welcome_msg := false;
-                        end;
                         scru := SCRU_NONE;
                         if first_time then begin
                                 first_time := false;
@@ -90,7 +82,7 @@ begin
                 ins := true;
                 exit_code := 0;
                 config.width := scr.getwidth;
-                config.height := scr.getheight;
+                config.height := scr.getheight - 1;
                 config.tab_size := 8;
                 config.hl_enable := false;
                 config.color.top    := $70;

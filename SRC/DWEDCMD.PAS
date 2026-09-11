@@ -1,0 +1,9 @@
+{ SPDX-License-Identifier: MIT }
+unit dwedcmd;
+interface
+type TEditorCommand = (CMD_NONE, CMD_NEW, CMD_OPEN, CMD_SAVE, CMD_SAVE_AS,
+        CMD_SAVE_ALL, CMD_CLOSE, CMD_EXIT, CMD_CUT, CMD_COPY, CMD_PASTE,
+        CMD_FIND, CMD_FIND_CASE, CMD_FIND_NEXT, CMD_GOTO, CMD_HIGHLIGHT,
+        CMD_INSERT_MODE, CMD_HELP, CMD_WINDOWS, CMD_NEXT_WINDOW, CMD_ABOUT);
+implementation
+end.

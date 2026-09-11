@@ -30,7 +30,7 @@ procedure update(var ctx : TEditorContext; scru : integer);
 
 implementation
 
-uses scr, kminput, str, strutil, strs, dwedhndl, dwedutil, dwedhl;
+uses scr, kminput, str, strutil, strs, dwedhndl, dwedutil, dwedhl, dwedmenu;
 
 function line_full_in_sel(num : longint; y1 : longint; y2 : longint) : boolean;
 begin
@@ -194,8 +194,9 @@ begin
         fname := ' ' + trim(ctx.current^.sfname);
         endline := lpad(endline, ctx.current^.config^.width - length(fname));
 
-        scr.cln(0, 0, ctx.current^.config^.color.top);
-        scr.print(0, 0, ctx.current^.config^.color.top, fname + endline);
+        scr.cln(0, ctx.config.height, ctx.current^.config^.color.top);
+        scr.print(0, ctx.config.height, ctx.current^.config^.color.top, fname + endline);
+        draw_menu_bar(ctx,-1);
 end;
 
 procedure update(var ctx : TEditorContext; scru : integer);

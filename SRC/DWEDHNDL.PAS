@@ -23,14 +23,16 @@ unit dwedhndl;
 { TODO: Refactor it. Too big. }
 interface
 
-uses dwedtype, event;
+uses dwedtype, event, dwedcmd;
+
+function execute_command(var ctx:TEditorContext; command:TEditorCommand):integer;
 
 function process_event(var ctx : TEditorContext; var e : TEvent) : integer;
 
 implementation
 
 uses dwedhelp, scr, kminput, cstring, scrui, strs, str, dwedscru, dwedutil,
-dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl;
+dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu;
 
 {$F+}
 const
@@ -73,20 +75,34 @@ begin
         lookop_event_handler := h;
 end;
 
+function command_for(proc:pointer; var e:TEvent):TEditorCommand;forward;
+
 function process_event(var ctx : TEditorContext; var e : TEvent) : integer;
 var     h         : PEventHandler;
         r         : integer;
         prev_scrx : integer;
         proc      : TEventProc;
+        command   : TEditorCommand;
+        group     : integer;
 begin
         r := SCRU_NONE;
+        group := menu_request(e);
+        if group >= 0 then begin
+                command := choose_menu(ctx,group);
+                r := execute_command(ctx,command);
+                if r <> SCRU_QUIT then r := norm_xy(ctx,SCRU_FULL);
+                process_event := r;
+                exit;
+        end;
         if (e.etype = KEYBOARD) then begin
                 prev_scrx := ctx.current^.scrx;
                 h := lookop_event_handler(e);
                 if h <> nil then begin
                         proc := TEventProc(h^.proc);
-                        r := proc(ctx, @e);
-                        if h^.reset_selection and ctx.current^.editor.selection then begin
+                        command := command_for(h^.proc,e);
+                        if command <> CMD_NONE then r := execute_command(ctx,command)
+                        else r := proc(ctx, @e);
+                        if (command=CMD_NONE) and h^.reset_selection and ctx.current^.editor.selection then begin
                                 ctx.current^.editor.selection := false;
                                 r := SCRU_FULL;
                         end;
@@ -95,7 +111,8 @@ begin
         end else if e.etype in [MOUSE_MOVE,
                 MOUSE_PRESS_B1, MOUSE_PRESS_B2,
                 MOUSE_RELEASE_B1, MOUSE_RELEASE_B2 ] then begin
-                r := handle_mouse(ctx, @e);
+                if (e.mouse_y > 0) and (e.mouse_y < ctx.config.height) then
+                        r := handle_mouse(ctx, @e);
         end;
         if r <> SCRU_NONE then r := norm_xy(ctx, r);
         process_event := r;
@@ -1363,6 +1380,79 @@ begin
                 r := SCRU_FULL;
         end;
         hk_move_line_down := r;
+end;
+
+{ Match the near declarations; callbacks above intentionally remain far. }
+{$F-}
+function command_for(proc:pointer; var e:TEvent):TEditorCommand;
+begin
+        command_for:=CMD_NONE;
+        if proc=@hk_load then command_for:=CMD_OPEN;
+        if proc=@hk_save_as then command_for:=CMD_SAVE_AS;
+        if proc=@hk_close then command_for:=CMD_CLOSE;
+        if proc=@hk_esc then command_for:=CMD_EXIT;
+        if proc=@hk_cb_cut then command_for:=CMD_CUT;
+        if proc=@hk_cb_copy then command_for:=CMD_COPY;
+        if proc=@hk_cb_paste then command_for:=CMD_PASTE;
+        if proc=@hk_find_again then command_for:=CMD_FIND_NEXT;
+        if proc=@hk_goto_line then command_for:=CMD_GOTO;
+        if proc=@hk_change_hl then command_for:=CMD_HIGHLIGHT;
+        if proc=@hk_ins then command_for:=CMD_INSERT_MODE;
+        if proc=@hk_help then command_for:=CMD_HELP;
+        if proc=@hk_winlist then command_for:=CMD_WINDOWS;
+        if proc=@hk_nextwin then command_for:=CMD_NEXT_WINDOW;
+        if proc=@hk_save then begin
+                if e.ctrl_keys and key_shift<>0 then command_for:=CMD_SAVE_ALL
+                else command_for:=CMD_SAVE;
+        end;
+        if proc=@hk_start_find then begin
+                if e.ctrl_keys and key_shift<>0 then command_for:=CMD_FIND_CASE
+                else command_for:=CMD_FIND;
+        end;
+end;
+
+function execute_command(var ctx:TEditorContext; command:TEditorCommand):integer;
+var e:TEvent; r:integer;
+begin
+        { Adapt logical options to existing callbacks; never enqueue keystrokes. }
+        fillchar(e,sizeof(e),0); e.etype:=KEYBOARD;
+        r:=SCRU_NONE;
+        case command of
+        CMD_NEW:begin commit(ctx); new_file(ctx,''); ctx.current^.sfname:='Untitled'; r:=SCRU_FULL end;
+        CMD_SAVE:if ctx.current^.fname='' then r:=hk_save_as(ctx,@e) else r:=hk_save(ctx,@e);
+        CMD_SAVE_ALL:begin e.ctrl_keys:=key_shift; r:=hk_save(ctx,@e) end;
+        CMD_FIND:r:=hk_start_find(ctx,@e);
+        CMD_FIND_CASE:begin e.ctrl_keys:=key_shift; r:=hk_start_find(ctx,@e) end;
+        CMD_OPEN:r:=hk_load(ctx,@e);
+        CMD_SAVE_AS:r:=hk_save_as(ctx,@e);
+        CMD_CLOSE:r:=hk_close(ctx,@e);
+        CMD_EXIT:r:=hk_esc(ctx,@e);
+        CMD_CUT:r:=hk_cb_cut(ctx,@e);
+        CMD_COPY:r:=hk_cb_copy(ctx,@e);
+        CMD_PASTE:r:=hk_cb_paste(ctx,@e);
+        CMD_FIND_NEXT:r:=hk_find_again(ctx,@e);
+        CMD_GOTO:r:=hk_goto_line(ctx,@e);
+        CMD_HIGHLIGHT:r:=hk_change_hl(ctx,@e);
+        CMD_INSERT_MODE:r:=hk_ins(ctx,@e);
+        CMD_HELP:r:=hk_help(ctx,@e);
+        CMD_WINDOWS:r:=hk_winlist(ctx,@e);
+        CMD_NEXT_WINDOW:r:=hk_nextwin(ctx,@e);
+        CMD_ABOUT:begin
+                scr.push;
+                scrui.msg_box(ctx.config.color.menu,'About','DWED - MS-DOS EDIT project','[ OK ]');
+                scr.show;
+                repeat wait_event(e) until (e.etype=KEYBOARD) and
+                        (e.scancode in [SCAN_ENTER,SCAN_ESC]);
+                scr.pop; r:=SCRU_FULL;
+        end;
+        end;
+        if command in [CMD_FIND,CMD_FIND_CASE,CMD_FIND_NEXT,CMD_GOTO] then
+                if ctx.current^.editor.selection then begin
+                        ctx.current^.editor.selection:=false; r:=SCRU_FULL;
+                end;
+        if (command in [CMD_OPEN,CMD_FIND,CMD_FIND_CASE,CMD_GOTO,CMD_HIGHLIGHT,CMD_HELP])
+           and (r<>SCRU_QUIT) then r:=SCRU_FULL;
+        execute_command:=r;
 end;
 
 begin

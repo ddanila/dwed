@@ -1,0 +1,284 @@
+{
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 184506,
+        "sha256": "0395a43167f9a2b836140bb2e67eb96cdd9ef8ad3096d2c159388cfbeb26222e"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 6656,
+        "sha256": "9e476091cab746652ff9a5137f77f8f94c646a7fa3d2eb485fed2879afa8afa2"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      }
+    }
+  },
+  "clean_builds_identical": true,
+  "parent_revision": "986ac7fa3e13c7a17179afe80306b58067b9efdb",
+  "runtime": "QEMU 486 TCG; private copies of parent out/floppy.img",
+  "cases": [
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "backup-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "outside-directory-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-lf-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-cr-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-no-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-tabs-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-codepage-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-max-line-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-empty-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-long-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-control-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "new-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "split-whitespace-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "remove-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-alt-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-copy-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "shortcut-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    }
+  ],
+  "screenshot": {
+    "path": "images/file-menu.png",
+    "sha256": "3e498f1b7edd2c0736bd83064c7413257f69fa97b5b956fae5f8cb4edc66fbcb",
+    "case": "menu-save-low"
+  }
+}
