@@ -62,10 +62,14 @@ this report. This is BIOS and functional evidence under emulation, not physical
 hardware acceptance, boot-speed measurement or coverage of all editor commands.
 
 
-The HIGH-mode attempt is recorded separately in
-`ibmat-high-investigation.json`. DOS reports HMA residency and the text probe
-passes, but packaged EDIT does not complete. A separate diagnostic boot reaches
-the point immediately before EDIT after installing the keyboard driver. The
-launcher/startup failure remains unresolved; these results do not qualify HIGH
-mode. The parent runner retains a failed status and last guest stage when a
-run fails, so partial probe success cannot be mistaken for a complete pass.
+The earlier HIGH-mode failure remains recorded in
+`ibmat-high-investigation.json`. Tracing found that the configuration reader's
+XMS cache move left A20 disabled because HIMEM did not preserve it across the
+IBM BIOS block-move service. The parent HIMEM fix restores the physical entry
+state and preserves the BIOS result and caller's interrupt-enable state.
+
+`ibmat-high-a20-milestone.json` records the complete HIGH-mode run using that
+fix and the unchanged editor package. The parent runner retains failure status
+and the last guest stage when a run fails, so partial probe success cannot be
+mistaken for a complete pass. Broader platform and editor release gates remain
+open.
