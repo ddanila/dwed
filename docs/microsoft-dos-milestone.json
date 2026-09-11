@@ -1,0 +1,641 @@
+{
+  "scope": "DWED functional qualification on Microsoft DOS 6.22 reference media",
+  "parent_base_revision": "7a5d3086855965dc11f045a6ac0fd5f0b9b60c9f",
+  "dwed_revision": "190ce8e55bbf19e64c42ad60632be60923e21665",
+  "media_source": "https://archive.org/details/MSDOS-622-Floppy",
+  "commercial_media_committed": false,
+  "reference_provenance": {
+    "source_image_sha256": "b88030401122d234ea6aafba3cfed7de2b7b1782700a67be5498edca6f9fec5d",
+    "boot_image_sha256": "ca2c5347a0ab34a8b49774887eee2c74130acc493bccc57d87643e6ac323706f",
+    "core_sha256": {
+      "IO.SYS": "e443d6fb7303cd341d59a260262ae2aa20029a54d8e8daac83c1d4efa9042d75",
+      "MSDOS.SYS": "6db133420bf04ddbafe310a720fab934db3e7dc9f5a53fc6692d5a01cbbc0d4e",
+      "COMMAND.COM": "65fa71b0a34e91feffc31297fb5e24d40767c72fb513e46aaac721bda7836110"
+    },
+    "driver_sha256": {
+      "HIMEM.SYS": "615b656d0d094a31cb10ab56ab31273062c535d819e8208d412ad5d022847c93",
+      "EMM386.EXE": "d4a011769db9415402d7be129fffb762fa7d174096bcc921aa5ce85734072635"
+    },
+    "operation": "Copy floppy; retain boot sectors and DOS core; remove other root files"
+  },
+  "reference_environment": {
+    "boot_image_sha256": "ca2c5347a0ab34a8b49774887eee2c74130acc493bccc57d87643e6ac323706f",
+    "boot_file_sha256": {
+      "HIMEM.SYS": "615b656d0d094a31cb10ab56ab31273062c535d819e8208d412ad5d022847c93",
+      "EMM386.EXE": "d4a011769db9415402d7be129fffb762fa7d174096bcc921aa5ce85734072635"
+    },
+    "build": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 218792,
+          "sha256": "afed09576d0df49103ca73e866d37bf1ddc10bb859785f214f0940e7650aa03e"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 6912,
+          "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37604,
+          "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+        },
+        "STORTEST.exe": {
+          "bytes": 155472,
+          "sha256": "1d330f9510fd053ad985efdee2a950461146d4f0ec0c1796fb1104f06a880213"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 156012,
+          "sha256": "3caa5e13ff0f59189b6c1c9d70a69bebe21f756ba0b59786a6fef6169c02282d"
+        },
+        "TABTEST.exe": {
+          "bytes": 211062,
+          "sha256": "58d57643560b2deaf3f15a8bfe21a8f9fb370d9b6f47e9c6f8ae8d63566d71e0"
+        },
+        "SAVETEST.exe": {
+          "bytes": 162520,
+          "sha256": "aaad894586ca601eeee8743b0e8b8ee8523c0a9feebc5fbea99d1639f9a0058d"
+        },
+        "RECVTEST.exe": {
+          "bytes": 36648,
+          "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+        },
+        "MEMTEST.exe": {
+          "bytes": 214204,
+          "sha256": "5610d7589756308388f39615f52b03d90c793f48dce336947a443cf393e0c19a"
+        }
+      }
+    }
+  },
+  "boot_copy_reproduced_identically": true,
+  "source_sha256": {
+    "tests/test_dwed_qemu.py": "3566896705dc68c4ede7a4308065cb39b2b89e9b67bd9c71a035ce46bf4d30be",
+    "tests/prepare_dwed_reference.py": "7fad613d248a8697545f31bb2207553d8e7e5af942f0973fe779646a5f4a93df"
+  },
+  "runtime": "QEMU 486 TCG, 16 MiB, configured DOS LOW and DOS HIGH/UMB",
+  "case_count": 42,
+  "cases": [
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "memory-probe-low",
+      "mode": "low",
+      "memory_probe": "PASS 62 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "memory-probe-high",
+      "mode": "high",
+      "memory_probe": "PASS 62 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "indent-enter-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "indent-enter-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "text-lf-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "text-cr-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "text-no-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "text-tabs-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "text-codepage-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "reject-long-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "reject-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "reject-control-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "reject-memory-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "reject-memory-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "tab-probe-low",
+      "mode": "low",
+      "tab_probe": "PASS 10725 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "tab-probe-high",
+      "mode": "high",
+      "tab_probe": "PASS 10725 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-fault-low",
+      "mode": "low",
+      "save_probe": "CASE 0 PASS\r\nCASE 1 PASS\r\nCASE 2 PASS\r\nCASE 3 PASS\r\nCASE 4 PASS\r\nCASE 5 PASS\r\nCASE 6 PASS\r\nCASE 7 PASS\r\nCASE 8 PASS\r\nCASE 9 PASS\r\nCASE 10 PASS\r\nCASE 11 PASS\r\nCASE 12 PASS\r\nCASE 13 PASS\r\nCASE 14 PASS\r\nCASE 15 PASS\r\nCASE 16 PASS\r\nCASE 17 PASS\r\nCASE 18 PASS\r\nCASE 19 PASS\r\nCASE 20 PASS\r\nCASE 21 PASS\r\nCASE 22 PASS\r\nCASE 23 PASS\r\nCASE 24 PASS\r\nCASE 25 PASS\r\nPASS 426 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-fault-high",
+      "mode": "high",
+      "save_probe": "CASE 0 PASS\r\nCASE 1 PASS\r\nCASE 2 PASS\r\nCASE 3 PASS\r\nCASE 4 PASS\r\nCASE 5 PASS\r\nCASE 6 PASS\r\nCASE 7 PASS\r\nCASE 8 PASS\r\nCASE 9 PASS\r\nCASE 10 PASS\r\nCASE 11 PASS\r\nCASE 12 PASS\r\nCASE 13 PASS\r\nCASE 14 PASS\r\nCASE 15 PASS\r\nCASE 16 PASS\r\nCASE 17 PASS\r\nCASE 18 PASS\r\nCASE 19 PASS\r\nCASE 20 PASS\r\nCASE 21 PASS\r\nCASE 22 PASS\r\nCASE 23 PASS\r\nCASE 24 PASS\r\nCASE 25 PASS\r\nPASS 426 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dialog-unnamed-saveall-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dialog-unnamed-saveall-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-typing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "undo-edit-typing-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "mono-edit-flow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "display_flow": "mode7",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "mono-edit-flow-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "display_flow": "mode7",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-0-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 0,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-0-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 0,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-1-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 1,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-1-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 1,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-2-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 2,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": true,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-2-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 2,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": true,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-3-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 3,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-3-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 3,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-4-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 4,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 29 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "save-cut-4-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 4,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": false,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 29 assertions",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "recover-readonly-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "readonly",
+      "recovered": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "recover-readonly-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "readonly",
+      "recovered": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "recover-payload-read-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "payload-read",
+      "recovered": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "recover-payload-read-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "payload-read",
+      "recovered": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "recover-record-close-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "record-close",
+      "recovered": false,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "recover-record-close-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "record-close",
+      "recovered": false,
+      "dos_version": "MS-DOS Version 6.22"
+    }
+  ],
+  "default_parent_smoke": {
+    "environment": {
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {},
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 218792,
+            "sha256": "afed09576d0df49103ca73e866d37bf1ddc10bb859785f214f0940e7650aa03e"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 6912,
+            "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 155472,
+            "sha256": "1d330f9510fd053ad985efdee2a950461146d4f0ec0c1796fb1104f06a880213"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 156012,
+            "sha256": "3caa5e13ff0f59189b6c1c9d70a69bebe21f756ba0b59786a6fef6169c02282d"
+          },
+          "TABTEST.exe": {
+            "bytes": 211062,
+            "sha256": "58d57643560b2deaf3f15a8bfe21a8f9fb370d9b6f47e9c6f8ae8d63566d71e0"
+          },
+          "SAVETEST.exe": {
+            "bytes": 162520,
+            "sha256": "aaad894586ca601eeee8743b0e8b8ee8523c0a9feebc5fbea99d1639f9a0058d"
+          },
+          "RECVTEST.exe": {
+            "bytes": 36648,
+            "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+          },
+          "MEMTEST.exe": {
+            "bytes": 214204,
+            "sha256": "5610d7589756308388f39615f52b03d90c793f48dce336947a443cf393e0c19a"
+          }
+        }
+      }
+    },
+    "cases": [
+      {
+        "case": "edit-low",
+        "mode": "low",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "edit-high",
+        "mode": "high",
+        "completed": true,
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "limits": {
+    "full_editor_suite_on_reference": false,
+    "boot_speed_measured": false,
+    "memory_usage_measured": false,
+    "physical_hardware_qualified": false
+  }
+}
