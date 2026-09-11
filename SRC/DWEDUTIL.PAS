@@ -416,14 +416,15 @@ begin
 end;
 
 function save_clipboard(var ctx:TEditorContext; fname:string):integer;
-var f:TSaveFile; error:integer; size:word;
+var error:integer; size:word;
 begin
+        if save_pending_files(ctx.pending_save) then begin save_clipboard:=SAVE_PENDING; exit end;
         error:=clip_length(ctx.clipboard,CB_SIZE,size);
         if error=0 then begin
-                start_save(f,fname,error);
+                start_save(ctx.pending_save,fname,error);
                 if error=0 then begin
-                        write_save(f,ctx.clipboard[0],size,error);
-                        finish_save(f,error);
+                        write_save(ctx.pending_save,ctx.clipboard[0],size,error);
+                        finish_save(ctx.pending_save,error);
                 end;
         end;
         save_clipboard:=error;
@@ -780,6 +781,7 @@ function get_err_msg(errCode:integer) : string;
 var     errMsg : string;
 begin
         case errCode of
+        SAVE_PENDING: errMsg := 'Resolve the previous save before saving again';
         1005: errMsg := 'Text exceeds clipboard capacity';
         1006: errMsg := 'Resulting line exceeds 255 bytes';
         1007: errMsg := 'Unsupported control byte in clipboard';

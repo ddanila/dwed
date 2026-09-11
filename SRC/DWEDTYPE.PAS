@@ -24,7 +24,7 @@ unit dwedtype;
 
 interface
 
-uses strs, dwedhl, event, unredo;
+uses strs, dwedhl, event, unredo, safesave;
 
 const
 SCRU_QUIT   = 1;
@@ -135,6 +135,7 @@ end;
 
 PEditorContext =^ TEditorContext;
 TEditorContext = record
+        pending_save   : TSaveFile;
         ins            : boolean;
         exit_code      : byte;
         current        : PFileContext;

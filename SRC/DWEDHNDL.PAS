@@ -33,7 +33,7 @@ implementation
 
 uses dwedhelp, scr, kminput, cstring, scrui, strs, str, dwedscru, dwedutil,
 dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu,
-unredo, strsdos, dwedundo, textcell;
+unredo, strsdos, dwedundo, textcell, dwedsave;
 
 {$F+}
 const
@@ -460,6 +460,7 @@ var e:TEvent; newname,msg:string; errCode:integer; accepted:boolean;
 begin
         save_document:=SAVE_CANCELLED;
         commit(ctx);
+        if not pending_save_dialog(ctx,false) then exit;
         newname:=ctx.current^.fname;
         if choose_name or (newname='') then begin
                 msg:=' Save file to :'; accepted:=false;
@@ -483,7 +484,7 @@ begin
                         '[Y Replace]  [N Keep]  [C Cancel]')<>YES then exit;
         scr.cln(0,0,ctx.config.color.top);
         scr.print(1,0,ctx.config.color.top,'Save "'+newname+'"'); scr.show;
-        strs.to_file(newname,ctx.current^.rline,ctx.current^.format,errCode,@save_file_progress);
+        strs.to_file(ctx.pending_save,newname,ctx.current^.rline,ctx.current^.format,errCode,@save_file_progress);
         if errCode<>0 then begin
                 handle_error(ctx,errCode);
                 save_document:=SAVE_FAILED;
@@ -494,6 +495,7 @@ begin
                 undo_saved(ctx.current^.history);
                 save_document:=SAVE_OK;
         end;
+        accepted:=pending_save_dialog(ctx,false);
 end;
 
 function may_close_document(var ctx:TEditorContext):boolean;
@@ -521,7 +523,8 @@ begin
                 current:=current^.next;
         end;
         ctx.current:=original;
-        hk_esc:=SCRU_QUIT;
+        if pending_save_dialog(ctx,true) then hk_esc:=SCRU_QUIT
+        else hk_esc:=SCRU_FULL;
 end;
 
 function hk_save(var ctx:TEditorContext; event:PEvent):integer;
@@ -1022,6 +1025,8 @@ var     fname      : string;
         errCode    : integer;
 begin
         commit(ctx);
+        hk_cb_save:=SCRU_FULL;
+        if not pending_save_dialog(ctx,false) then exit;
         fname := '';
         msg := ' Save clipboard to file :';
         scr.cln(0, 0, ctx.current^.config^.color.top);
@@ -1037,6 +1042,7 @@ begin
         if start_save then begin
                 errCode := save_clipboard(ctx, fname);
                 if errCode <> 0 then handle_error(ctx, errCode);
+                start_save:=pending_save_dialog(ctx,false);
         end;
         hk_cb_save := SCRU_CLINE;
 end;
@@ -1083,6 +1089,8 @@ var canclose:boolean; r,next,prev:PFileContext; res:integer;
 begin
         res:=SCRU_FULL;
         canclose:=may_close_document(ctx);
+        if canclose and (ctx.all=ctx.current) and (ctx.current^.next=nil) then
+                canclose:=pending_save_dialog(ctx,true);
         if canclose then begin
                 next := ctx.current^.next;
                 prev := nil;
@@ -1209,6 +1217,7 @@ begin
                 ctx.current := srcctx;
         end;
 
+        if can_run then can_run:=pending_save_dialog(ctx,true);
         if can_run then begin
                 assign(t, ctx.temp);
                 rewrite(t);

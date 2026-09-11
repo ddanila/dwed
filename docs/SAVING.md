@@ -20,7 +20,8 @@ replacement, inspect the destination, its backup and the `$ED*.TMP` and
 the save stopped, these may contain new contents, the original destination or
 the previous backup. Exclusive creation skips existing payload temporaries,
 including files from interrupted saves. Persistent metadata and automatic
-recovery prompts are still release gates.
+restart recovery prompts are still release gates. Session recovery and retained
+handle ownership are described in [SAVE-RECOVERY.md](SAVE-RECOVERY.md).
 
 The parent `tests/test_dwed_qemu.py` checks ordinary saves, disk-full failures,
 read-only documents and saving a backup document. Failure cases check the error

@@ -1,6 +1,6 @@
 { SPDX-License-Identifier: MIT }
 program savetest;
-uses dos,safesave;
+uses dos,safesave,strs,dwedtype,dwedutil,unredo;
 var output:text; tests:longint; sf:TSaveFile; error,kind:integer;
     old21,old60:pointer; armed,hooked:boolean; fault,hits,renames,temp_handle:word;
     payload:string; regs:registers;
@@ -140,7 +140,97 @@ begin
         if not (kind in [8,9,11,12]) then
                 check((sf.temporary='') and (sf.previous_backup=''),'completed cleanup');
         expect_file('C:\$EB0000.TMP','OTHER_BACKUP_TRANSACTION');
+        if kind in [8,9,11,12] then begin
+                check(save_pending_files(sf),'failed cleanup remains pending');
+                retry_save_cleanup(sf);
+                check(not save_pending_files(sf),'retry settles transaction');
+                check((sf.cleanup_error=0) and (sf.recovery_error=0),'retry clears secondary errors');
+                if kind=11 then begin
+                        expect_file('C:\SAVE.TXT',payload); expect_file('C:\SAVE.BAK',original);
+                end else begin
+                        expect_file('C:\SAVE.TXT',original); expect_file('C:\SAVE.BAK',older);
+                end;
+        end;
         remove(sf.temporary); remove(sf.previous_backup);
+        writeln(output,'CASE ',kind,' PASS');
+end;
+
+procedure writer_lifecycle;
+var ctx:TEditorContext; body:string; clipboard:array[0..8] of char;
+    retained:TSaveFile;
+begin
+        kind:=16; FillChar(ctx,sizeof(ctx),0); FillChar(clipboard,sizeof(clipboard),0);
+        strs.init(MT_DOS); new_file(ctx,''); body:='DOC_NEW';
+        ctx.current^.rline:=strs.put(ctx.current^.rline,body);
+        ctx.current^.cline:=ctx.current^.rline;
+        body:='CLIP_NEW'; move(body[1],clipboard[0],length(body)); ctx.clipboard:=@clipboard;
+        fixture('C:\SAVE.TXT',original); fixture('C:\SAVE.BAK',older);
+        fault:=13; hits:=0; renames:=0; temp_handle:=$FFFF; armed:=true;
+        strs.to_file(ctx.pending_save,'C:\SAVE.TXT',ctx.current^.rline,
+                     ctx.current^.format,error,nil);
+        check((error=5) and ctx.pending_save.opened,'caller owns failed document close');
+        retained:=ctx.pending_save;
+        check(save_clipboard(ctx,'C:\OTHER.TXT')=SAVE_PENDING,'clipboard cannot replace pending document save');
+        strs.to_file(ctx.pending_save,'C:\OTHER.TXT',ctx.current^.rline,
+                     ctx.current^.format,error,nil);
+        check(error=SAVE_PENDING,'document cannot replace pending save');
+        check((ctx.pending_save.handle=retained.handle) and
+              (ctx.pending_save.temporary=retained.temporary) and
+              (ctx.pending_save.destination=retained.destination) and ctx.pending_save.opened,
+              'blocked writers preserve transaction ownership');
+        expect_absent('C:\OTHER.TXT');
+        armed:=false; retry_save_cleanup(ctx.pending_save);
+        check(not save_pending_files(ctx.pending_save),'retained document handle can be settled');
+        expect_file('C:\SAVE.TXT',original); expect_file('C:\SAVE.BAK',older);
+        fault:=13; hits:=0; armed:=true;
+        error:=save_clipboard(ctx,'C:\SAVE.TXT');
+        check((error=5) and ctx.pending_save.opened,'caller owns failed clipboard close');
+        armed:=false; retry_save_cleanup(ctx.pending_save);
+        check(not save_pending_files(ctx.pending_save),'retained clipboard handle can be settled');
+        check(save_clipboard(ctx,'C:\SAVE.TXT')=0,'clipboard retry after settled close');
+        expect_file('C:\SAVE.TXT','CLIP_NEW'); expect_file('C:\SAVE.BAK',original);
+        strs.free(ctx.current^.rline); undo_done(ctx.current^.history);
+        FreeMem(ctx.current,sizeof(TFileContext)); strs.done;
+        writeln(output,'CASE ',kind,' PASS');
+end;
+
+procedure path_lifecycle;
+var previous,name:string; i:integer;
+        procedure change_dir(name:string);
+        begin
+                {$I-} ChDir(name); {$I+}
+                check(System.IOResult=0,'change directory: '+name);
+        end;
+begin
+        kind:=17; GetDir(0,previous);
+        {$I-} MkDir('C:\PATHOWN'); {$I+}
+        check(System.IOResult=0,'create path fixture directory'); change_dir('C:\PATHOWN');
+        fixture('C:\PATHOWN\SAVE.TXT',original);
+        fixture('C:\PATHOWN\SAVE.BAK',older);
+        start_save(sf,'SAVE.TXT',error);
+        check((error=0) and (sf.destination='C:\PATHOWN\SAVE.TXT'),'relative destination expanded');
+        change_dir('C:\');
+        write_save(sf,payload[1],length(payload),error); finish_save(sf,error);
+        check((error=0) and not save_pending_files(sf),'save survives directory change');
+        expect_file('C:\PATHOWN\SAVE.TXT',payload);
+        expect_file('C:\PATHOWN\SAVE.BAK',original);
+        change_dir('C:\PATHOWN');
+        name:=''; for i:=1 to 120 do name:=name+'.\'; name:=name+'SAVE.TXT';
+        start_save(sf,name,error);
+        check((error=3) and not save_pending_files(sf),'relative path overflow rejected before creation');
+        expect_file('C:\PATHOWN\SAVE.TXT',payload);
+        start_save(sf,'C:SAVE.TXT',error);
+        check((error=0) and (sf.destination='C:\PATHOWN\SAVE.TXT'),'drive-relative destination expanded');
+        cancel_save(sf); check(not save_pending_files(sf),'drive-relative cleanup');
+        name:='\'; for i:=1 to 126 do name:=name+'.\'; name:=name+'AB';
+        start_save(sf,name,error);
+        check((error=3) and not save_pending_files(sf),'root-relative path overflow rejected');
+        { DOS retains a current directory on each drive. Leave C's fixture
+          before switching back to the original drive and removing it. }
+        change_dir('C:\'); change_dir(previous);
+        remove('C:\PATHOWN\SAVE.TXT'); remove('C:\PATHOWN\SAVE.BAK');
+        {$I-} RmDir('C:\PATHOWN'); {$I+}
+        check(System.IOResult=0,'remove path fixture directory');
         writeln(output,'CASE ',kind,' PASS');
 end;
 
@@ -151,6 +241,7 @@ begin
         GetIntVec($21,old21); GetIntVec($60,old60);
         SetIntVec($60,old21); SetIntVec($21,@intercept); hooked:=true;
         for kind:=0 to 15 do run_case;
+        writer_lifecycle; path_lifecycle;
         SetIntVec($21,old21); SetIntVec($60,old60); hooked:=false;
         remove('C:\$EB0000.TMP'); remove('C:\SAVE.TXT'); remove('C:\SAVE.BAK');
         writeln(output,'PASS ',tests,' assertions'); close(output);

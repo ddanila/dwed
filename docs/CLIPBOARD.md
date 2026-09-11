@@ -37,7 +37,9 @@ Save Clipboard uses the document saver in `SAFESAVE.PAS`, including checked
 writes, temporary files and backup replacement. Disk-full failure preserves
 the existing destination and backup. Injected close/rename failures are covered
 at the shared writer boundary in
-`SAVE-TRANSACTION.md`; interrupted-save recovery remains part of `EDIT-PLAN.md`.
+`SAVE-TRANSACTION.md`. Document and clipboard saves share editor-owned pending
+state, described in [SAVE-RECOVERY.md](SAVE-RECOVERY.md); interrupted-save recovery
+remains part of `EDIT-PLAN.md`.
 
 ## Host clipboard boundary
 

@@ -26,6 +26,8 @@ unit strs;
 
 interface
 
+uses safesave;
+
 type
 MemoryType = (MT_DOS, MT_SWAP, MT_SXMS);
 TTextFormat = record
@@ -41,7 +43,7 @@ procedure done;
 function new : EditorStr;
 
 function from_file(fname : string; var format : TTextFormat; var errCode : integer; scrupdate : pointer) : EditorStr;
-procedure to_file(fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
+procedure to_file(var f:TSaveFile; fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
 
 function create(next, prev : EditorStr; var body : string) : EditorStr;
 procedure free(r : EditorStr);
@@ -74,7 +76,7 @@ function is_nil(r : EditorStr) : boolean;
 
 implementation
 
-uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, safesave, dwedutil;
+uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, dwedutil;
 
 const
 memType : MemoryType = MT_DOS;
@@ -197,12 +199,12 @@ begin
         spinner_stop;
 end;
 
-procedure to_file(fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
-var     f : TSaveFile;
-        s : string;
+procedure to_file(var f:TSaveFile; fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
+var     s : string;
         current,total,start_date : longint;
         scrup : TPercentUpdateProc;
 begin
+        if save_pending_files(f) then begin errCode:=SAVE_PENDING; exit end;
         spinner_start;
         start_save(f,fname,errCode);
         if errCode=0 then begin

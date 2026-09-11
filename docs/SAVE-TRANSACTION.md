@@ -50,9 +50,8 @@ startup discovery and recovery decisions after an interrupted replacement.
 A recoverable temporary filename alone does not identify its destination or
 prove that it is safe to restore.
 
-The UI currently reports the primary DOS error. It does not yet expose the
-retained-file paths or secondary cleanup/recovery errors, and the writer's
-local ownership record must be integrated with editor lifecycle handling for
-persistent close failures. Those gaps, read-only media and interruption tests
-remain release gates. This milestone must not be described as crash-safe save
-or complete recovery support.
+The editor now retains the transaction in its context and reports secondary
+errors and retained paths through the [session recovery screen](SAVE-RECOVERY.md).
+Persistent metadata, restart recovery, read-only media and interruption tests
+remain release gates. The synchronous fault milestone does not establish
+crash-safe save or complete recovery support.

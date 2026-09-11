@@ -28,3 +28,6 @@ They verify actual destination and backup bytes as well as editor state and
 process completion. Mouse operation of the confirmation controls remains part
 of release qualification. Injected DOS save failures and remaining recovery
 work are described in [SAVE-TRANSACTION.md](SAVE-TRANSACTION.md).
+
+Pending save ownership and the recovery screen shared by editor exit paths
+are described in [SAVE-RECOVERY.md](SAVE-RECOVERY.md).

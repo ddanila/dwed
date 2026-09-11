@@ -2,11 +2,13 @@
 unit safesave;
 interface
 
+const SAVE_PENDING=1010;
+
 type TSaveFile = record
         handle : word;
         opened : boolean;
         temporary, destination, backup, previous_backup : string;
-        original_moved : boolean;
+        original_moved, published : boolean;
         cleanup_error, recovery_error : integer;
 end;
 
@@ -14,6 +16,8 @@ procedure start_save(var f:TSaveFile; name:string; var error:integer);
 procedure write_save(var f:TSaveFile; var data; count:word; var error:integer);
 procedure finish_save(var f:TSaveFile; var error:integer);
 procedure cancel_save(var f:TSaveFile);
+function save_pending_files(var f:TSaveFile):boolean;
+procedure retry_save_cleanup(var f:TSaveFile);
 
 implementation
 uses dos;
@@ -122,11 +126,77 @@ begin
         end;
 end;
 
+function save_pending_files(var f:TSaveFile):boolean;
+begin
+        save_pending_files:=f.opened or f.original_moved or
+                            (f.temporary<>'') or (f.previous_backup<>'');
+end;
+
+procedure retry_save_cleanup(var f:TSaveFile);
+var code:integer;
+begin
+        f.cleanup_error:=0; f.recovery_error:=0;
+        if f.opened then begin
+                code:=close_handle(f.handle);
+                if (code<>0) and (code<>6) then begin f.cleanup_error:=code; exit end;
+                f.opened:=false;
+        end;
+        if f.published then begin
+                if f.previous_backup<>'' then begin
+                        f.cleanup_error:=remove_file(f.previous_backup);
+                        if (f.cleanup_error=0) or (f.cleanup_error=2) then begin
+                                f.previous_backup:=''; f.cleanup_error:=0;
+                        end;
+                end;
+        end else begin
+                restore_generations(f); cancel_save(f);
+        end;
+end;
+
+function absolute_name(var name:string):integer;
+var regs:registers; directory:TName; drive:byte; prefix,tail:string; i,n:integer;
+begin
+        absolute_name:=0;
+        for i:=1 to length(name) do if name[i]='/' then name[i]:='\';
+        { Network roots are already independent of the working directory. }
+        if copy(name,1,2)='\\' then exit;
+        tail:=name;
+        if (length(name)>=2) and (name[2]=':') then begin
+                if not (upcase(name[1]) in ['A'..'Z']) then begin absolute_name:=15; exit end;
+                drive:=ord(upcase(name[1]))-ord('A')+1;
+                System.delete(tail,1,2);
+        end else begin
+                fillchar(regs,sizeof(regs),0); regs.ah:=$19; intr($21,regs);
+                drive:=regs.al+1;
+                if drive>26 then begin absolute_name:=15; exit end;
+        end;
+        prefix:=chr(ord('A')+drive-1)+':';
+        if (length(tail)>0) and (tail[1]='\') then begin
+                if length(prefix)+length(tail)>255 then begin absolute_name:=3; exit end;
+                name:=prefix+tail; exit;
+        end;
+        fillchar(directory,sizeof(directory),$FF); fillchar(regs,sizeof(regs),0);
+        regs.ah:=$47; regs.dl:=drive; regs.ds:=seg(directory); regs.si:=ofs(directory);
+        intr($21,regs); absolute_name:=result_code(regs);
+        if regs.flags and 1<>0 then exit;
+        n:=0;
+        while (n<sizeof(directory)) and (directory[n]<>#0) do inc(n);
+        if n>251 then begin absolute_name:=3; exit end;
+        prefix:=prefix+'\';
+        for i:=0 to n-1 do prefix:=prefix+directory[i];
+        if n>0 then prefix:=prefix+'\';
+        { Check before concatenating short strings; truncation can name a
+          different real file. Do not use FExpand's silent truncation here. }
+        if length(prefix)+length(tail)>255 then begin absolute_name:=3; exit end;
+        name:=prefix+tail;
+end;
+
 procedure start_save(var f:TSaveFile; name:string; var error:integer);
 var regs:registers; z:TName; attr:word; dir,number:string;
     i,separator:integer;
 begin
-        fillchar(f,sizeof(f),0); f.destination:=name;
+        fillchar(f,sizeof(f),0); error:=absolute_name(name); f.destination:=name;
+        if error<>0 then exit;
         error:=attributes(name,attr);
         if error=0 then begin
                 if attr and $19 <> 0 then error:=5;
@@ -204,7 +274,7 @@ begin
         if error<>0 then begin
                 restore_generations(f); cancel_save(f);
         end else begin
-                f.temporary:=''; f.original_moved:=false;
+                f.temporary:=''; f.original_moved:=false; f.published:=true;
                 { Publication is complete. Cleanup cannot undo a successful
                   save; retain its path and error if the old backup persists. }
                 if f.previous_backup<>'' then begin
