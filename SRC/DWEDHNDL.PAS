@@ -450,8 +450,9 @@ end;
 function save_document(var ctx:TEditorContext; choose_name:boolean):TSaveOutcome;
 var e:TEvent; newname,msg:string; errCode:integer; accepted:boolean;
 begin
+        save_document:=SAVE_FAILED;
+        if not try_commit(ctx,errCode) then begin handle_error(ctx,errCode); exit end;
         save_document:=SAVE_CANCELLED;
-        commit(ctx);
         if not pending_save_dialog(ctx,false) then exit;
         newname:=ctx.current^.fname;
         if choose_name or (newname='') then begin
@@ -492,8 +493,10 @@ begin
 end;
 
 function may_close_document(var ctx:TEditorContext):boolean;
+var error:integer;
 begin
-        commit(ctx);
+        may_close_document:=false;
+        if not try_commit(ctx,error) then begin handle_error(ctx,error); exit end;
         may_close_document:=true;
         if not ctx.current^.chg then exit;
         dwedscru.update(ctx,SCRU_FULL);
@@ -507,9 +510,11 @@ end;
 
 {$F+}
 function hk_esc(var ctx:TEditorContext; event:PEvent):integer;
-var current,original:PFileContext;
+var current,original:PFileContext; error:integer;
 begin
-        commit(ctx); original:=ctx.current; current:=ctx.all;
+        hk_esc:=SCRU_FULL;
+        if not try_commit(ctx,error) then begin handle_error(ctx,error); exit end;
+        original:=ctx.current; current:=ctx.all;
         while current<>nil do begin
                 ctx.current:=current;
                 if not may_close_document(ctx) then begin hk_esc:=SCRU_FULL; exit end;
@@ -521,13 +526,15 @@ begin
 end;
 
 function hk_save(var ctx:TEditorContext; event:PEvent):integer;
-var original:PFileContext; outcome:TSaveOutcome;
+var original:PFileContext; outcome:TSaveOutcome; error:integer;
 begin
-        hk_save:=SCRU_FULL; commit(ctx); original:=ctx.current;
+        hk_save:=SCRU_FULL;
+        if not try_commit(ctx,error) then begin handle_error(ctx,error); exit end;
+        original:=ctx.current;
         if event^.ctrl_keys=key_shift then begin
                 ctx.current:=ctx.all;
                 while ctx.current<>nil do begin
-                        commit(ctx);
+                        if not try_commit(ctx,error) then begin handle_error(ctx,error); exit end;
                         if ctx.current^.chg then
                                 if save_document(ctx,false)<>SAVE_OK then exit;
                         ctx.current:=ctx.current^.next;

@@ -92,7 +92,11 @@ and release prior staging if a later reservation fails; see
 [DATABASE-APPENDS.md](DATABASE-APPENDS.md). Checked fixed-record updates reserve
 replacement and before-image buffers before writing, release both on pre-write
 refusal, and retain only the before-image when rollback is pending; see
-[DATABASE-UPDATES.md](DATABASE-UPDATES.md). Alternative document stores remain runtime review work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
+[DATABASE-UPDATES.md](DATABASE-UPDATES.md). Checked DOS line growth allocates
+its replacement before changing links, and checked editor commits retain the
+file context on allocation refusal; see [LINE-UPDATES.md](LINE-UPDATES.md).
+Alternative document stores remain runtime review work. See the cache scope in
+[EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
 
 The heap review does not establish minimum physical RAM, supported file size,
 full-command operation at the startup boundary, or final legacy CPU coverage.

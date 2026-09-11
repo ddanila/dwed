@@ -14,7 +14,7 @@
     "SRC/DWEDCMD.PAS": "04fadfde4f2d9b89652c859f86bc8a6254090f4f0ae12e40ecff1de8acc56bd9",
     "SRC/DWEDHELP.PAS": "8f452dbba947bf1acfd26498382b7ca80c3b07e3d7e7d2996d962ee8ac88e5b8",
     "SRC/DWEDHL.PAS": "ce580cb0b9064221b3a65f0381c65b7d918fa4aaa3e69d43e8e3a22da7d4c219",
-    "SRC/DWEDHNDL.PAS": "d95fe8266bd8ad2bee20ccc533245a7140ed99e9f24a00c9d512c7bdde4f5215",
+    "SRC/DWEDHNDL.PAS": "3d9f3113e5c9468bb509e432ab8da2a2f39cc5116cfe0b3feac1c8a49ce21cae",
     "SRC/DWEDINIT.PAS": "38831e73348b701e83679cc7073cd7b8798ae1002bf65cfccc16797a9cc420cf",
     "SRC/DWEDLNCH.PAS": "bf9fbb5c509d507b148e659521f3931a3b5e86760fb34022dcd02172ff90ea04",
     "SRC/DWEDMENU.PAS": "debdc2410e6dd1a47f2f72f300e0aadb39248e00604e01fa0f4df232ec863b78",
@@ -26,7 +26,7 @@
     "SRC/DWEDTBL.PAS": "a8fa30250272d5c20372bff3b9ac0c0a891566dcbb6327ffa65b154112f4e834",
     "SRC/DWEDTYPE.PAS": "b811c94cb1a6abafae2cf87ee7cf69822243eeb2c48fa5e7ee25a4ef0d2031b6",
     "SRC/DWEDUNDO.PAS": "160abba70955d5f3adc2515e41b2ccaf31cc5f80b6f9c3d1b9e8fd8125a35127",
-    "SRC/DWEDUTIL.PAS": "945b3a1f286bfa61f02f817c90598f228df215560e1948503d74680d38538e18",
+    "SRC/DWEDUTIL.PAS": "f6a1c383007be99059a552e0f6f0a85dbbddfff7b0e5a8445353a94670f516bd",
     "SRC/EVENT.PAS": "c4b3971028a49c7bcd6f9d4fadc5803ef26dd1c501f5a3cb039ff500ad2eafe9",
     "SRC/HELP.PAS": "168151a184ea7c69b6974d07b719aaf8c648b37f5e5f13f6d4e758b17abf536d",
     "SRC/SAFESAVE.PAS": "0100d53d32713cce5898843e14e406e42a2ab74fd661957aedfd82811f7f85b5",
@@ -34,17 +34,17 @@
     "SRC/SCR.PAS": "66d353eaae1c56975fe6a8ee196703f66c4cf5f3a837bc27f9b48a9d53575f84",
     "SRC/SCRUI.PAS": "af6bcd7660800506ed8f8a10e946611e55b9d294b69299a382c06fac9547a412",
     "SRC/STARTMEM.PAS": "579a6c373fb549d1dff0e29e5a2559a848d4b3f4089f589e22a639fa868a24e8",
-    "SRC/STRS.PAS": "12967f53379fd9b56dff96b8ce33a702b03fad8724914f0755a824175da601a4",
-    "SRC/STRSDOS.PAS": "1f7ed085f1de1a9e3ffade3718f35018af916f39085152ab9266426f05bc9b83",
-    "SRC/STRSSWAP.PAS": "9d8c7d7fc5a1da4fbbca6fdb001a9bb73df9161604e263dbf65ce41e879083de",
-    "SRC/STRSSXMS.PAS": "a53b650f31a4a88d5a62d78a8a08977c5f5160f396018548b34b9a496b818231",
+    "SRC/STRS.PAS": "28fe28deb44551d9b596ca68fb1f7db25a41327652a6215fd9c542b287f50954",
+    "SRC/STRSDOS.PAS": "9eda1f3053ccf14494e8884154b8805e50b7ab38b4734a4930bdae376bf30878",
+    "SRC/STRSSWAP.PAS": "ca87bff1319db719912e5f0928d5f81421142eefa83e81b967a348f6d1f36958",
+    "SRC/STRSSXMS.PAS": "88cc7173d105d64cc4400a1a92a973e1d06f8d23b2c3d15fcb3c2eb0d846b89e",
     "SRC/STRUTIL.PAS": "70211b805803e3fe1c3283e3661bf62bbca2aa00594357574990a9c4d8ad7d5c",
     "SRC/TEXTCELL.PAS": "c02a11c1a53aa1d1458f0739c7be07e0318938e93a1d99521c975f8474deb41f",
     "SRC/UNREDO.PAS": "e3ae9e7f50c77ff90219f22d2be1c4c37ce7736676349a5370984acf716cb19e",
     "vendor/system2/ANSI.PAS": "dcb87317ace6b875aead528d139e74bab1a37fd816e800edabab9e5a87ef0de4",
     "vendor/system2/CSTRING.PAS": "cf78b1b4bcbda44422f5283d01a39e940984c1b310f5890e68e57e99ea4653b7",
     "vendor/system2/DBB.PAS": "f0e1b7b736dac11a30611e51ea7f9632759fcc5b7dfb259383be1c2d90474dc9",
-    "vendor/system2/DBM.PAS": "54b84877e1cb7b73348e94983d82f937e802edd5a26723f220735b5f12dc8f99",
+    "vendor/system2/DBM.PAS": "ed05e91cf8f7bebb3e03a43be984e8564c81b893d4a4e1d98218ef4202d75f6f",
     "vendor/system2/DETECT.PAS": "ae81be855f8c7a00ba43c0cb5e54c981992d95c52908ae96a439f644ca07ee26",
     "vendor/system2/EXCACHE.PAS": "43a4c12b1fe98d5a98da22408593e98b4b64dd183b9731e912dc9c0b7002e687",
     "vendor/system2/EXMS.PAS": "809f8e47e6240bfa1c534540d94165dfac221c06e32345c42216533484616cb0",
@@ -444,10 +444,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 449,
+      "line": 469,
       "allocator": "getmem",
       "preceding_routine_declaration": "load_clipboard",
-      "context_start_line": 437,
+      "context_start_line": 457,
       "context": [
         "        p:=nil; allocated:=0; size:=0;",
         "        System.Assign(f,fname);",
@@ -470,10 +470,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 559,
+      "line": 579,
       "allocator": "getmem",
       "preceding_routine_declaration": "copy_selected",
-      "context_start_line": 547,
+      "context_start_line": 567,
       "context": [
         "                                if number<se_y then begin",
         "                                        dest[position]:=#13; dest[position+1]:=#10;",
@@ -496,10 +496,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 638,
+      "line": 658,
       "allocator": "getmem",
       "preceding_routine_declaration": "refresh_clipboard",
-      "context_start_line": 626,
+      "context_start_line": 646,
       "context": [
         "begin",
         "        delete_selected:=true;",
@@ -522,10 +522,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 671,
+      "line": 691,
       "allocator": "getmem",
       "preceding_routine_declaration": "go_win_list",
-      "context_start_line": 659,
+      "context_start_line": 679,
       "context": [
         "        i := 0;",
         "        memlen := 0; sitem := 0; cctx := 0;",
@@ -548,10 +548,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 745,
+      "line": 765,
       "allocator": "getmem",
       "preceding_routine_declaration": "new_file",
-      "context_start_line": 733,
+      "context_start_line": 753,
       "context": [
         "                scry := 0;",
         "                total := strs.renum(rline);",
@@ -574,10 +574,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 766,
+      "line": 786,
       "allocator": "getmem",
       "preceding_routine_declaration": "load_file",
-      "context_start_line": 754,
+      "context_start_line": 774,
       "context": [
         "        ctx.current := p;",
         "        load_ed(ctx);",
@@ -600,10 +600,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 952,
+      "line": 972,
       "allocator": "getmem",
       "preceding_routine_declaration": "create_fast_jmp_list",
-      "context_start_line": 940,
+      "context_start_line": 960,
       "context": [
         "                        end else if starts_with(uline, 'IMPLEMENTATION') then begin",
         "                                upstr(line);",
@@ -626,10 +626,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 993,
+      "line": 1013,
       "allocator": "getmem",
       "preceding_routine_declaration": "fast_jmp",
-      "context_start_line": 981,
+      "context_start_line": 1001,
       "context": [
         "        r := SCRU_NONE; fast_jmp:=r;",
         "        if fjl=nil then exit;",
@@ -782,10 +782,10 @@
     },
     {
       "path": "SRC/STRSDOS.PAS",
-      "line": 133,
+      "line": 134,
       "allocator": "getmem",
       "preceding_routine_declaration": "create",
-      "context_start_line": 121,
+      "context_start_line": 122,
       "context": [
         "        norm_len := w;",
         "end;",
@@ -808,10 +808,10 @@
     },
     {
       "path": "SRC/STRSDOS.PAS",
-      "line": 385,
+      "line": 398,
       "allocator": "getmem",
       "preceding_routine_declaration": "replay_allocate",
-      "context_start_line": 373,
+      "context_start_line": 386,
       "context": [
         "        strsdos.create(PDosStringRec(r)^.next, r, s2);",
         "        split := r;",
@@ -964,10 +964,10 @@
     },
     {
       "path": "vendor/system2/DBM.PAS",
-      "line": 285,
+      "line": 296,
       "allocator": "getmem",
       "preceding_routine_declaration": "dbm_TryGet",
-      "context_start_line": 273,
+      "context_start_line": 284,
       "context": [
         "END;",
         "",
@@ -990,10 +990,10 @@
     },
     {
       "path": "vendor/system2/DBM.PAS",
-      "line": 326,
+      "line": 337,
       "allocator": "getmem",
       "preceding_routine_declaration": "dbm_TryAppend",
-      "context_start_line": 314,
+      "context_start_line": 325,
       "context": [
         "           (f.header.records<0) OR (f.header.next<0) OR (f.header.next>f.header.records) OR",
         "           (f.header.root<0) OR (f.header.root>f.header.records) OR",
@@ -1016,10 +1016,10 @@
     },
     {
       "path": "vendor/system2/DBM.PAS",
-      "line": 330,
+      "line": 341,
       "allocator": "getmem",
       "preceding_routine_declaration": "dbm_TryAppend",
-      "context_start_line": 318,
+      "context_start_line": 329,
       "context": [
         "        END;",
         "        IF f.header.records>physical DIV f.header.size-1 THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;",

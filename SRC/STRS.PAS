@@ -38,6 +38,7 @@ EditorStr = pointer;
 function supports_undo:boolean;
 
 procedure init(mType : MemoryType);
+function try_done(var error:integer):boolean;
 procedure done;
 
 function new : EditorStr;
@@ -49,6 +50,9 @@ procedure to_file(var f:TSaveFile; fname : string; r : EditorStr; format : TText
 function create(next, prev : EditorStr; var body : string) : EditorStr;
 procedure free(r : EditorStr);
 
+function try_put(var r:EditorStr; var body:string; var error:integer):boolean;
+function pending_update:boolean;
+function retry_update(var error:integer):boolean;
 function put(r : EditorStr; var body : string) : EditorStr;
 function try_read(r:EditorStr; var dest:string; var next,prev:EditorStr; var error:integer):boolean;
 procedure get(r : EditorStr; var dest : string);
@@ -94,11 +98,43 @@ begin
         else strsdos.init;
 end;
 
+function try_done(var error:integer):boolean;
+begin
+        error:=0; try_done:=true;
+        if memType=MT_SXMS then try_done:=strssxms.try_done(error)
+        else if memType=MT_SWAP then try_done:=strsswap.try_done(error)
+        else strsdos.done;
+end;
+
 procedure done;
 begin
         if memType = MT_SXMS then strssxms.done
         else if memType = MT_SWAP then strsswap.done
         else strsdos.done;
+end;
+
+function pending_update:boolean;
+begin
+        pending_update:=false;
+        if memType=MT_SWAP then pending_update:=strsswap.pending_update
+        else if memType=MT_SXMS then pending_update:=strssxms.pending_update;
+end;
+
+function retry_update(var error:integer):boolean;
+begin
+        error:=0; retry_update:=true;
+        if memType=MT_SWAP then retry_update:=strsswap.retry_update(error)
+        else if memType=MT_SXMS then retry_update:=strssxms.retry_update(error);
+end;
+
+function try_put(var r:EditorStr; var body:string; var error:integer):boolean;
+begin
+        error:=0; try_put:=false;
+        if r=nil then begin error:=DBB_INVALID; exit end;
+        if memType=MT_SWAP then try_put:=strsswap.try_put(dword(r),body,error)
+        else if memType=MT_SXMS then try_put:=strssxms.try_put(dword(r),body,error)
+        else if strsdos.try_put(r,body,UNDO_DEFAULT_RESERVE) then try_put:=true
+        else error:=8;
 end;
 
 function put(r : EditorStr; var body : string) : EditorStr;

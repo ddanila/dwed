@@ -42,6 +42,7 @@ procedure get_sel_coord(
 
 function norm_xy(var ctx : TEditorContext; r : integer) : integer;
 
+function try_commit(var ctx:TEditorContext; var error:integer):boolean;
 procedure commit(var ctx : TEditorContext);
 procedure load_ed(var ctx : TEditorContext);
 
@@ -91,6 +92,25 @@ uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwe
 function get_ticks : longint;
 begin
      get_ticks := meml[Seg0040:$006c];
+end;
+
+{ Publish editor flags and pointer aliases only after the backing replacement
+  succeeds. Callers must stop their action when this returns false. }
+function try_commit(var ctx:TEditorContext; var error:integer):boolean;
+var oldline,newline:EditorStr;
+begin
+        try_commit:=false; error:=0;
+        if ctx.current=nil then begin error:=103; exit end;
+        if not ctx.current^.editor.chg then begin try_commit:=true; exit end;
+        oldline:=ctx.current^.cline; newline:=oldline;
+        if not strs.try_put(newline,ctx.current^.editor.line,error) then exit;
+        with ctx.current^ do begin
+                cline:=newline;
+                if rline=oldline then rline:=newline;
+                if scrline=oldline then scrline:=newline;
+                chg:=true; editor.chg:=false;
+        end;
+        try_commit:=true;
 end;
 
 procedure commit(var ctx : TEditorContext);

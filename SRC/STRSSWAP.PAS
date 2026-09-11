@@ -29,6 +29,7 @@ interface
 uses dwedtype;
 
 procedure init;
+function try_done(var error:integer):boolean;
 procedure done;
 
 function new : dword;
@@ -36,6 +37,9 @@ procedure free(r : dword);
 
 function create(next, prev : dword; body : string) : dword;
 
+function try_put(r:dword; var body:string; var error:integer):boolean;
+function pending_update:boolean;
+function retry_update(var error:integer):boolean;
 function put(r : dword; var body : string) : dword;
 function try_links(r:dword; var next,prev:dword; var error:integer):boolean;
 function try_read(r:dword; var dest:string; var next,prev:dword; var error:integer):boolean;
@@ -178,6 +182,33 @@ begin
                 if length(staged)+1<>rec.len then begin error:=DBB_INVALID; exit end;
         end;
         dest:=staged; next:=rec.next; prev:=rec.prev; try_read:=true;
+end;
+
+function pending_update:boolean;
+begin pending_update:=dbb_PendingWrite(dbb_idx) end;
+
+function retry_update(var error:integer):boolean;
+begin
+        retry_update:=dbb_RetryRollback(dbb_idx); error:=dbb_idx.f.ioresult;
+end;
+
+function try_put(r:dword; var body:string; var error:integer):boolean;
+var rec:TExtStringRec; oldbody:string; next,prev,payload:dword;
+begin
+        try_put:=false;
+        if not retry_update(error) then exit;
+        if not try_read(r,oldbody,next,prev,error) then exit;
+        if not read_index(r,rec,error) then exit;
+        { Stage payload before changing its index. Retain old and orphaned
+          payloads until checked reclamation is available. }
+        payload:=0;
+        if body<>'' then
+                if not dbm_TryAppend(dbm_mem,body,length(body)+1,payload) then begin
+                        error:=dbm_mem.f.ioresult; exit;
+                end;
+        rec.len:=length(body)+1; rec.recno:=payload;
+        if not dbb_TryPut(dbb_idx,r,rec) then begin error:=dbb_idx.f.ioresult; exit end;
+        try_put:=true; error:=0;
 end;
 
 procedure get(r : dword; var dest : string);
@@ -434,11 +465,24 @@ begin
         dbb_rewritetemp(dbb_idx, IDX_BLK_SIZE);
 end;
 
-procedure done;
+function try_done(var error:integer):boolean;
 begin
-        dbm_close(dbm_mem);
-        dbb_close(dbb_idx);
+        try_done:=false; error:=0;
+        { Keep payload ownership until its index handle has been discarded. }
+        dbb_Discard(dbb_idx);
+        if IsOpen(dbb_idx.f) or dbb_PendingWrite(dbb_idx) then begin error:=dbb_idx.f.ioresult; exit end;
+        if dbb_idx.f.delete_pending then error:=dbb_idx.f.ioresult;
+        dbm_Discard(dbm_mem);
+        if IsOpen(dbm_mem.f) or dbm_mem.f.delete_pending then begin
+                if error=0 then error:=dbm_mem.f.ioresult;
+                exit;
+        end;
+        try_done:=not dbb_idx.f.delete_pending;
 end;
+
+procedure done;
+var error:integer;
+begin try_done(error) end;
 
 function from_file(fname : string; tab_size : integer; var errCode : integer; scrupdate : pointer) : dword;
 var     root       : dword;

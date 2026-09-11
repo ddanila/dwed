@@ -66,6 +66,7 @@ FUNCTION dbm_Size(VAR f : DBMFile; rec : LONGINT) : LONGINT;
 
 PROCEDURE dbm_Free(VAR f : DBMFile; rec : LONGINT);
 
+PROCEDURE dbm_Discard(VAR f:DBMFile);
 PROCEDURE dbm_Close(VAR f : DBMFile);
 
 IMPLEMENTATION
@@ -167,6 +168,16 @@ END;
 FUNCTION dbm_IsOpen(VAR f : DBMFile) : BOOLEAN;
 BEGIN
         dbm_IsOpen := f.ready AND IsOpen(f.f);
+END;
+
+{ Explicit temporary-store discard must not seek or flush payload pages. }
+PROCEDURE dbm_Discard(VAR f:DBMFile);
+BEGIN
+        IF NOT IsOpen(f.f) AND NOT f.f.delete_pending THEN EXIT;
+        IF NOT f.f.delonclose THEN BEGIN f.f.ioresult:=5; EXIT END;
+        Close(f.f);
+        IF IsOpen(f.f) OR f.f.delete_pending THEN EXIT;
+        FillChar(f,SizeOf(DBMFile),0);
 END;
 
 PROCEDURE dbm_Close(VAR f : DBMFile);

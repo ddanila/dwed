@@ -36,16 +36,18 @@ record mutation or complete editor behavior with these stores.
 [Database initialization](DATABASE-INITIALIZATION.md) validates headers without
 rewriting failed input and retains cleanup ownership. [Checked append APIs](DATABASE-APPENDS.md)
 write unpublished records for replacement transactions. [Checked index updates](DATABASE-UPDATES.md)
-retain a before-image through partial-write failure and rollback. Callers still
-need migration to these APIs. Legacy allocation,
+retain a before-image through partial-write failure and rollback.
+[Checked line replacement](LINE-UPDATES.md) connects these APIs to editor
+commits used by saving and closing. Remaining callers still need migration. Legacy allocation,
 free-list traversal and updates, and replacement still need checked status
 propagation and failure-safe publication. [Checked record reads](DATABASE-READS.md)
 stage output and validate chains. [Checked string-store saves](STORE-SAVES.md)
 propagate metadata and payload failures into safe-save cleanup. Loading,
 navigation, rendering, and editing still need checked error propagation.
-Existing string-store replacement frees the old payload before installing its
-replacement; that operation needs failure-safe publication before the stores
-can be qualified for editing.
+Legacy string-store replacement frees the old payload before installing its
+replacement. The checked path retains old and orphaned payloads until discard;
+checked reclamation and migration of remaining editing callers are required
+before the stores can be qualified for editing.
 
 The alternative stores also need edit transaction and undo/redo integration,
 exact-text and clipboard tests, and end-to-end disk-full, allocation, transfer,

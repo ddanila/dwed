@@ -53,6 +53,7 @@ procedure free(r : pointer);
 function create(next, prev : pointer; body : string) : pointer;
 function create_checked(next,prev:pointer; body:string; reserve:longint):pointer;
 
+function try_put(var r:pointer; var body:string; reserve:longint):boolean;
 function put(r : pointer; var body : string) : pointer;
 procedure get(r : pointer; var dest : string);
 function delete(r : pointer; num_from, num_to : longint) : pointer;
@@ -177,6 +178,18 @@ begin
                 strsdos.free_str(old);
         end;
         put := r;
+end;
+
+function try_put(var r:pointer; var body:string; reserve:longint):boolean;
+var old,added:PDosStringRec;
+begin
+        try_put:=false; if r=nil then exit;
+        if (live_history<>nil) or (norm_len(length(body))=PDosStringRec(r)^.allocated) then begin
+                r:=strsdos.put(r,body); try_put:=true; exit;
+        end;
+        old:=r; added:=create_checked(old^.next,old^.prev,body,reserve);
+        if added=nil then exit;
+        added^.num:=old^.num; r:=added; strsdos.free_str(old); try_put:=true;
 end;
 
 function new : pointer;
