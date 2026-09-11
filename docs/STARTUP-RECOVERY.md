@@ -45,7 +45,9 @@ the DOS memory backend on emulated hardware; low-memory, alternate stores and
 broader platform qualification remain open. Interruption occurs at completed
 DOS-call boundaries, not during physical sector writes.
 
-Recovery currently preserves the old record and retained file generations even
-after an explicit save. A guided resolution and cleanup workflow remains a
-release gate. The record does not fingerprint the old destination or previous
-backup, so metadata alone cannot authorize deleting or replacing them.
+C checks whether the recorded payload is already installed and offers confirmed
+cleanup of a verified duplicate temporary and its record. See
+[RECOVERY-CLEANUP.md](RECOVERY-CLEANUP.md). Retained older backup generations and
+later-edited recovered contents still need a guided resolution workflow. The
+record does not fingerprint the old destination or previous backup, so metadata
+alone cannot authorize deleting or replacing them.

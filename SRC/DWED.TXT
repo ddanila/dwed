@@ -61,6 +61,11 @@ A damaged record or read error offers Retry/Skip.
 
 Recovering does not delete retained files.
 Use ~F2~ to save the recovered document explicitly.
+At startup, ~C~ checks whether the saved copy is
+already installed. After a successful check,
+~D~ removes the duplicate temporary and record.
+~Enter~ or ~Esc~ keeps them. Changed contents and
+unverified older backups are left in place.
 An already open original remains a separate window.
 Retained generations still need manual inspection
 and cleanup after recovery.

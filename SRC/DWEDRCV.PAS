@@ -4,6 +4,9 @@ unit dwedrcv;
 interface
 uses dwedtype,saveinfo;
 
+const CLEANUP_RETAINED_BACKUP=1015;
+
+function resolve_record(var ctx:TEditorContext; name:string; var expected:TSaveRecord; remove:boolean):integer;
 procedure discover_recovery(var ctx:TEditorContext);
 function recover_document(var ctx:TEditorContext; var info:TSaveRecord; source:string):integer;
 function read_record(var ctx:TEditorContext; name:string; var info:TSaveRecord):integer;
@@ -26,6 +29,62 @@ begin
                 if error=0 then error:=ctx.file_reader.close_error;
         end;
         read_record:=error;
+end;
+
+function payload_matches(var ctx:TEditorContext; name:string; var info:TSaveRecord):integer;
+var buffer:array[0..1023] of byte; error:integer; count:word; total,crc:longword;
+begin
+        open_read(ctx.file_reader,name,error); total:=0; crc:=$FFFFFFFF;
+        if error=0 then begin
+                if ctx.file_reader.size<>info.payload_size then error:=RECOVERY_MISMATCH;
+                while error=0 do begin
+                        read_bytes(ctx.file_reader,buffer,sizeof(buffer),count,error);
+                        if (error<>0) or (count=0) then break;
+                        inc(total,count); crc:=crc_update(crc,buffer,count);
+                        if total>info.payload_size then error:=RECOVERY_MISMATCH;
+                end;
+                if (error=0) and ((total<>info.payload_size) or
+                   ((crc xor $FFFFFFFF)<>info.payload_crc)) then error:=RECOVERY_MISMATCH;
+                close_read(ctx.file_reader);
+                if error=0 then error:=ctx.file_reader.close_error;
+        end;
+        payload_matches:=error;
+end;
+
+function resolve_record(var ctx:TEditorContext; name:string; var expected:TSaveRecord; remove:boolean):integer;
+type TRecordBytes=array[0..sizeof(TSaveRecord)-1] of byte;
+var info:TSaveRecord; error,i:integer; f:file; attr:word; has_temporary:boolean;
+        function erase_name(path:string):integer;
+        begin
+                System.Assign(f,path);
+                {$I-} System.Erase(f); {$I+}
+                erase_name:=System.IOResult;
+        end;
+begin
+        { Every confirmation is revalidated before any deletion. The record is
+          removed last so a failed deletion remains discoverable and retryable. }
+        error:=read_record(ctx,name,info);
+        if error=0 then for i:=0 to sizeof(info)-1 do
+                if TRecordBytes(info)[i]<>TRecordBytes(expected)[i] then error:=RECORD_INVALID;
+        if (error=0) and (info.previous_backup<>'') then begin
+                System.Assign(f,info.previous_backup); GetFAttr(f,attr);
+                if DosError=0 then error:=CLEANUP_RETAINED_BACKUP
+                else if DosError<>2 then error:=DosError;
+        end;
+        if error=0 then error:=payload_matches(ctx,info.destination,info);
+        has_temporary:=false;
+        if error=0 then begin
+                System.Assign(f,info.temporary); GetFAttr(f,attr);
+                if DosError=0 then begin
+                        has_temporary:=true;
+                        error:=payload_matches(ctx,info.temporary,info);
+                end else if DosError<>2 then error:=DosError;
+        end;
+        if (error=0) and remove then begin
+                if has_temporary then error:=erase_name(info.temporary);
+                if error=0 then error:=erase_name(name);
+        end;
+        resolve_record:=error;
 end;
 
 function recover_document(var ctx:TEditorContext; var info:TSaveRecord; source:string):integer;
@@ -59,7 +118,7 @@ begin
 end;
 
 procedure offer_record(var ctx:TEditorContext; name:string; var stop:boolean);
-var info:TSaveRecord; error,row,width,scroll,visible:integer; source,number:string; key:byte; done,settled:boolean;
+var info:TSaveRecord; error,cleanup_error,row,width,scroll,visible:integer; source,number:string; key:byte; done,settled,confirm_cleanup:boolean;
         procedure line(value:string);
         begin
                 repeat
@@ -73,7 +132,7 @@ begin
         if width<1 then width:=1;
         source:=''; if error=0 then source:=candidate(info);
         scroll:=0; visible:=scr.getheight-5;
-        done:=false;
+        done:=false; confirm_cleanup:=false; cleanup_error:=0;
         repeat
                 scr.cls(ctx.config.color.text);
                 scr.print(1,0,ctx.config.color.top,'Interrupted save'); row:=0;
@@ -81,9 +140,24 @@ begin
                 if error=0 then begin
                         line('Destination:'); line(info.destination);
                         line('Saved copy:'); line(source);
-                        line('R opens a verified copy as an unsaved document.');
-                        line('Files on disk will be preserved.');
-                        scr.print(1,scr.getheight-2,ctx.config.color.top,'R Recover  S Skip  Esc Skip all');
+                        if confirm_cleanup then begin
+                                line('The destination matches the recorded saved contents.');
+                                line('Remove this record and any verified temporary copy?');
+                                line('Temporary:'); line(info.temporary);
+                                line('The destination and normal backup will be kept.');
+                                scr.print(1,scr.getheight-2,ctx.config.color.top,'D Remove duplicates   Enter/Esc Keep');
+                        end else begin
+                                line('R opens a verified copy as an unsaved document.');
+                                line('C checks whether the saved copy is already installed.');
+                                if cleanup_error<>0 then begin
+                                        str(cleanup_error,number); line('Cleanup unavailable. Error #'+number);
+                                        if cleanup_error=CLEANUP_RETAINED_BACKUP then begin
+                                                line('An older backup has no recorded fingerprint; keep it.');
+                                                line(info.previous_backup);
+                                        end;
+                                end;
+                                scr.print(1,scr.getheight-2,ctx.config.color.top,'R Recover  C Check cleanup  S Skip  Esc Skip all');
+                        end;
                 end else begin
                         str(error,number); line('Cannot recover this record. Error #'+number);
                         if source<>'' then begin line('Saved copy:'); line(source) end;
@@ -93,11 +167,23 @@ begin
                 scr.print(1,scr.getheight-1,ctx.config.color.top,'Up/Down Scroll');
                 scr.cursor_off; scr.show; key:=hi(kbd_getkey);
                 case key of
-                SCAN_ESC:begin stop:=true; done:=true end;
-                SCAN_S,SCAN_ENTER:done:=true;
+                SCAN_ESC:if confirm_cleanup then confirm_cleanup:=false
+                         else begin stop:=true; done:=true end;
+                SCAN_ENTER:if confirm_cleanup then confirm_cleanup:=false else done:=true;
+                SCAN_S:if not confirm_cleanup then done:=true;
+                SCAN_C:if (error=0) and not confirm_cleanup then begin
+                        cleanup_error:=resolve_record(ctx,name,info,false);
+                        confirm_cleanup:=cleanup_error=0; scroll:=0;
+                end;
+                SCAN_D:if confirm_cleanup then begin
+                        cleanup_error:=resolve_record(ctx,name,info,true);
+                        confirm_cleanup:=false; scroll:=0;
+                        if cleanup_error=0 then done:=true;
+                end;
                 SCAN_UP:if scroll>0 then dec(scroll);
                 SCAN_DOWN:if scroll+visible<row then inc(scroll);
-                SCAN_R:if error=0 then begin
+                SCAN_R:if confirm_cleanup then confirm_cleanup:=false
+                       else if error=0 then begin
                         error:=recover_document(ctx,info,source);
                         if error=0 then done:=true;
                         scroll:=0;
