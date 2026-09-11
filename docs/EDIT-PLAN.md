@@ -34,8 +34,8 @@ The previous bundled-binary assessment found successful ordinary edits in LOW
 and HIGH/UMB, but silent empty output on a nearly full disk (also reproduced on
 Microsoft 6.22), tab expansion, physical-line splitting and newline conversion.
 The existing vmenu and event-handler code can support the menu work. The undo
-unit currently contains scaffolding only. These findings are adoption gates,
-not behaviours to preserve merely to make an initial port pass.
+journal and its remaining editor integration are described in `UNDO.md`. These
+findings are adoption gates, not behaviours to preserve merely to make an initial port pass.
 
 Record concrete progress and qualification in commits and machine-readable
 reports. Do not advertise a release until all gates above have evidence.

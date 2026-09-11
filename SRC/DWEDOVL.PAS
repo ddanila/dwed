@@ -32,7 +32,7 @@ SOFTWARE. }
 {$ENDIF}
 
 uses system2, dos, str, strutil, wincb, kminput, event,
-strs, unredo, dwedtype, dwedhndl, dwedutil, dwedhl, dwedscru, dwedlnch,
+strs, dwedtype, dwedhndl, dwedutil, dwedhl, dwedscru, dwedlnch,
 scr, ansi;
         
 procedure edit(var ctx : TEditorContext; show_welcome_msg : boolean);
@@ -272,7 +272,6 @@ begin
         END;
         exitProc := prevExitProc;
         strs.done;
-        unredo.done;
 end;
 {$F-}
 
@@ -309,7 +308,6 @@ begin
         if ctx.config.memory = MEM_SXMS then strs.init(strs.MT_SXMS)
         else if ctx.config.memory = MEM_SWAP then strs.init(strs.MT_SWAP)
         else strs.init(strs.MT_DOS);
-        unredo.init;
         scr.push;
         scr.cls(7);
         if is_resuming and FileExists(ctx.temp) then begin
