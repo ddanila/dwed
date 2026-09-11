@@ -402,7 +402,7 @@ begin
         commit(ctx);
         if is_in_table(ctx, event) then r := tbl_append_row(ctx, event) else begin
                 if ctx.current^.editor.selection then begin
-                        delete_selected(ctx);
+                        if not delete_selected(ctx) then begin hk_enter:=SCRU_FULL; exit end;
                         with ctx.current^ do total := strs.renum(rline);
                 end;
                 s := '';
@@ -560,7 +560,7 @@ begin
         r := SCRU_NONE;
         if ctx.current^.editor.selection then begin
                 commit(ctx);
-                delete_selected(ctx);
+                if not delete_selected(ctx) then begin hk_bs:=SCRU_FULL; exit end;
                 ctx.current^.total := strs.renum(ctx.current^.rline);
                 r := SCRU_FULL;
         end else begin
@@ -605,7 +605,7 @@ begin
         r := SCRU_NONE;
         if ctx.current^.editor.selection then begin
                 commit(ctx);
-                delete_selected(ctx);
+                if not delete_selected(ctx) then begin hk_del:=SCRU_FULL; exit end;
                 ctx.current^.total := strs.renum(ctx.current^.rline);
                 r := SCRU_FULL;
         end else begin
@@ -637,8 +637,9 @@ end;
 function hk_cb_cut(var ctx:TEditorContext; event:PEvent):integer;
 begin
         if ctx.current^.editor.selection then begin
-                copy_selected(ctx);
-                delete_selected(ctx);
+                if not selection_fits(ctx) then begin hk_cb_cut:=SCRU_FULL; exit end;
+                if not copy_selected(ctx) then begin hk_cb_cut:=SCRU_FULL; exit end;
+                if not delete_selected(ctx) then begin hk_cb_cut:=SCRU_FULL; exit end;
                 with ctx.current^ do total := strs.renum(rline);
                 hk_cb_cut := SCRU_FULL;
         end else hk_cb_cut := SCRU_NONE;
@@ -667,36 +668,19 @@ end;
 
 function hk_cb_copy(var ctx:TEditorContext; event:PEvent):integer;
 begin
-        if ctx.current^.editor.selection then copy_selected(ctx);
-        hk_cb_copy := SCRU_NONE;
+        hk_cb_copy:=SCRU_NONE;
+        if ctx.current^.editor.selection then
+                if not copy_selected(ctx) then hk_cb_copy:=SCRU_FULL;
 end;
 
 function hk_cb_paste(var ctx:TEditorContext; event:PEvent):integer;
-var     lnum    : word;
-        isfist  : boolean;
-        cbsize  : dword;
+var error:integer; changed:boolean;
 begin
         commit(ctx);
-        if ctx.current^.editor.selection then begin
-                delete_selected(ctx);
-                ctx.current^.total := strs.renum(ctx.current^.rline);
-                ctx.current^.editor.selection := false;
-        end;
-        with ctx.current^ do begin
-                if ctx.has_wincb then WCB_Paste(ctx.clipboard[0], CB_SIZE);
-                isfist := strs.is_first(cline);
-                cline := strs.append(cline, editor.x, ctx.clipboard, lnum);
-                if isfist then rline := strs.go_first(cline);
-                while (lnum <> 0) and (scry <> config^.height - 2) do begin
-                        dec(lnum);
-                        inc(scry);
-                end;
-                total := strs.renum(rline);
-                chg := true;
-        end;
-        load_ed(ctx);
-        kbd_reset;
-        hk_cb_paste := SCRU_FULL;
+        error:=refresh_clipboard(ctx);
+        if error<>0 then handle_error(ctx,error)
+        else changed:=replace_text(ctx,ctx.clipboard,CB_SIZE,false);
+        hk_cb_paste:=SCRU_FULL;
 end;
 
 function hk_goto_line(var ctx:TEditorContext; event:PEvent):integer;
@@ -868,7 +852,7 @@ begin
         if (c >= ' ') then begin
                 r := SCRU_CLINE;
                 if ctx.current^.editor.selection then begin
-                        delete_selected(ctx);
+                        if not delete_selected(ctx) then begin hk_default:=SCRU_FULL; exit end;
                         with ctx.current^ do total := strs.renum(rline);
                         r := SCRU_FULL;
                 end;
@@ -1136,7 +1120,7 @@ begin
                 end else if event^.etype <> MOUSE_MOVE then begin start_load := false; break; end;
         end;
         errCode := 0;
-        if start_load then load_clipboard(ctx, fname);
+        if start_load then errCode:=load_clipboard(ctx, fname);
         if errCode <> 0 then handle_error(ctx, errCode);
         hk_cb_load := SCRU_CLINE;
 end;

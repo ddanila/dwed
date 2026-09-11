@@ -28,7 +28,7 @@ structure is present, but this is not completion of the EDIT release gates.
 Save, Save As, Save All, Close and Exit now share the
 [save outcome and cancellation rules](SAVE-DIALOGS.md), including unnamed
 documents. Remaining work includes broader undo qualification, tab-stop
-display, clipboard fidelity, mouse qualification, monochrome/accessibility
+display, host clipboard interoperability, mouse qualification, monochrome/accessibility
 checks and the remaining command/dialog tests.
 
 The parent QEMU suite checks Save via menu navigation and Alt-F, selection

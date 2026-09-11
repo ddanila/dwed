@@ -1,0 +1,681 @@
+{
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 196096,
+        "sha256": "d4050478f5321af4f9a0493ce164e90a63a6cee6e3aa3c60319efc188a7d0412"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 6912,
+        "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37572,
+        "sha256": "5503446dc22b472cd5f73c40b04dacf6b0052f1fd12a3ddef3e1e1b33276ccd2"
+      },
+      "STORTEST.exe": {
+        "bytes": 142092,
+        "sha256": "56c6c89747dfa519a96f3c1f9ac64ef408b2692935f4292cbffa7cdae92b70d9"
+      },
+      "CLIPTEST.exe": {
+        "bytes": 142616,
+        "sha256": "c2dd7fae9d4cda2b6682c3af0b46c30d95f68c344a242d4ceff8ff7028a0b9ac"
+      }
+    }
+  },
+  "clean_builds_identical": true,
+  "parent_revision": "9800e3f544825f9fd25340cd855e0c8bb9c01204",
+  "dwed_base_revision": "fef041d868d85b82e59540b90f7c7ae87b73d617",
+  "runtime": "QEMU 486 TCG; private copies of parent out/floppy.img",
+  "editor_memory_backend": "DOS",
+  "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+  "host_clipboard_scope": "Simulated INT 2Fh service; real Windows/DOSBox interoperability unqualified",
+  "source_sha256": {
+    "dwed/SRC/CLIPTEXT.PAS": "51a90bcc00057872fe7c7d04ebd450bf8b161ec93ff879448d7f60a82e7db8b8",
+    "dwed/SRC/DWEDHNDL.PAS": "e25ac0109d783016bf32a7f5440fd68dd28d4b5d929c9b24406c29d99f698050",
+    "dwed/SRC/DWEDUTIL.PAS": "7282c6978a863e4ea8fb0d3276318f50ff846963262a271c573f91303cd4dd43",
+    "dwed/SRC/STRS.PAS": "4faf55a612412d4890499eaa84a0901502257acdc6a5778d664824603903bfac",
+    "dwed/SRC/STRSDOS.PAS": "b1ee72088d48332aa72a7ceadd3c48d682a0acc6ac221b81be3447e325dd5c0a",
+    "dwed/SRC/DWEDUNDO.PAS": "160abba70955d5f3adc2515e41b2ccaf31cc5f80b6f9c3d1b9e8fd8125a35127",
+    "dwed/SRC/UNREDO.PAS": "58e6ffc67ab125623cfcc532776a7b9b6691c9053168a1604c34fdd80b274ca2",
+    "dwed/SRC/SAFESAVE.PAS": "99ff70fd1df8f99fa4bef8c568d439d134a296af84e1295e22227a2f7b85aa9d",
+    "dwed/vendor/system2/WINCB.PAS": "af27829d65fe6fabe66bfb4561206345a338522be0a59df732b1d671daf17c07",
+    "dwed/tests/CLIPTEST.PAS": "738d8034e5bc3a14dff47c1711f18d7d6abf06a0a2f2d6b070381977fa85aacb",
+    "dwed/tools/build.py": "db329db99802b7cf64c845fb1b3118aa0f87021dd6823021f185850c3d8f3793",
+    "tests/test_dwed_qemu.py": "a4682960318e605df524bbf8abe8aebe2cd56352b5bc6e1ded1d60d51eaabd2e",
+    "tests/dwed_clipboard_scenarios.py": "75b2fa242919a550c5df4631286d3d8aad3f9f8929fe5e52f9f84da9a4abdd8c",
+    "tests/dwed_undo_scenarios.py": "d8c9ea7182ff055e18e59d8b5caa12e4d0801e1531d8d6fbef161bdfc68c2f5d",
+    "tests/dwed_dialog_scenarios.py": "ce33d3bfe443ab5c8e528f70d7e45d5b857668abb49732db65f394334b68ef94"
+  },
+  "case_count": 80,
+  "cases": [
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "disk-full-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "read-only-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "backup-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "external-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "recursive-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "outside-directory-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-lf-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-cr-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-no-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-tabs-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-codepage-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-max-line-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-empty-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-long-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-control-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "new-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "split-whitespace-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "remove-final-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "keyboard-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-save-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-alt-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-copy-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "menu-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "shortcut-open-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-journal-low",
+      "mode": "low",
+      "journal_probe": "PASS 95638 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-journal-high",
+      "mode": "high",
+      "journal_probe": "PASS 95638 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-low",
+      "mode": "low",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-high",
+      "mode": "high",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "clipboard-probe-low",
+      "mode": "low",
+      "clipboard_probe": "PASS 89 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "clipboard-probe-high",
+      "mode": "high",
+      "clipboard_probe": "PASS 89 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "dialog-exit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-save"
+    },
+    {
+      "case": "dialog-exit-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-cancel"
+    },
+    {
+      "case": "dialog-close-discard-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "close-discard"
+    },
+    {
+      "case": "dialog-close-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "close-cancel"
+    },
+    {
+      "case": "dialog-saveas-cancel-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "saveas-cancel"
+    },
+    {
+      "case": "dialog-unnamed-exit-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-unnamed-close-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-close"
+    },
+    {
+      "case": "dialog-unnamed-saveall-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "dialog-unnamed-cancel-name-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-cancel-name"
+    },
+    {
+      "case": "dialog-unnamed-cancel-all-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-cancel-all"
+    },
+    {
+      "case": "dialog-overwrite-no-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "overwrite-no"
+    },
+    {
+      "case": "dialog-overwrite-yes-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "overwrite-yes"
+    },
+    {
+      "case": "dialog-startup-unnamed-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-startup-command-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-exit-save-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-save"
+    },
+    {
+      "case": "dialog-unnamed-saveall-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "dialog-exit-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-full"
+    },
+    {
+      "case": "undo-edit-typing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing"
+    },
+    {
+      "case": "undo-edit-split-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "split"
+    },
+    {
+      "case": "undo-edit-merge-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "merge"
+    },
+    {
+      "case": "undo-edit-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "cut"
+    },
+    {
+      "case": "undo-edit-paste-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "paste"
+    },
+    {
+      "case": "undo-edit-multi-cut-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "multi-cut"
+    },
+    {
+      "case": "undo-edit-save-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "save"
+    },
+    {
+      "case": "undo-edit-windows-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "windows"
+    },
+    {
+      "case": "undo-edit-branch-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "branch"
+    },
+    {
+      "case": "undo-edit-indent-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "indent"
+    },
+    {
+      "case": "undo-edit-move-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "move"
+    },
+    {
+      "case": "undo-edit-typing-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "typing"
+    },
+    {
+      "case": "undo-edit-capacity-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "undo_flow": "capacity"
+    },
+    {
+      "case": "clip-edit-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "mixed"
+    },
+    {
+      "case": "clip-edit-import-large-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-large"
+    },
+    {
+      "case": "clip-edit-import-control-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-control"
+    },
+    {
+      "case": "clip-edit-import-missing-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "import-missing"
+    },
+    {
+      "case": "clip-edit-export-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "export-full"
+    },
+    {
+      "case": "clip-edit-paste-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "paste-overflow"
+    },
+    {
+      "case": "clip-edit-replace-newline-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "replace-newline"
+    },
+    {
+      "case": "clip-edit-cut-overflow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "cut-overflow"
+    },
+    {
+      "case": "clip-edit-copy-capacity-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "copy-capacity"
+    },
+    {
+      "case": "clip-edit-mixed-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "clipboard_flow": "mixed"
+    }
+  ]
+}

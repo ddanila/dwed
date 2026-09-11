@@ -56,8 +56,12 @@ function go_word_right(var ctx : TEditorContext) : integer;
 function go_page_up(var ctx : TEditorContext) : integer;
 function go_page_down(var ctx : TEditorContext) : integer;
 
-procedure copy_selected(var ctx : TEditorContext);
-procedure delete_selected(var ctx : TEditorContext);
+function copy_selected(var ctx : TEditorContext):boolean;
+function delete_selected(var ctx : TEditorContext):boolean;
+function selection_fits(var ctx:TEditorContext):boolean;
+function replace_text(var ctx:TEditorContext; p:pchar; capacity:word;
+                      allow_empty:boolean):boolean;
+function refresh_clipboard(var ctx:TEditorContext):integer;
 function save_clipboard(var ctx : TEditorContext; fname:string) : integer;
 function load_clipboard(var ctx : TEditorContext; fname:string) : integer;
 procedure go_win_list(var ctx:TEditorContext);
@@ -81,7 +85,7 @@ function get_ticks : longint;
 
 implementation
 
-uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo;
+uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo, cliptext, safesave;
 
 function get_ticks : longint;
 begin
@@ -402,137 +406,190 @@ begin
         end;
 end;
 
-function save_clipboard(var ctx : TEditorContext; fname : string) : integer;
-var f : bfile;
+function save_clipboard(var ctx:TEditorContext; fname:string):integer;
+var f:TSaveFile; error:integer; size:word;
 begin
-        save_clipboard := 105;
-        assign(f, fname);
-        rewrite(f);
-        if isopen(f) then begin
-                blockwrite(f, ctx.clipboard[0], strlen(ctx.clipboard));
-                truncate(f);
-                close(f);
-                save_clipboard := 0;
+        error:=clip_length(ctx.clipboard,CB_SIZE,size);
+        if error=0 then begin
+                start_save(f,fname,error);
+                if error=0 then begin
+                        write_save(f,ctx.clipboard[0],size,error);
+                        finish_save(f,error);
+                end;
         end;
+        save_clipboard:=error;
 end;
 
-function load_clipboard(var ctx : TEditorContext; fname : string) : integer;
-var f : bfile;
-readed   : word;
+function load_clipboard(var ctx:TEditorContext; fname:string):integer;
+var f:file; p:pchar; size:longint; got,allocated:word;
+    error,close_error:integer; previous_mode:byte; extra:byte;
 begin
-        load_clipboard := 104;
-        assign(f, fname);
-        reset(f);
-        if isopen(f) then begin
-                readed := blockread(f, ctx.clipboard[0], CB_SIZE - 1);
-                close(f);
-                ctx.clipboard[readed] := #0;
-                if readed <> 0 then load_clipboard := 0;
-                WCB_Copy(ctx.clipboard[0], readed + 1);
+        p:=nil; allocated:=0; size:=0;
+        System.Assign(f,fname);
+        previous_mode:=System.FileMode; System.FileMode:=0;
+        {$I-} System.Reset(f,1); {$I+}
+        error:=System.IOResult; System.FileMode:=previous_mode;
+        if error=0 then begin
+                {$I-} size:=System.FileSize(f); {$I+}
+                error:=System.IOResult;
+                if (error=0) and (size>=CB_SIZE) then error:=CLIP_TOO_LARGE;
+                if error=0 then begin
+                        allocated:=size+1;
+                        if MaxAvail<allocated then error:=8
+                        else GetMem(p,allocated);
+                end;
+                if error=0 then begin
+                        {$I-} System.BlockRead(f,p[0],size,got); {$I+}
+                        error:=System.IOResult;
+                        if (error=0) and (got<>size) then error:=CLIP_READ_CHANGED;
+                end;
+                if error=0 then begin
+                        {$I-} System.BlockRead(f,extra,1,got); {$I+}
+                        error:=System.IOResult;
+                        if (error=0) and (got<>0) then error:=CLIP_READ_CHANGED;
+                end;
+                {$I-} System.Close(f); {$I+}
+                close_error:=System.IOResult;
+                if error=0 then error:=close_error;
         end;
+        if error=0 then error:=clip_bytes(p,size);
+        if error=0 then begin
+                p[size]:=#0;
+                if ctx.has_wincb then
+                        if not WCB_Copy(p[0],size+1) then error:=CLIP_UNAVAILABLE;
+                if error=0 then Move(p[0],ctx.clipboard[0],size+1);
+        end;
+        if p<>nil then FreeMem(p,allocated);
+        load_clipboard:=error;
 end;
 
-procedure copy_selected(var ctx : TEditorContext);
-var
-        sb_y, se_y, clinenum : dword;
-        sb_x, se_x : integer;
-        pos        : word;
-        line       : EditorStr;
-        lineStr    : string;
-        len        : integer;
+function copy_selected(var ctx:TEditorContext):boolean;
+var sb_y,se_y,number,total:longint; sb_x,se_x,first,last,pass,error:integer;
+    line:EditorStr; body,part:string; position,size:word; dest:pchar;
 begin
+        copy_selected:=false;
         if not ctx.current^.editor.selection then exit;
-        get_sel_coord(ctx, sb_x, sb_y, se_x, se_y);
-        line := strs.find_num(ctx.current^.rline, sb_y);
-        pos := 0;
-        if sb_y = se_y then begin
-                strs.get(line, lineStr);
-                lineStr := copy(lineStr, sb_x, se_x - sb_x);
-                pos := length(lineStr);
-                move(lineStr[1], ctx.clipboard[0], pos);
-        end else while line <> nil do begin
-                strs.get(line, lineStr);
-                clinenum := strs.get_num(line);
-                len := length(lineStr);
-                if clinenum = sb_y then begin
-                        if pos > (CB_SIZE - (len + 3)) then break;
-                        dec(len, sb_x);
-                        move(lineStr[sb_x], ctx.clipboard[pos], len + 1);
-                        inc(pos, len + 1);
-                        ctx.clipboard[pos] := #$0D;
-                        inc(pos);
-                        ctx.clipboard[pos] := #$0A;
-                        inc(pos);
-                end else if clinenum = se_y then begin
-                        len := se_x - 1;
-                        if pos > (CB_SIZE - (len + 1)) then break;
-                        if se_x > 0 then begin
-                                move(lineStr[1], ctx.clipboard[pos], len);
-                                inc(pos, len);
+        get_sel_coord(ctx,sb_x,sb_y,se_x,se_y);
+        total:=0; error:=0; dest:=nil; size:=0;
+        for pass:=1 to 2 do begin
+                line:=strs.find_num(ctx.current^.rline,sb_y);
+                number:=sb_y; position:=0;
+                while number<=se_y do begin
+                        strs.get(line,body); first:=1; last:=length(body);
+                        if number=sb_y then first:=sb_x;
+                        if number=se_y then last:=se_x-1;
+                        part:=copy(body,first,last-first+1);
+                        if pass=1 then begin
+                                error:=clip_bytes(@part[1],length(part));
+                                if error<>0 then break;
+                                inc(total,length(part));
+                                if number<se_y then inc(total,2);
+                                if total>=CB_SIZE then begin error:=CLIP_TOO_LARGE; break end;
+                        end else begin
+                                Move(part[1],dest[position],length(part));
+                                inc(position,length(part));
+                                if number<se_y then begin
+                                        dest[position]:=#13; dest[position+1]:=#10;
+                                        inc(position,2);
+                                end;
                         end;
-                        break;
-                end else begin
-                        if pos > (CB_SIZE - (len + 3)) then break;
-                        move(lineStr[1], ctx.clipboard[pos], len);
-                        inc(pos, len);
-                        ctx.clipboard[pos] := #$0D;
-                        inc(pos);
-                        ctx.clipboard[pos] := #$0A;
-                        inc(pos);
+                        inc(number); line:=strs.go_next(line);
                 end;
-                line := strs.go_next(line);
+                if error<>0 then break;
+                if pass=1 then begin
+                        size:=total+1;
+                        if ctx.has_wincb then begin
+                                if MaxAvail<size then begin error:=8; break end;
+                                GetMem(dest,size);
+                        end else dest:=ctx.clipboard;
+                end;
         end;
-        ctx.clipboard[pos] := #0;
-        if ctx.has_wincb then begin
-                WCB_Copy(ctx.clipboard[0], pos + 1);
+        if error=0 then begin
+                dest[total]:=#0;
+                if ctx.has_wincb then begin
+                        if not WCB_Copy(dest[0],total+1) then error:=CLIP_UNAVAILABLE;
+                        if error=0 then Move(dest[0],ctx.clipboard[0],total+1);
+                end;
+        end;
+        if (dest<>nil) and ctx.has_wincb then FreeMem(dest,size);
+        if error<>0 then handle_error(ctx,error) else copy_selected:=true;
+end;
+
+procedure selection_edges(var ctx:TEditorContext; var first_line,last_line:longint;
+                          var prefix,suffix:string);
+var first_col,last_col:integer; line:EditorStr; body:string;
+begin
+        if ctx.current^.editor.selection then
+                get_sel_coord(ctx,first_col,first_line,last_col,last_line)
+        else begin
+                first_col:=ctx.current^.editor.x; last_col:=first_col;
+                first_line:=strs.get_num(ctx.current^.cline); last_line:=first_line;
+        end;
+        line:=strs.find_num(ctx.current^.rline,first_line); strs.get(line,body);
+        prefix:=copy(body,1,first_col-1);
+        line:=strs.find_num(ctx.current^.rline,last_line); strs.get(line,body);
+        suffix:=copy(body,last_col,length(body)-last_col+1);
+end;
+
+function selection_fits(var ctx:TEditorContext):boolean;
+var first_line,last_line:longint; prefix,suffix:string;
+begin
+        selection_fits:=true;
+        if not ctx.current^.editor.selection then exit;
+        selection_edges(ctx,first_line,last_line,prefix,suffix);
+        if length(prefix)+length(suffix)>255 then begin
+                handle_error(ctx,CLIP_LONG_LINE); selection_fits:=false;
         end;
 end;
 
-procedure delete_selected(var ctx : TEditorContext);
-var
-        sb_y, se_y        : dword;
-        sb_x, se_x        : integer;
-        bline, eline      : EditorStr;
-        lineStr  : string;
-        is_last  : boolean;
-        merged   : boolean;
+function replace_text(var ctx:TEditorContext; p:pchar; capacity:word;
+                      allow_empty:boolean):boolean;
+var first_line,last_line:longint; prefix,suffix:string;
+    size,added:word; error:integer; line:EditorStr;
 begin
-        if not ctx.current^.editor.selection then exit;
-        get_sel_coord(ctx, sb_x, sb_y, se_x, se_y);
-        if sb_y = se_y then begin
-                bline := strs.find_num(ctx.current^.rline, sb_y);
-                strs.get(bline, lineStr);
-                lineStr := copy(lineStr, 1, sb_x - 1) + copy(lineStr, se_x, length(lineStr) - se_x + 1);
-                bline := strs.put(bline, lineStr);
-                ctx.current^.cline := bline;
-                ctx.current^.editor.x := sb_x;
-        end else begin
-                if (sb_y + 1 <> se_y) then ctx.current^.rline := strs.delete(ctx.current^.rline, sb_y + 1, se_y - 1);
-                bline := strs.find_num(ctx.current^.rline, sb_y);
-                is_last := strs.is_last(bline);
-                strs.get(bline, lineStr);
-                if length(lineStr) <> 0 then begin
-                        lineStr := copy(lineStr, 1, sb_x - 1);
-                        bline := strs.put(bline, lineStr);
-                end;
-                ctx.current^.editor.x :=length(lineStr) + 1;
-                if not is_last then begin
-                        eline := strs.go_next(bline);
-                        strs.get(eline, lineStr);
-                        if length(lineStr) <> 0 then begin
-                                lineStr := copy(lineStr, se_x, length(lineStr) - se_x + 1);
-                                eline := strs.put(eline, lineStr);
-                        end;
-                        bline := strs.merge(bline, merged);
-                end;
-                ctx.current^.cline := bline;
-        end;
+        replace_text:=false;
+        error:=clip_length(p,capacity,size);
+        if error<>0 then begin handle_error(ctx,error); exit end;
+        if (size=0) and not allow_empty then begin replace_text:=true; exit end;
+        selection_edges(ctx,first_line,last_line,prefix,suffix);
+        error:=clip_check(p,capacity,length(prefix),length(suffix),size);
+        if error<>0 then begin handle_error(ctx,error); exit end;
+        line:=strs.find_num(ctx.current^.rline,first_line);
+        if first_line<last_line then
+                ctx.current^.rline:=strs.delete(ctx.current^.rline,first_line+1,last_line);
+        line:=strs.paste_parts(line,prefix,suffix,p,size,ctx.current^.editor.x,added);
         with ctx.current^ do begin
-                if strs.is_first(cline) then rline := cline;
-                chg := true;
-                editor.selection := false;
+                cline:=line; rline:=strs.go_first(line); total:=strs.renum(rline);
+                editor.selection:=false; editor.chg:=false; chg:=true;
         end;
-        load_ed(ctx);
+        load_ed(ctx); replace_text:=true;
+end;
+
+function delete_selected(var ctx:TEditorContext):boolean;
+const empty:pchar='';
+begin
+        delete_selected:=true;
+        if ctx.current^.editor.selection then
+                delete_selected:=replace_text(ctx,empty,1,true);
+end;
+
+function refresh_clipboard(var ctx:TEditorContext):integer;
+var p:pchar; size:word; error:integer;
+begin
+        error:=0;
+        if ctx.has_wincb then begin
+                if MaxAvail<CB_SIZE then error:=8 else begin
+                        GetMem(p,CB_SIZE); FillChar(p[0],CB_SIZE,$FF);
+                        if not WCB_Paste(p[0],CB_SIZE) then error:=CLIP_UNAVAILABLE
+                        else begin
+                                error:=clip_length(p,CB_SIZE,size);
+                                if error=0 then error:=clip_bytes(p,size);
+                                if error=0 then Move(p[0],ctx.clipboard[0],size+1);
+                        end;
+                        FreeMem(p,CB_SIZE);
+                end;
+        end;
+        refresh_clipboard:=error;
 end;
 
 procedure go_win_list(var ctx:TEditorContext);
@@ -667,6 +724,11 @@ function get_err_msg(errCode:integer) : string;
 var     errMsg : string;
 begin
         case errCode of
+        1005: errMsg := 'Text exceeds clipboard capacity';
+        1006: errMsg := 'Resulting line exceeds 255 bytes';
+        1007: errMsg := 'Unsupported control byte in clipboard';
+        1008: errMsg := 'Clipboard file changed during read';
+        1009: errMsg := 'Host clipboard is unavailable';
         1004: errMsg := 'Cannot record edit; document unchanged';
         1001: errMsg := 'Line exceeds 255 bytes; file was not opened';
         1002: errMsg := 'Mixed line endings; file was not opened';

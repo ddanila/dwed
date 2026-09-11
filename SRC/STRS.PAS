@@ -63,6 +63,10 @@ function renum(r : EditorStr) : longint;
 function get_num(r : EditorStr) : longint;
 function find_num(r : EditorStr; num : longint) : EditorStr;
 
+{ Caller must preflight with clip_check before any selection mutation. }
+function paste_parts(r:EditorStr; prefix,suffix:string; p:pchar; size:word;
+                     var column:integer; var added:word):EditorStr;
+
 function append(r : EditorStr; var pos : integer; p : pchar; var lnum:word) : EditorStr;
 function split(r : EditorStr; pos : integer) : EditorStr;
 
@@ -322,6 +326,25 @@ begin
         if memType = MT_SXMS then merge := EditorStr(strssxms.merge(dword(r), merged))
         else if memType = MT_SWAP then merge := EditorStr(strsswap.merge(dword(r), merged))
         else merge := EditorStr(strsdos.merge(pointer(r), merged));
+end;
+
+function paste_parts(r:EditorStr; prefix,suffix:string; p:pchar; size:word;
+                     var column:integer; var added:word):EditorStr;
+var body,empty:string; i:word; c:char;
+begin
+        body:=prefix; empty:=''; i:=0; added:=0;
+        while i<size do begin
+                c:=p[i]; inc(i);
+                if c in [#10,#13] then begin
+                        r:=strs.put(r,body);
+                        r:=strs.create(strs.go_next(r),r,empty);
+                        body:=''; inc(added);
+                        if (c=#13) and (i<size) then if p[i]=#10 then inc(i);
+                end else body:=body+c;
+        end;
+        column:=length(body)+1;
+        body:=body+suffix;
+        paste_parts:=strs.put(r,body);
 end;
 
 function append(r : EditorStr; var pos : integer; p : pchar; var lnum:word) : EditorStr;

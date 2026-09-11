@@ -93,7 +93,7 @@ ASM
         JZ   @end
         INC  BX
 @end:
-        MOV  BX, AX
+        MOV  AX, BX
 END;
 
 FUNCTION WCB_GetData(VAR d) : BOOLEAN;ASSEMBLER;
@@ -125,32 +125,37 @@ BEGIN
         r := FALSE;
         IF WCB_Detect THEN
                 IF WCB_Open THEN
-                        IF WCB_Clear THEN BEGIN
-                                r := WCB_SetData(d, (size AND $FFE0) OR $1F);
+                        BEGIN
+                                IF WCB_Clear THEN
+                                        r := WCB_SetData(d, size);
                                 WCB_Close;
                         END;
         WCB_Copy := r;
 END;
 
 FUNCTION WCB_Paste(VAR d; max_size : WORD) : BOOLEAN;
-VAR     r    : BOOLEAN;
-        size : LONGINT;
-        p    : PCHAR;
+VAR r:BOOLEAN; size:LONGINT; p:PCHAR; i:WORD;
 BEGIN
-        r := FALSE;
+        r:=FALSE;
         IF WCB_Detect THEN
                 IF WCB_Open THEN BEGIN
-                        size := WCB_GetDataSize;
-                        IF (size - 1) < max_size THEN BEGIN
-                                r := WCB_GetData(d);
+                        size:=WCB_GetDataSize;
+                        { The returned size bounds the transfer. CF_TEXT must
+                          contain its own NUL, possibly followed by padding. }
+                        IF (size>0) AND (size<=max_size) THEN BEGIN
+                                r:=WCB_GetData(d);
                                 IF r THEN BEGIN
-                                        p := @d;
-                                        p[size] := #0;
+                                        p:=@d; i:=0;
+                                        WHILE i<size DO BEGIN
+                                                IF p[i]=#0 THEN BREAK;
+                                                INC(i);
+                                        END;
+                                        r:=i<size;
                                 END;
                         END;
                         WCB_Close;
                 END;
-        WCB_Paste := r;
+        WCB_Paste:=r;
 END;
 
 END.

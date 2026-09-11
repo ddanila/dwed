@@ -17,7 +17,8 @@ opens a new document with that name; other open/read errors remain errors.
 Tabs currently appear as a one-cell arrow while remaining literal TAB bytes in
 storage. This keeps byte positions and selection consistent during this stage
 of the port. Normal tab-stop display, tab-aware cursor/mouse positioning and
-clipboard/insertion behavior still need implementation and qualification.
+insertion behavior still need implementation and qualification. Clipboard
+byte preservation and rejection behavior are described in `CLIPBOARD.md`.
 Automatic indentation and commands that intentionally change whitespace also
 need their own behavioral coverage.
 

@@ -84,7 +84,7 @@ that an empty document contains an empty line.
 `DWEDUNDO.PAS` snapshots the active file context and commits cached typing
 before finishing the group. File lifecycle, saving, window switching and
 undo/redo use their own paths. Conventional-memory `put`, `create` and deletion
-capture deltas before changing links; merge, split and append use those same
+capture deltas before changing links; merge, split and paste use those same
 entry points. The live transaction retains removed nodes until commit.
 
 A history-capacity or working-memory failure aborts the command, restores all
