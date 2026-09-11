@@ -28,4 +28,35 @@ This is instruction-model and functional smoke evidence, not real-BIOS
 acceptance or historical timing. DOSBox-X labels its 8086 model experimental.
 The generated report records the emulator binary fingerprint. IBM AT/XT ROMs,
 physical machines, old display adapters and HMA behavior are not established by
-these checks. The separate 86Box/real-BIOS gate remains open.
+these checks. See the separate IBM AT BIOS check below; broader platform qualification remains open.
+
+
+## IBM AT BIOS smoke check
+
+The parent `test_dwed_286_86box.py` installs the verified development EDIT
+package on a private boot floppy and starts an emulated IBM AT with IBM BIOS
+and VGA ROMs. It checks CPU identity and DOS HMA residency, runs the text and
+indentation probe, and exercises the packaged EDIT.COM through BIOS keyboard
+input. The host requires exact saved and backup bytes and the probe log both
+before and after the editor. A guest routine flushes DOS writes, signals the
+host through the serial port and halts; the host then stops its private emulator.
+This avoids relying on emulator-specific guest shutdown support.
+
+With a local 86Box installation and the official ROM set:
+
+```sh
+xvfb-run -a python3 tests/test_dwed_286_86box.py \
+  --build dwed/out/build --package dwed/out/package \
+  --emulator /path/to/86Box --roms /path/to/roms --mode low
+```
+
+On a graphical desktop, omit `xvfb-run`. Extracted Linux AppImages may use
+`AppRun` as the executable. The runner defaults to Qt xcb; `--qt-platform`
+selects another installed backend. `--timeout` controls the per-machine limit.
+ROMs and emulator binaries remain local, outside version control.
+
+The generated `ibmat-bios-milestone.json` records the validated LOW-mode run,
+package and core fingerprints, official download provenance and guest results.
+The runner also supports `--mode high`, but that mode is not established by
+this report. This is BIOS and functional evidence under emulation, not physical
+hardware acceptance, boot-speed measurement or coverage of all editor commands.
