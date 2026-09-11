@@ -87,7 +87,9 @@ preserve EMS sources. Cache and buffered-file writeback preserve dirty ownership
 temporary page allocations check contiguous heap space. Configuration and resume metadata use checked DOS reads with staged
 publication. Checked database reads stage output behind contiguous-heap checks
 and release staging on both success and failure; see [DATABASE-READS.md](DATABASE-READS.md).
-Alternative document stores remain runtime review work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
+Checked database appends reserve their input and block staging before writing,
+and release prior staging if a later reservation fails; see
+[DATABASE-APPENDS.md](DATABASE-APPENDS.md). Alternative document stores remain runtime review work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
 
 The heap review does not establish minimum physical RAM, supported file size,
 full-command operation at the startup boundary, or final legacy CPU coverage.

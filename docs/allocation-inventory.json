@@ -43,14 +43,14 @@
     "SRC/UNREDO.PAS": "e3ae9e7f50c77ff90219f22d2be1c4c37ce7736676349a5370984acf716cb19e",
     "vendor/system2/ANSI.PAS": "dcb87317ace6b875aead528d139e74bab1a37fd816e800edabab9e5a87ef0de4",
     "vendor/system2/CSTRING.PAS": "cf78b1b4bcbda44422f5283d01a39e940984c1b310f5890e68e57e99ea4653b7",
-    "vendor/system2/DBB.PAS": "c4a396c55e7f821bde6a6b8f13e29dc20987101fa1fcee89598fa7af26ce175f",
-    "vendor/system2/DBM.PAS": "636622e27f800727b842a546fc327c73277dc3b9976c06d63ce43ae37257d824",
+    "vendor/system2/DBB.PAS": "1f6bb303965206cadb7a8e717aceb95a2ef570d4ca6f307876855307be1ebc1b",
+    "vendor/system2/DBM.PAS": "54b84877e1cb7b73348e94983d82f937e802edd5a26723f220735b5f12dc8f99",
     "vendor/system2/DETECT.PAS": "ae81be855f8c7a00ba43c0cb5e54c981992d95c52908ae96a439f644ca07ee26",
     "vendor/system2/EXCACHE.PAS": "43a4c12b1fe98d5a98da22408593e98b4b64dd183b9731e912dc9c0b7002e687",
     "vendor/system2/EXMS.PAS": "809f8e47e6240bfa1c534540d94165dfac221c06e32345c42216533484616cb0",
     "vendor/system2/KMINPUT.PAS": "142a50bfa3a9755e3938c7bb4cc198294080a2d394dfe669549e24639aba850e",
     "vendor/system2/STR.PAS": "8810c6e77a7a087863e91b10f99e51e5a96689bdc12ec1dcf179dd6e2ed53664",
-    "vendor/system2/SYSTEM2.PAS": "5df0797de724acd853a8f701930c7d9a0faf2f7c187ad71539246468c64ed33b",
+    "vendor/system2/SYSTEM2.PAS": "07ff4c58ca39a63b5d214460ae7082f7958eeac1e62e1c65bd90b396337e91dd",
     "vendor/system2/WINCB.PAS": "af27829d65fe6fabe66bfb4561206345a338522be0a59df732b1d671daf17c07"
   },
   "unit_dependencies": {
@@ -860,10 +860,10 @@
     },
     {
       "path": "vendor/system2/DBB.PAS",
-      "line": 199,
+      "line": 200,
       "allocator": "getmem",
       "preceding_routine_declaration": "dbb_TryGet",
-      "context_start_line": 187,
+      "context_start_line": 188,
       "context": [
         "VAR staged:POINTER; count:WORD; physical:LONGINT;",
         "BEGIN",
@@ -885,11 +885,37 @@
       ]
     },
     {
+      "path": "vendor/system2/DBB.PAS",
+      "line": 237,
+      "allocator": "getmem",
+      "preceding_routine_declaration": "dbb_TryAppend",
+      "context_start_line": 225,
+      "context": [
+        "                EXIT;",
+        "        END;",
+        "        physical:=FileSize(f.f);",
+        "        IF (f.header.size<SizeOf(LONGINT)) OR (f.header.records<0) OR",
+        "           (f.header.next<0) OR (f.header.next>f.header.records) OR",
+        "           (f.header.root<0) OR (f.header.root>f.header.records) OR",
+        "           (physical<DBB_HDR_SIZE) THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;",
+        "        IF (f.header.records>(physical-DBB_HDR_SIZE) DIV f.header.size) OR",
+        "           (f.header.records>=(2147483647-DBB_HDR_SIZE) DIV f.header.size) THEN BEGIN",
+        "                f.f.ioresult:=DBB_INVALID; EXIT;",
+        "        END;",
+        "        IF MaxAvail<f.header.size THEN BEGIN f.f.ioresult:=8; EXIT END;",
+        "        GetMem(staged,f.header.size); CopyFarBytes(b,staged^,f.header.size);",
+        "        target:=f.header.records+1;",
+        "        Flush(f.f);",
+        "        IF f.f.ioresult=0 THEN _go(f,target);",
+        "        IF f.f.ioresult=0 THEN BlockWrite(f.f,staged^,f.header.size);"
+      ]
+    },
+    {
       "path": "vendor/system2/DBM.PAS",
-      "line": 283,
+      "line": 285,
       "allocator": "getmem",
       "preceding_routine_declaration": "dbm_TryGet",
-      "context_start_line": 271,
+      "context_start_line": 273,
       "context": [
         "END;",
         "",
@@ -906,8 +932,60 @@
         "                GetMem(staged,size);",
         "        END;",
         "        IF scan_chain(f,rec,PCHAR(staged),size,total) THEN BEGIN",
-        "                IF size<>0 THEN Move(staged^,b,size);",
+        "                IF size<>0 THEN CopyFarBytes(staged^,b,size);",
         "                dbm_TryGet:=TRUE;"
+      ]
+    },
+    {
+      "path": "vendor/system2/DBM.PAS",
+      "line": 326,
+      "allocator": "getmem",
+      "preceding_routine_declaration": "dbm_TryAppend",
+      "context_start_line": 314,
+      "context": [
+        "           (f.header.records<0) OR (f.header.next<0) OR (f.header.next>f.header.records) OR",
+        "           (f.header.root<0) OR (f.header.root>f.header.records) OR",
+        "           (physical<f.header.size) THEN BEGIN",
+        "                f.f.ioresult:=DBM_INVALID; EXIT;",
+        "        END;",
+        "        IF f.header.records>physical DIV f.header.size-1 THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;",
+        "        IF size=0 THEN BEGIN rec:=0; dbm_TryAppend:=TRUE; EXIT END;",
+        "        blocks:=(LONGINT(size)+f.rblk_size-1) DIV f.rblk_size;",
+        "        IF f.header.records>2147483647 DIV f.header.size-1-blocks THEN BEGIN",
+        "                f.f.ioresult:=DBM_INVALID; EXIT;",
+        "        END;",
+        "        IF MaxAvail<size THEN BEGIN f.f.ioresult:=8; EXIT END;",
+        "        GetMem(payload,size); CopyFarBytes(b,payload^,size);",
+        "        IF MaxAvail<f.header.size THEN BEGIN",
+        "                FreeMem(payload,size); f.f.ioresult:=8; EXIT;",
+        "        END;",
+        "        GetMem(staged,f.header.size);"
+      ]
+    },
+    {
+      "path": "vendor/system2/DBM.PAS",
+      "line": 330,
+      "allocator": "getmem",
+      "preceding_routine_declaration": "dbm_TryAppend",
+      "context_start_line": 318,
+      "context": [
+        "        END;",
+        "        IF f.header.records>physical DIV f.header.size-1 THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;",
+        "        IF size=0 THEN BEGIN rec:=0; dbm_TryAppend:=TRUE; EXIT END;",
+        "        blocks:=(LONGINT(size)+f.rblk_size-1) DIV f.rblk_size;",
+        "        IF f.header.records>2147483647 DIV f.header.size-1-blocks THEN BEGIN",
+        "                f.f.ioresult:=DBM_INVALID; EXIT;",
+        "        END;",
+        "        IF MaxAvail<size THEN BEGIN f.f.ioresult:=8; EXIT END;",
+        "        GetMem(payload,size); CopyFarBytes(b,payload^,size);",
+        "        IF MaxAvail<f.header.size THEN BEGIN",
+        "                FreeMem(payload,size); f.f.ioresult:=8; EXIT;",
+        "        END;",
+        "        GetMem(staged,f.header.size);",
+        "        target:=f.header.records+1; last:=f.header.records+blocks;",
+        "        source:=payload; remaining:=size;",
+        "        Flush(f.f);",
+        "        WHILE (remaining<>0) AND (f.f.ioresult=0) DO BEGIN"
       ]
     },
     {
@@ -938,10 +1016,10 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 657,
+      "line": 662,
       "allocator": "getmem",
       "preceding_routine_declaration": "ReWrite",
-      "context_start_line": 645,
+      "context_start_line": 650,
       "context": [
         "BEGIN",
         "        FillChar(f, SizeOf(BFILE), #0);",
@@ -964,10 +1042,10 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 687,
+      "line": 692,
       "allocator": "getmem",
       "preceding_routine_declaration": "ResetMode",
-      "context_start_line": 675,
+      "context_start_line": 680,
       "context": [
         "        END;",
         "{$ENDIF}",
@@ -990,10 +1068,10 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 761,
+      "line": 766,
       "allocator": "getmem",
       "preceding_routine_declaration": "ReWriteTemp",
-      "context_start_line": 749,
+      "context_start_line": 754,
       "context": [
         "        IF f.is_open OR f.delete_pending THEN BEGIN f.ioresult:=BFILE_PENDING; EXIT END;",
         "        FillChar(f,SizeOf(BFILE),0);",
@@ -1016,10 +1094,10 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 827,
+      "line": 832,
       "allocator": "getmem",
       "preceding_routine_declaration": "FsSwitchPage",
-      "context_start_line": 815,
+      "context_start_line": 820,
       "context": [
         "VAR scratch:^BFILE_BUF; count,wanted,got:WORD; remaining:LONGINT;",
         "    status:INTEGER; dirty,stored:BOOLEAN;",
@@ -1042,10 +1120,10 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 1030,
+      "line": 1064,
       "allocator": "getmem",
       "preceding_routine_declaration": "Flush",
-      "context_start_line": 1018,
+      "context_start_line": 1052,
       "context": [
         "        END;",
         "END;",
@@ -1067,5 +1145,5 @@
       ]
     }
   ],
-  "heap_call_count": 26
+  "heap_call_count": 29
 }

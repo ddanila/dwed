@@ -53,6 +53,7 @@ PROCEDURE dbb_ReWriteTemp(VAR f : DBBFile; blk_size : WORD);
 
 FUNCTION dbb_IsOpen(VAR f : DBBFile) : BOOLEAN;
 
+FUNCTION dbb_TryAppend(VAR f:DBBFile; VAR b; VAR rec:LONGINT):BOOLEAN;
 FUNCTION dbb_Add(VAR f : DBBFile; VAR b) : LONGINT;
 PROCEDURE dbb_Put(VAR f : DBBFile; rec : LONGINT; VAR b);
 FUNCTION dbb_TryGet(VAR f : DBBFile; rec : LONGINT; VAR b):BOOLEAN;
@@ -203,7 +204,7 @@ BEGIN
                 IF (f.f.ioresult=0) AND (count<>f.header.size) THEN f.f.ioresult:=100;
         END;
         IF f.f.ioresult=0 THEN BEGIN
-                Move(staged^,b,f.header.size); dbb_TryGet:=TRUE;
+                CopyFarBytes(staged^,b,f.header.size); dbb_TryGet:=TRUE;
         END;
         FreeMem(staged,f.header.size);
 END;
@@ -211,6 +212,38 @@ END;
 PROCEDURE dbb_Get(VAR f : DBBFile; rec : LONGINT; VAR b);
 BEGIN
         dbb_TryGet(f,rec,b);
+END;
+
+{ Copy-on-write callers append an unpublished record instead of consuming
+  the free list. Publish its number only after complete buffered writeback. }
+FUNCTION dbb_TryAppend(VAR f:DBBFile; VAR b; VAR rec:LONGINT):BOOLEAN;
+VAR staged:POINTER; physical,target:LONGINT;
+BEGIN
+        dbb_TryAppend:=FALSE;
+        IF NOT dbb_IsOpen(f) THEN BEGIN
+                IF f.f.ioresult=0 THEN f.f.ioresult:=103;
+                EXIT;
+        END;
+        physical:=FileSize(f.f);
+        IF (f.header.size<SizeOf(LONGINT)) OR (f.header.records<0) OR
+           (f.header.next<0) OR (f.header.next>f.header.records) OR
+           (f.header.root<0) OR (f.header.root>f.header.records) OR
+           (physical<DBB_HDR_SIZE) THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
+        IF (f.header.records>(physical-DBB_HDR_SIZE) DIV f.header.size) OR
+           (f.header.records>=(2147483647-DBB_HDR_SIZE) DIV f.header.size) THEN BEGIN
+                f.f.ioresult:=DBB_INVALID; EXIT;
+        END;
+        IF MaxAvail<f.header.size THEN BEGIN f.f.ioresult:=8; EXIT END;
+        GetMem(staged,f.header.size); CopyFarBytes(b,staged^,f.header.size);
+        target:=f.header.records+1;
+        Flush(f.f);
+        IF f.f.ioresult=0 THEN _go(f,target);
+        IF f.f.ioresult=0 THEN BlockWrite(f.f,staged^,f.header.size);
+        IF f.f.ioresult=0 THEN Flush(f.f);
+        IF f.f.ioresult=0 THEN BEGIN
+                f.header.records:=target; rec:=target; dbb_TryAppend:=TRUE;
+        END;
+        FreeMem(staged,f.header.size);
 END;
 
 FUNCTION dbb_Add(VAR f : DBBFile; VAR b) : LONGINT;

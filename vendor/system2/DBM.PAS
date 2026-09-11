@@ -57,6 +57,7 @@ FUNCTION dbm_IsOpen(VAR f : DBMFile) : BOOLEAN;
 FUNCTION dbm_GetRoot(VAR f : DBMFile):LONGINT;
 PROCEDURE dbm_SetRoot(VAR f : DBMFile; new_root : LONGINT);
 
+FUNCTION dbm_TryAppend(VAR f:DBMFile; VAR b; size:WORD; VAR rec:LONGINT):BOOLEAN;
 FUNCTION dbm_Add(VAR f : DBMFile; VAR b; size : WORD) : LONGINT;
 FUNCTION dbm_TryGet(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD):BOOLEAN;
 PROCEDURE dbm_Get(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD);
@@ -219,7 +220,7 @@ FUNCTION scan_chain(VAR f:DBMFile; rec:LONGINT; target:PCHAR; requested:WORD;
                     VAR total:LONGINT):BOOLEAN;
 VAR link:PACKED RECORD next:LONGINT; count:WORD END;
     physical,visited,anchor,power,distance:LONGINT;
-    copied,take,count:WORD;
+    copied,take,count:WORD; part:PCHAR;
 BEGIN
         scan_chain:=FALSE; total:=0; copied:=0; visited:=0;
         IF NOT dbm_IsOpen(f) THEN BEGIN
@@ -247,7 +248,8 @@ BEGIN
                 take:=link.count;
                 IF take>requested-copied THEN take:=requested-copied;
                 IF (target<>NIL) AND (take<>0) THEN BEGIN
-                        count:=BlockRead(f.f,target[copied],take);
+                        part:=FarBytePtr(target,copied);
+                        count:=BlockRead(f.f,part^,take);
                         IF f.f.ioresult<>0 THEN EXIT;
                         IF count<>take THEN BEGIN f.f.ioresult:=100; EXIT END;
                         Inc(copied,take);
@@ -283,7 +285,7 @@ BEGIN
                 GetMem(staged,size);
         END;
         IF scan_chain(f,rec,PCHAR(staged),size,total) THEN BEGIN
-                IF size<>0 THEN Move(staged^,b,size);
+                IF size<>0 THEN CopyFarBytes(staged^,b,size);
                 dbm_TryGet:=TRUE;
         END;
         IF staged<>NIL THEN FreeMem(staged,size);
@@ -292,6 +294,58 @@ END;
 PROCEDURE dbm_Get(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD);
 BEGIN
         dbm_TryGet(f,rec,b,size);
+END;
+
+{ Write complete new blocks without linking them into an existing chain or
+  consuming the free list. A failed append may leave an unpublished tail;
+  retry overwrites that tail starting at the unchanged record-count boundary. }
+FUNCTION dbm_TryAppend(VAR f:DBMFile; VAR b; size:WORD; VAR rec:LONGINT):BOOLEAN;
+VAR staged,source,payload:PCHAR;
+    link:PACKED RECORD next:LONGINT; count:WORD END;
+    physical,blocks,target,last:LONGINT; remaining,take:WORD;
+BEGIN
+        dbm_TryAppend:=FALSE;
+        IF NOT dbm_IsOpen(f) THEN BEGIN
+                IF f.f.ioresult=0 THEN f.f.ioresult:=103;
+                EXIT;
+        END;
+        physical:=FileSize(f.f);
+        IF (f.header.size<=ADDED_DATA) OR (f.rblk_size<>f.header.size-ADDED_DATA) OR
+           (f.header.records<0) OR (f.header.next<0) OR (f.header.next>f.header.records) OR
+           (f.header.root<0) OR (f.header.root>f.header.records) OR
+           (physical<f.header.size) THEN BEGIN
+                f.f.ioresult:=DBM_INVALID; EXIT;
+        END;
+        IF f.header.records>physical DIV f.header.size-1 THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
+        IF size=0 THEN BEGIN rec:=0; dbm_TryAppend:=TRUE; EXIT END;
+        blocks:=(LONGINT(size)+f.rblk_size-1) DIV f.rblk_size;
+        IF f.header.records>2147483647 DIV f.header.size-1-blocks THEN BEGIN
+                f.f.ioresult:=DBM_INVALID; EXIT;
+        END;
+        IF MaxAvail<size THEN BEGIN f.f.ioresult:=8; EXIT END;
+        GetMem(payload,size); CopyFarBytes(b,payload^,size);
+        IF MaxAvail<f.header.size THEN BEGIN
+                FreeMem(payload,size); f.f.ioresult:=8; EXIT;
+        END;
+        GetMem(staged,f.header.size);
+        target:=f.header.records+1; last:=f.header.records+blocks;
+        source:=payload; remaining:=size;
+        Flush(f.f);
+        WHILE (remaining<>0) AND (f.f.ioresult=0) DO BEGIN
+                take:=remaining; IF take>f.rblk_size THEN take:=f.rblk_size;
+                FillFarBytes(staged^,f.header.size,0);
+                link.next:=0; IF target<last THEN link.next:=target+1;
+                link.count:=take; Move(link,staged^,SizeOf(link));
+                CopyFarBytes(source^,staged[ADDED_DATA],take);
+                _go(f,target);
+                IF f.f.ioresult=0 THEN BlockWrite(f.f,staged^,f.header.size);
+                IF f.f.ioresult=0 THEN BEGIN Inc(target); source:=FarBytePtr(source,take); Dec(remaining,take) END;
+        END;
+        IF f.f.ioresult=0 THEN Flush(f.f);
+        IF f.f.ioresult=0 THEN BEGIN
+                rec:=f.header.records+1; f.header.records:=last; dbm_TryAppend:=TRUE;
+        END;
+        FreeMem(staged,f.header.size); FreeMem(payload,size);
 END;
 
 FUNCTION dbm_Add(VAR f : DBMFile; VAR b; size : WORD) : LONGINT;

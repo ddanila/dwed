@@ -1,7 +1,9 @@
 # Checked backing-database reads
 
 `dbb_TryGet` and `dbm_TryGet` return success only after staging and validating
-all requested bytes. On failure, the caller's destination remains unchanged;
+all requested bytes. Staging copies and buffered transfers handle far buffers
+that cross a segment boundary; maximum-size cases are covered by
+[the append probe](DATABASE-APPENDS.md). On failure, the caller's destination remains unchanged;
 `f.f.ioresult` identifies the failure. Staging allocation refusal reports the
 DOS out-of-memory status. Legacy `dbb_Get` and `dbm_Get` delegate to these
 functions, retaining status in the database object.

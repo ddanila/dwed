@@ -34,7 +34,8 @@ record mutation or complete editor behavior with these stores.
 ## Remaining qualification
 
 [Database initialization](DATABASE-INITIALIZATION.md) validates headers without
-rewriting failed input and retains cleanup ownership. Database allocation,
+rewriting failed input and retains cleanup ownership. [Checked append APIs](DATABASE-APPENDS.md)
+write unpublished records for future replacement transactions. Legacy allocation,
 free-list traversal and updates, and replacement still need checked status
 propagation and failure-safe publication. [Checked record reads](DATABASE-READS.md)
 stage output and validate chains. [Checked string-store saves](STORE-SAVES.md)

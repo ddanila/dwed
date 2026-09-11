@@ -109,6 +109,11 @@ FUNCTION ReadWord(VAR f : BFILE) : WORD;
 FUNCTION ReadDWord(VAR f : BFILE) : DWORD;
 PROCEDURE ReadLn (VAR f : BFILE; VAR s : STRING);
 PROCEDURE ReadAsciiz(VAR f : BFile; VAR s : STRING);
+{ Segment-aware access to far buffers; CopyFarBytes requires nonoverlap. }
+FUNCTION FarBytePtr(base:POINTER; offset:WORD):PCHAR;
+PROCEDURE CopyFarBytes(VAR source,dest; count:WORD);
+PROCEDURE FillFarBytes(VAR dest; count:WORD; value:BYTE);
+
 FUNCTION BlockRead (VAR f : BFILE; VAR d; count : WORD) : WORD;
 
 PROCEDURE WriteByte(VAR f : BFILE; b : BYTE);
@@ -889,6 +894,35 @@ BEGIN
         FsSwitchPage(f, new_page);
 END;
 
+FUNCTION FarBytePtr(base:POINTER; offset:WORD):PCHAR;
+VAR address:LONGINT;
+BEGIN
+        address:=LONGINT(Ofs(base^))+offset;
+        FarBytePtr:=Ptr(Seg(base^)+(address SHR 4),address AND 15);
+END;
+
+PROCEDURE CopyFarBytes(VAR source,dest; count:WORD);
+VAR copied,take:WORD; src,dst:PCHAR;
+BEGIN
+        copied:=0;
+        WHILE count<>0 DO BEGIN
+                take:=count; IF take>16384 THEN take:=16384;
+                src:=FarBytePtr(@source,copied); dst:=FarBytePtr(@dest,copied);
+                Move(src^,dst^,take); Inc(copied,take); Dec(count,take);
+        END;
+END;
+
+PROCEDURE FillFarBytes(VAR dest; count:WORD; value:BYTE);
+VAR copied,take:WORD; dst:PCHAR;
+BEGIN
+        copied:=0;
+        WHILE count<>0 DO BEGIN
+                take:=count; IF take>16384 THEN take:=16384;
+                dst:=FarBytePtr(@dest,copied);
+                FillChar(dst^,take,value); Inc(copied,take); Dec(count,take);
+        END;
+END;
+
 PROCEDURE BlockWrite(VAR f : BFILE; VAR d; count : WORD);
 VAR     p     : PCHAR;
         delta : WORD;
@@ -899,7 +933,7 @@ BEGIN
         END;
         f.ioresult := 0;
         res := 0;
-        p := @d;
+        p := FarBytePtr(@d,0);
         WHILE count <> 0 DO BEGIN
                 delta := SizeOf(BFILE_BUF) - f.buf_pos;
                 IF delta = 0 THEN BEGIN
@@ -912,7 +946,7 @@ BEGIN
                 Move(p^, f.buf^[f.buf_pos], delta);
                 f.buf_update := TRUE;
                 Inc(f.buf_pos, delta);
-                Inc(p, delta);
+                p := FarBytePtr(p,delta);
                 Dec(count, delta);
                 IF f.buf_pos > f.buf_count THEN f.buf_count := f.buf_pos;
         END;
@@ -930,7 +964,7 @@ BEGIN
         f.ioresult := 0;
         r := 0;
         res := 0;
-        p := @d;
+        p := FarBytePtr(@d,0);
         WHILE count <> 0 DO BEGIN
                 delta := f.buf_count - f.buf_pos;
                 IF delta = 0 THEN BEGIN
@@ -944,7 +978,7 @@ BEGIN
                 Move(f.buf^[f.buf_pos], p^, delta);
                 Inc(f.buf_pos, delta);
                 Dec(count, delta);
-                Inc(p, delta);
+                p := FarBytePtr(p,delta);
                 Inc(r, delta);
         END;
         BlockRead := r;
