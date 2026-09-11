@@ -51,10 +51,9 @@ for exact build identity, scope, and old-implementation controls.
 ## Remaining caller qualification
 
 These guarantees apply to cache and buffered-file operations whose callers
-check their results and retain the file object on failure. Higher-level caller
-review remains necessary: `DWEDOVL.load_config` and `parse_temp` do not check
-each buffered read result. Their error paths must be fixed and tested before
-release. External-command checkpoints use the checked transaction described in
-[SESSION-SAFETY.md](SESSION-SAFETY.md). Optional document stores also
-need end-to-end qualification of their buffered-I/O failures. A successful
-cache operation alone does not establish safe behavior for those callers.
+check their results and retain the file object on failure. Configuration and
+resume metadata now use the [checked metadata reader](METADATA-READERS.md).
+External-command checkpoints use the checked transaction described in
+[SESSION-SAFETY.md](SESSION-SAFETY.md). Optional document stores still need
+end-to-end qualification of their buffered-I/O failures. A successful cache
+operation alone does not establish safe behavior for those callers.

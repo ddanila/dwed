@@ -24,6 +24,12 @@ candidates are freed without publishing a partial document. `STRS.from_file`
 uses `STRSDOS.create_checked` for unpublished DOS lines; the shared loader frees
 the partial chain on refusal. See [LOAD-MEMORY.md](LOAD-MEMORY.md).
 
+`DOSLINES.read_lines` checks each metadata staging allocation against the
+largest free block and the caller's working reserve. Failure frees the partial
+list and closes the read handle, retaining its owner if close fails. Its
+allocation-failure probe verifies that the staged heap is reclaimed. See
+[METADATA-READERS.md](METADATA-READERS.md).
+
 The raw `STRSDOS.create` heap call requires caller context. Runtime DOS edits
 enter `DWEDHNDL.run_action`, bind a journal with `DWEDUNDO.start_edit`, and use
 `live_change` through `create`/`put`. `replay_allocate` and `UNREDO.allocate`
@@ -75,12 +81,11 @@ intercepts XMS discovery and chains all unrelated requests to the real handler.
 This qualifies request construction, not an actual SXMS driver's memory manager.
 The [checked transfer APIs](EXTENDED-TRANSFERS.md) expose driver failure and
 preserve EMS sources. Cache and buffered-file writeback preserve dirty ownership on refusal; their
-temporary page allocations check contiguous heap space. The higher-level
-buffered-file callers and alternative document stores remain runtime review
-work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
+temporary page allocations check contiguous heap space. Configuration and resume metadata use checked DOS reads with staged
+publication. Alternative document stores remain runtime review work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
 
 The heap review does not establish minimum physical RAM, supported file size,
 full-command operation at the startup boundary, or final legacy CPU coverage.
-The measured startup/edit boundary for the current executable is recorded in
+The historical startup/edit boundary and its exact executable identity are recorded in
 [current-memory-milestone.json](current-memory-milestone.json). Final runtime
 qualification and distribution promotion remain open.

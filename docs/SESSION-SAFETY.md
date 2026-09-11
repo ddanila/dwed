@@ -26,8 +26,8 @@ into COMMAND's memory; it is not linked into the editor. Successful launch and
 resume are covered separately through the actual packaged launcher.
 
 See [session-safety-milestone.json](session-safety-milestone.json) for build
-identity and qualification evidence. This does not complete resume-file or
-configuration-reader error handling, alternative document-store qualification,
-or final memory and runtime qualification. The extra persistent transaction
+identity and qualification evidence. Resume-file and configuration reads are covered by
+[the metadata-reader contract](METADATA-READERS.md). Alternative document-store
+qualification and final memory and runtime qualification remain open. The extra persistent transaction
 changes the editor's memory footprint; older memory-boundary reports do not
 establish the minimum for this build.

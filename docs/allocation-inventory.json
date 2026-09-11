@@ -8,15 +8,17 @@
   "source_sha256": {
     "SRC/CLIPTEXT.PAS": "51a90bcc00057872fe7c7d04ebd450bf8b161ec93ff879448d7f60a82e7db8b8",
     "SRC/DOSFAIL.PAS": "f43bef841fa62e1306f7ebaf891c420ac1aa0522da73840724f465b343ffb0ae",
+    "SRC/DOSLINES.PAS": "f55b8d5828fe1a812c03d4ffe581676dd9461f4b4cf68c1f00b1159277aaf43b",
     "SRC/DOSREAD.PAS": "efd380e6ec6c6e0014cde4741ccb48645064fdbdce9240c0480a3d7018b8270f",
     "SRC/DWEDADDO.PAS": "79647f143786ac2846edba495bd688e49dace202acb1f763cd0fa20ce245e2ef",
     "SRC/DWEDCMD.PAS": "04fadfde4f2d9b89652c859f86bc8a6254090f4f0ae12e40ecff1de8acc56bd9",
     "SRC/DWEDHELP.PAS": "8f452dbba947bf1acfd26498382b7ca80c3b07e3d7e7d2996d962ee8ac88e5b8",
     "SRC/DWEDHL.PAS": "ce580cb0b9064221b3a65f0381c65b7d918fa4aaa3e69d43e8e3a22da7d4c219",
     "SRC/DWEDHNDL.PAS": "d95fe8266bd8ad2bee20ccc533245a7140ed99e9f24a00c9d512c7bdde4f5215",
+    "SRC/DWEDINIT.PAS": "38831e73348b701e83679cc7073cd7b8798ae1002bf65cfccc16797a9cc420cf",
     "SRC/DWEDLNCH.PAS": "bf9fbb5c509d507b148e659521f3931a3b5e86760fb34022dcd02172ff90ea04",
     "SRC/DWEDMENU.PAS": "debdc2410e6dd1a47f2f72f300e0aadb39248e00604e01fa0f4df232ec863b78",
-    "SRC/DWEDOVL.PAS": "704049609011a350f7fe3841b524e75b155dda5ca1f80ea6fcf69c27bfbf69ba",
+    "SRC/DWEDOVL.PAS": "19325aaa84f2431018fa4a6add150b2e252bc8d218729a0b1d628117a4b8ea9f",
     "SRC/DWEDRCV.PAS": "b626a90b30f91ac4c4b209a79211dbd7532cd3e3b7fffe239422ed95065de7f9",
     "SRC/DWEDSAVE.PAS": "aa4bfe408c5f1245af937a83ecdd355a41e81f5b3bd930ec4a9750d1429da0cd",
     "SRC/DWEDSCRU.PAS": "9ec3b0ee4dd4a7e6893fa1793bc0c59e6094e29d3f276872c262f6f2725c7b10",
@@ -24,7 +26,7 @@
     "SRC/DWEDTBL.PAS": "a8fa30250272d5c20372bff3b9ac0c0a891566dcbb6327ffa65b154112f4e834",
     "SRC/DWEDTYPE.PAS": "b811c94cb1a6abafae2cf87ee7cf69822243eeb2c48fa5e7ee25a4ef0d2031b6",
     "SRC/DWEDUNDO.PAS": "160abba70955d5f3adc2515e41b2ccaf31cc5f80b6f9c3d1b9e8fd8125a35127",
-    "SRC/DWEDUTIL.PAS": "c284186b66694d0d6a1c1642a18d6bec393894d6582528748b5fddaf690aa7d5",
+    "SRC/DWEDUTIL.PAS": "db7d8037faf5fe418486d50c1d8cb3fb2497d1b6abc62a61050636d367548f26",
     "SRC/EVENT.PAS": "c4b3971028a49c7bcd6f9d4fadc5803ef26dd1c501f5a3cb039ff500ad2eafe9",
     "SRC/HELP.PAS": "168151a184ea7c69b6974d07b719aaf8c648b37f5e5f13f6d4e758b17abf536d",
     "SRC/SAFESAVE.PAS": "0100d53d32713cce5898843e14e406e42a2ab74fd661957aedfd82811f7f85b5",
@@ -55,6 +57,9 @@
     "SRC/CLIPTEXT.PAS": [],
     "SRC/DOSFAIL.PAS": [
       "dos"
+    ],
+    "SRC/DOSLINES.PAS": [
+      "dosread"
     ],
     "SRC/DOSREAD.PAS": [
       "dos",
@@ -120,6 +125,19 @@
       "unredo",
       "wincb"
     ],
+    "SRC/DWEDINIT.PAS": [
+      "ansi",
+      "dos",
+      "doslines",
+      "dosread",
+      "dwedtype",
+      "dwedutil",
+      "str",
+      "strs",
+      "strutil",
+      "system2",
+      "unredo"
+    ],
     "SRC/DWEDLNCH.PAS": [
       "dwedtype"
     ],
@@ -138,6 +156,7 @@
       "dos",
       "dwedhl",
       "dwedhndl",
+      "dwedinit",
       "dwedlnch",
       "dwedrcv",
       "dwedscru",
@@ -371,6 +390,32 @@
   ],
   "heap_calls": [
     {
+      "path": "SRC/DOSLINES.PAS",
+      "line": 29,
+      "allocator": "getmem",
+      "preceding_routine_declaration": "append",
+      "context_start_line": 17,
+      "context": [
+        "        end;",
+        "end;",
+        "function read_lines(var reader:TReadFile; name:string; var lines:PInputLine;",
+        "                    reserve:longint):integer;",
+        "var buffer:array[0..511] of char; count,i:word; error:integer;",
+        "    total:longword; value:string; last:PInputLine; after_cr:boolean;",
+        "        procedure append;",
+        "        var item:PInputLine;",
+        "        begin",
+        "                if error<>0 then exit;",
+        "                if (MaxAvail<sizeof(TInputLine)) or",
+        "                   (MemAvail-sizeof(TInputLine)<reserve) then begin error:=8; exit end;",
+        "                GetMem(item,sizeof(TInputLine)); item^.next:=nil; item^.value:=value;",
+        "                if last=nil then lines:=item else last^.next:=item;",
+        "                last:=item; value:='';",
+        "        end;",
+        "begin"
+      ]
+    },
+    {
       "path": "SRC/DWEDRCV.PAS",
       "line": 206,
       "allocator": "getmem",
@@ -554,10 +599,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 950,
+      "line": 951,
       "allocator": "getmem",
       "preceding_routine_declaration": "create_fast_jmp_list",
-      "context_start_line": 938,
+      "context_start_line": 939,
       "context": [
         "                        end else if starts_with(uline, 'IMPLEMENTATION') then begin",
         "                                upstr(line);",
@@ -580,10 +625,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 991,
+      "line": 992,
       "allocator": "getmem",
       "preceding_routine_declaration": "fast_jmp",
-      "context_start_line": 979,
+      "context_start_line": 980,
       "context": [
         "        r := SCRU_NONE; fast_jmp:=r;",
         "        if fjl=nil then exit;",
@@ -943,5 +988,5 @@
       ]
     }
   ],
-  "heap_call_count": 22
+  "heap_call_count": 23
 }
