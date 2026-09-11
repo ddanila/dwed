@@ -45,3 +45,6 @@ for [cleanup retry](SAVE-RECOVERY.md). Recovery additionally checks the size and
 CRC of the exact bytes passed through the parser before adopting the document.
 These checks detect size changes and accidental recovery-copy corruption;
 ordinary loads do not promise a snapshot against concurrent same-size writes.
+
+DOS-store loading now rejects exhausted document memory without retaining a
+partial document. See [allocation behavior and limits](LOAD-MEMORY.md).

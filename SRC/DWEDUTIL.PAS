@@ -69,7 +69,7 @@ procedure go_win_list(var ctx:TEditorContext);
 
 function mk_short_name(fname : string) : string;
 
-procedure new_file(var ctx : TEditorContext; fname : string);
+function new_file(var ctx : TEditorContext; fname : string):integer;
 function load_file(var ctx : TEditorContext; fname : string; var errCode : integer; percent_proc : pointer) : integer;
 
 procedure load_file_progress(value, total, start_time : dword);
@@ -731,12 +731,16 @@ begin
         end;
 end;
 
-procedure new_file(var ctx : TEditorContext; fname : string);
+function new_file(var ctx : TEditorContext; fname : string):integer;
 var p : PFileContext;
 begin
+        new_file:=8;
+        if (MaxAvail<sizeof(TFileContext)) or
+           (MemAvail-sizeof(TFileContext)<UNDO_DEFAULT_RESERVE) then exit;
         getmem(p, sizeof(TFileContext));
         p^.fname := fname;
-        p^.rline := strs.new;
+        p^.rline := strs.new_checked(UNDO_DEFAULT_RESERVE);
+        if strs.is_nil(p^.rline) then begin FreeMem(p,sizeof(TFileContext)); exit end;
         p^.format.newline := #13#10;
         p^.config := @ctx.config;
         reset_file(p);
@@ -744,20 +748,22 @@ begin
         ctx.all := p;
         ctx.current := p;
         load_ed(ctx);
+        new_file:=0;
 end;
 
 function load_file(var ctx : TEditorContext; fname : string; var errCode : integer; percent_proc : pointer) : integer;
 var p : PFileContext;
         r : integer;
 begin
-        r := SCRU_FULL;
+        r := SCRU_FULL; load_file:=r; errCode:=8;
+        if (MaxAvail<sizeof(TFileContext)) or
+           (MemAvail-sizeof(TFileContext)<UNDO_DEFAULT_RESERVE) then exit;
         getmem(p, sizeof(TFileContext));
         p^.fname := fname;
         p^.rline := strs.from_file(ctx.file_reader,fname,false,0,0,p^.format,errCode,percent_proc);
         if errCode = 2 then begin
                 freemem(p, sizeof(TFileContext));
-                new_file(ctx, fname);
-                errCode := 0;
+                errCode:=new_file(ctx, fname);
                 load_file := SCRU_FULL;
                 exit;
         end;
@@ -852,7 +858,7 @@ var errMsg : string;
 begin
         errMsg := get_err_msg(errCode);
         scr.push;
-        scrui.msg_box(ctx.current^.config^.color.top_hl, 'Error', errMsg, '[ OK ]');
+        scrui.msg_box(ctx.config.color.top_hl, 'Error', errMsg, '[ OK ]');
         scr.show;
         kbd_reset;
         while true do begin

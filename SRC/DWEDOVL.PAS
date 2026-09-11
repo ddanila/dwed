@@ -237,7 +237,7 @@ begin
                 inc(p);
                 fname := copy(s, p, length(s) - p + 1);
                 if fname='' then begin
-                        new_file(ctx,''); errCode:=0;
+                        errCode:=new_file(ctx,'');
                 end else load_file(ctx, fname, errCode, @load_file_progress);
                 if errCode <> 0 then handle_error(ctx, errCode) else begin
                         ctx.current^.editor.x := x;
@@ -331,9 +331,14 @@ begin
                         end;
                 end;
         end;
-        if ctx.all = nil then new_file(ctx, DEFAULT_FILE_NAME);
-        discover_recovery(ctx);
-        edit(ctx, show_welcome_msg);
+        if ctx.all = nil then begin
+                errCode:=new_file(ctx, DEFAULT_FILE_NAME);
+                if errCode<>0 then begin handle_error(ctx,errCode); ctx.exit_code:=1 end;
+        end;
+        if ctx.all<>nil then begin
+                discover_recovery(ctx);
+                edit(ctx, show_welcome_msg);
+        end;
         scr.pop;
         scr.show;
         scr.set_cursor(scr.cursor);

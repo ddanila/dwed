@@ -1349,7 +1349,7 @@ begin
 end;
 
 function execute_command(var ctx:TEditorContext; command:TEditorCommand):integer;
-var e:TEvent; r:integer;
+var e:TEvent; r,error:integer;
 begin
         { Adapt logical options to existing callbacks; never enqueue keystrokes. }
         fillchar(e,sizeof(e),0); e.etype:=KEYBOARD;
@@ -1357,7 +1357,8 @@ begin
         case command of
         CMD_UNDO:r:=hk_undo(ctx,@e);
         CMD_REDO:r:=hk_redo(ctx,@e);
-        CMD_NEW:begin commit(ctx); new_file(ctx,''); r:=SCRU_FULL end;
+        CMD_NEW:begin commit(ctx); error:=new_file(ctx,'');
+                if error<>0 then handle_error(ctx,error); r:=SCRU_FULL end;
         CMD_SAVE:r:=hk_save(ctx,@e);
         CMD_SAVE_ALL:begin e.ctrl_keys:=key_shift; r:=hk_save(ctx,@e) end;
         CMD_FIND:r:=hk_start_find(ctx,@e);

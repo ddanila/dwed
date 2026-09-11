@@ -1,0 +1,348 @@
+{
+  "scope": "Recoverable document-induced memory exhaustion in DOS backing store",
+  "parent_base_revision": "ae9ca524f8d372be04a645a6f9951e2e9e213e48",
+  "dwed_base_revision": "ca6565d909b87934c3c8852878a694b2e0171a77",
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 218748,
+        "sha256": "20c1173cf8985545a82d24ce9abe15752c535a8b5c2fbbcdcf38e785ee64df3d"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 6912,
+        "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37604,
+        "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+      },
+      "STORTEST.exe": {
+        "bytes": 155472,
+        "sha256": "1d330f9510fd053ad985efdee2a950461146d4f0ec0c1796fb1104f06a880213"
+      },
+      "CLIPTEST.exe": {
+        "bytes": 156012,
+        "sha256": "3caa5e13ff0f59189b6c1c9d70a69bebe21f756ba0b59786a6fef6169c02282d"
+      },
+      "TABTEST.exe": {
+        "bytes": 209146,
+        "sha256": "36e360c2192a5e5a36b338f32c4be7e717d7b6efaadbef24c40f23ad88034e44"
+      },
+      "SAVETEST.exe": {
+        "bytes": 162520,
+        "sha256": "aaad894586ca601eeee8743b0e8b8ee8523c0a9feebc5fbea99d1639f9a0058d"
+      },
+      "RECVTEST.exe": {
+        "bytes": 36648,
+        "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+      },
+      "MEMTEST.exe": {
+        "bytes": 214160,
+        "sha256": "0b051a5e4bc193a6f6865cc0ccbd5387f5da53699f9ded27dbcbf67ac62fd3aa"
+      }
+    }
+  },
+  "clean_builds_identical": true,
+  "runtime": "QEMU 486 TCG; parent DOS LOW and HIGH/UMB",
+  "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+  "source_sha256": {
+    "dwed/SRC/DWEDHNDL.PAS": "ea324f8f0bba026ee9db9fadd059d58d778f36886b959bf5dabc1219c6f26c56",
+    "dwed/SRC/DWEDOVL.PAS": "39c179151d575cc60ed3ea0721c6bb47a8a86587e2aeb7ec7685509a5876d8b7",
+    "dwed/SRC/DWEDRCV.PAS": "16bb98c65d05fb4a81affbfa4810f984d160b7ee008d06771808e041832e22fd",
+    "dwed/SRC/DWEDUTIL.PAS": "656f6df2863a7c467b38689a26f720224af518aca305b3eecaa11794100ddae1",
+    "dwed/SRC/STRS.PAS": "e631de1e2c4097b8bc4009c9f9ea26b4b5aeb15515d1abcf98d0158e0631cd35",
+    "dwed/SRC/STRSDOS.PAS": "1f7ed085f1de1a9e3ffade3718f35018af916f39085152ab9266426f05bc9b83",
+    "dwed/tests/MEMTEST.PAS": "9791550458cc4ca3942f9cd531597a7f34748bda6be01616f9dd1ea45aa9a89d",
+    "dwed/tools/build.py": "5e1a912bc1ae28f471acaa434486f1f4234b947e5b60b1cbf36d281d0d8fec1c",
+    "tests/test_dwed_qemu.py": "9bba86be9972b33be86d6cbd970a9d82fda1dcac8c59a89dbf65485ff89cbbb8"
+  },
+  "negative_control": {
+    "build": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 218076,
+          "sha256": "5df8885b29dc9e0f35d3eb9d3f020270a7956bab9c577d94d7312dc93dfa69a5"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 6912,
+          "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37604,
+          "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+        },
+        "STORTEST.exe": {
+          "bytes": 154912,
+          "sha256": "926e3e687e32697908c8cfb741f594f02056957090ae27b6f05264f49df7e9e7"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 155452,
+          "sha256": "f882670a58afd674c06511ee95573cf783567dacc5831e1b75d57a610a55b302"
+        },
+        "TABTEST.exe": {
+          "bytes": 208554,
+          "sha256": "f0c9c3b82c9b1e1770af3238ed220362b47b79be75d99d3b59e508609cae893a"
+        },
+        "SAVETEST.exe": {
+          "bytes": 161976,
+          "sha256": "61de2cf68951c8e39a25847df023445214537f05d1a353136254c18106251331"
+        },
+        "RECVTEST.exe": {
+          "bytes": 36648,
+          "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+        }
+      }
+    },
+    "case": "reject-memory-low",
+    "expected_failure": true,
+    "observation": "Previous editor fails to display a recoverable memory error; screen remains at loading progress"
+  },
+  "prior_full_regression_report": "save-discovery-milestone.json",
+  "prior_full_regression_report_sha256": "8a425bc78863422db4f0a9ce53d24938fb32e67e4fc5925646d0e4b0a9bb02f3",
+  "validation_scope": "Focused memory and affected integration tests; preceding full suite is separate baseline evidence",
+  "limits": {
+    "all_ui_allocations_checked": false,
+    "fragmented_heap_qualified": false,
+    "alternate_stores_qualified": false,
+    "minimum_machine_memory_qualified": false
+  },
+  "case_count": 23,
+  "cases": [
+    {
+      "case": "memory-probe-low",
+      "mode": "low",
+      "memory_probe": "PASS 62 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "memory-probe-high",
+      "mode": "high",
+      "memory_probe": "PASS 62 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-memory-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-memory-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-tabs-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "text-codepage-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-long-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-mixed-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "reject-control-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "new-file-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-low",
+      "mode": "low",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "undo-storage-high",
+      "mode": "high",
+      "storage_probe": "PASS 77608 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true
+    },
+    {
+      "case": "dialog-unnamed-saveall-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "dialog-startup-unnamed-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-startup-command-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-exit"
+    },
+    {
+      "case": "dialog-unnamed-saveall-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall"
+    },
+    {
+      "case": "mono-edit-flow-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "display_flow": "mode7"
+    },
+    {
+      "case": "save-cut-2-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 2,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": true,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions"
+    },
+    {
+      "case": "save-cut-2-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "cut_stage": 2,
+      "rebooted": true,
+      "editor_recovered": true,
+      "recovery_saved": true,
+      "undo_retains_unsaved_state": true,
+      "record_sha256": "922dec50990919827d8a588950f64c7705138046a123859361acfa98b6258b16",
+      "record_bytes": 1048,
+      "payload_crc32": 565278260,
+      "restart_probe": "PASS 30 assertions"
+    },
+    {
+      "case": "recover-readonly-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "readonly",
+      "recovered": true
+    },
+    {
+      "case": "recover-record-close-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "recovery_flow": "record-close",
+      "recovered": false
+    }
+  ]
+}

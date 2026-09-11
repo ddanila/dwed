@@ -51,6 +51,7 @@ function new : pointer;
 procedure free(r : pointer);
 
 function create(next, prev : pointer; body : string) : pointer;
+function create_checked(next,prev:pointer; body:string; reserve:longint):pointer;
 
 function put(r : pointer; var body : string) : pointer;
 procedure get(r : pointer; var dest : string);
@@ -138,6 +139,17 @@ begin
         if prev <> nil then PDosStringRec(prev)^.next := r;
         if next <> nil then PDosStringRec(next)^.prev := r;
         create := r;
+end;
+
+{ Used while loading unpublished text: leave the caller enough heap to report
+  failure and continue editing. No links change when allocation is refused. }
+function create_checked(next,prev:pointer; body:string; reserve:longint):pointer;
+var size:word;
+begin
+        create_checked:=nil;
+        size:=sizeof(TDosStringRec)+norm_len(length(body))-1;
+        if (MaxAvail<size) or (MemAvail-longint(size)<reserve) then exit;
+        create_checked:=create(next,prev,body);
 end;
 
 procedure free_str(r : pointer);

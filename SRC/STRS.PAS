@@ -41,6 +41,7 @@ procedure init(mType : MemoryType);
 procedure done;
 
 function new : EditorStr;
+function new_checked(reserve:longint):EditorStr;
 
 function from_file(var f:TReadFile; fname:string; checked:boolean; expected_size,expected_crc:longword; var format:TTextFormat; var errCode:integer; scrupdate:pointer):EditorStr;
 procedure to_file(var f:TSaveFile; fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
@@ -76,7 +77,7 @@ function is_nil(r : EditorStr) : boolean;
 
 implementation
 
-uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, dwedutil, saveinfo;
+uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, dwedutil, saveinfo, unredo;
 
 const
 memType : MemoryType = MT_DOS;
@@ -125,6 +126,7 @@ var     buffer : array[0..4095] of byte;
         scrup : TPercentUpdateProc;
 
         procedure emit(separator : string);
+        var added:EditorStr;
         begin
                 if separator <> '' then begin
                         if format.newline = '' then format.newline := separator
@@ -133,7 +135,11 @@ var     buffer : array[0..4095] of byte;
                                 exit;
                         end;
                 end;
-                last := strs.create(nil, last, body);
+                if memType=MT_DOS then begin
+                        added:=EditorStr(strsdos.create_checked(nil,last,body,UNDO_DEFAULT_RESERVE));
+                        if added=nil then begin errCode:=8; exit end;
+                end else added:=strs.create(nil,last,body);
+                last:=added;
                 if root = nil then root := last;
                 body := '';
         end;
@@ -223,6 +229,12 @@ begin
                 finish_save(f,errCode);
         end;
         spinner_stop;
+end;
+
+function new_checked(reserve:longint):EditorStr;
+begin
+        if memType=MT_DOS then new_checked:=EditorStr(strsdos.create_checked(nil,nil,'',reserve))
+        else new_checked:=strs.new;
 end;
 
 function new : EditorStr;

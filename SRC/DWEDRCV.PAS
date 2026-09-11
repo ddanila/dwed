@@ -33,7 +33,10 @@ var error:integer; root:EditorStr; format:TTextFormat;
 begin
         root:=strs.from_file(ctx.file_reader,source,true,info.payload_size,info.payload_crc,format,error,nil);
         if error=0 then begin
-                new_file(ctx,info.destination);
+                error:=new_file(ctx,info.destination);
+                if error<>0 then begin
+                        strs.free(root); recover_document:=error; exit;
+                end;
                 strs.free(ctx.current^.rline);
                 with ctx.current^ do begin
                         rline:=root; cline:=root; scrline:=root;
