@@ -35,8 +35,10 @@ record mutation or complete editor behavior with these stores.
 
 [Database initialization](DATABASE-INITIALIZATION.md) validates headers without
 rewriting failed input and retains cleanup ownership. Database allocation,
-free-list traversal and updates, record reads, and replacement still need
-checked status propagation and failure-safe publication. Existing
+free-list traversal and updates, and replacement still need checked status
+propagation and failure-safe publication. [Checked record reads](DATABASE-READS.md)
+stage output and validate chains; their failures still need propagation through
+the string-store and editor callers. Existing
 string-store replacement frees the old payload before installing its
 replacement. Shared loading and saving must receive backing-store failures
 instead of treating an empty result as successful input or output.

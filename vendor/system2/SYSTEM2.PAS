@@ -781,6 +781,8 @@ END;
 PROCEDURE UpdateFileSize(VAR f : BFILE);
 VAR     ns : DWORD;
 BEGIN
+        { Seeking to an empty page does not extend the file. }
+        IF NOT f.buf_update THEN EXIT;
         ns := DWORD(f.buf_page) * SizeOf(BFILE_BUF) + f.buf_count;
         IF f.fsize < ns THEN f.fsize := ns;
 END;
@@ -810,7 +812,8 @@ BEGIN
 END;
 
 PROCEDURE FsSwitchPage(VAR f:BFILE; new_page:DWORD);
-VAR scratch:^BFILE_BUF; count:WORD; status:INTEGER; dirty,stored:BOOLEAN;
+VAR scratch:^BFILE_BUF; count,wanted,got:WORD; remaining:LONGINT;
+    status:INTEGER; dirty,stored:BOOLEAN;
 BEGIN
         IF f.buf_update THEN UpdateFileSize(f);
 {$IFDEF USE_CACHE}
@@ -832,9 +835,22 @@ BEGIN
         { A clean cache can fall back to disk; a dirty cache cannot. }
 {$ENDIF}
         IF (f.ioresult=0) AND (status<>0) THEN BEGIN
+                { Read the complete logical page before publishing it. DOS may
+                  return positive short reads; zero before EOF is a failure. }
+                remaining:=f.fsize-LONGINT(new_page*SizeOf(BFILE_BUF));
+                wanted:=0;
+                IF remaining>0 THEN BEGIN
+                        IF remaining>SizeOf(BFILE_BUF) THEN wanted:=SizeOf(BFILE_BUF)
+                        ELSE wanted:=remaining;
+                END;
+                count:=0;
                 lSeek(f.f,SEEK_BEG,new_page*SizeOf(BFILE_BUF));
-                IF res=0 THEN count:=lRead(f.f,scratch^,SizeOf(BFILE_BUF));
                 IF res<>0 THEN f.ioresult:=100;
+                WHILE (f.ioresult=0) AND (count<wanted) DO BEGIN
+                        got:=lRead(f.f,scratch^[count],wanted-count);
+                        IF (res<>0) OR (got=0) OR (got>wanted-count) THEN f.ioresult:=100
+                        ELSE Inc(count,got);
+                END;
         END;
         IF f.ioresult=0 THEN BEGIN
                 stored:=FALSE;

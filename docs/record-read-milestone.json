@@ -1,0 +1,329 @@
+{
+  "scope": "Atomic backing-database record reads, bounded chain validation, and complete buffered page reads",
+  "dwed_base_revision": "8ded1615cd50cb244e3af01f9b13d4eada25b66c",
+  "parent_base_revision": "6684e54495827a5e838e07b0f2a0407c45bdcc93",
+  "source_sha256": {
+    "vendor/system2/DBB.PAS": "c4a396c55e7f821bde6a6b8f13e29dc20987101fa1fcee89598fa7af26ce175f",
+    "vendor/system2/DBM.PAS": "636622e27f800727b842a546fc327c73277dc3b9976c06d63ce43ae37257d824",
+    "vendor/system2/SYSTEM2.PAS": "5df0797de724acd853a8f701930c7d9a0faf2f7c187ad71539246468c64ed33b",
+    "tests/DBREAD.PAS": "2fc25df87a24a6b25f544975464fbff9245bf530d07d932502063b103d508d7e",
+    "tools/build.py": "6cf953e38cab605f9e668108a8280fcb9756016f1bfeb6bbfe1e0b815c8ad835"
+  },
+  "test_source_sha256": {
+    "tests/test_dwed_qemu.py": "8e29de70defad669e8791da8bb37f3ea1eb0a09cc46df7c1d39d10df7509d74b"
+  },
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 242934,
+        "sha256": "30f86c034770346d537a4c5aa58f7f1c17b4776369ab58cd7eca7a2b82cf68ba"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 10752,
+        "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "XMSTEST.exe": {
+        "bytes": 29516,
+        "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+      },
+      "XFERTEST.exe": {
+        "bytes": 30670,
+        "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+      },
+      "MEMXFER.exe": {
+        "bytes": 28982,
+        "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+      },
+      "CACHETEST.exe": {
+        "bytes": 55114,
+        "sha256": "455d3accd50b72ef299535ba80a166ebcd4c7215488710ad393fd7ff4f9c88c5"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37604,
+        "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+      },
+      "STORTEST.exe": {
+        "bytes": 165280,
+        "sha256": "ab979d2c6b3c07c22ef2f68fc54847d448477876b8268242a9984c0a027fe983"
+      },
+      "CLIPTEST.exe": {
+        "bytes": 165836,
+        "sha256": "2f92c6854ffeccf71ab70c8dc7f104d65aba5ec791ead5eaeaa9685c3fda0ceb"
+      },
+      "TABTEST.exe": {
+        "bytes": 241748,
+        "sha256": "1cd9b28298a4791a0251c2fbca9be990a286333bd993fd671686730bdd663c50"
+      },
+      "SESSPROB.exe": {
+        "bytes": 239084,
+        "sha256": "fc516beac342a88b3109dcde1dfbb1b0d957ab285788878f473064c8523e2507"
+      },
+      "INITPROB.exe": {
+        "bytes": 171872,
+        "sha256": "b28cf0e2bf5df8610b0f873f9bbfa64a36b89177afcc9447c1a17a850620b809"
+      },
+      "DBPROBE.exe": {
+        "bytes": 59278,
+        "sha256": "24f836d1222122e8c19ef0e90adfe5812723aed4835d3e990abc49ecdbfa2c7a"
+      },
+      "DBOPEN.exe": {
+        "bytes": 60702,
+        "sha256": "40ef3241a7ba12c14afc838ef91d924ac9da6e14666e781ae8e9c92bde4e8431"
+      },
+      "DBREAD.exe": {
+        "bytes": 61378,
+        "sha256": "08ca94f8ae2dcafb7a5c08a455032966bb88fcbad4bb3bd201a12ab324c30108"
+      },
+      "TMPPROBE.exe": {
+        "bytes": 63012,
+        "sha256": "f6e80a38f6de06a5538a16f8fb36020bb8fe28ebe4215846d67edbf2097ae81a"
+      },
+      "SAVETEST.exe": {
+        "bytes": 173846,
+        "sha256": "ca311c0e2a8a0cecfef4fb96c9ee2a6d1077b6dc4779e6491a049617b59eb5b2"
+      },
+      "RECVTEST.exe": {
+        "bytes": 37584,
+        "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+      },
+      "MEMTEST.exe": {
+        "bytes": 241444,
+        "sha256": "cfb0c3f08b2f92d2f34317af7c0718a52b91b99ae794b51e924a1dcad1b87be3"
+      }
+    }
+  },
+  "reproducibility": {
+    "build_directories": [
+      "dwed/out/record-read-f",
+      "dwed/out/record-read-g"
+    ],
+    "all_declared_artifacts_and_manifests_identical": true,
+    "package_bytes": 277990,
+    "package_sha256": "32c31f1a08024298cab266b59780e275ab7231a734f5eda4147754c02b477506",
+    "packages_identical": true,
+    "package_validation": "tests/test_dwed_package.py passed deterministic package, notices, and rejection checks"
+  },
+  "regression": {
+    "run_directory": "out/dwed-qemu-38hyv2tw",
+    "case_count": 10,
+    "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+    "boot_file_sha256": {
+      "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+      "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+    },
+    "results_sha256": "672f1ef5841bc6d6da9f7dafb58653cd90a4b192f3aa620df7da756b21090914",
+    "cases": [
+      {
+        "case": "temporary-probe-full-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "temporary_probe": "PASS 92 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "temporary-probe-full-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "temporary_probe": "PASS 92 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "record-read-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "record_read": "phase backend 1 kind 0 fault 1\r\nphase backend 1 kind 0 fault 2\r\nphase backend 1 kind 0 fault 3\r\nphase backend 1 kind 0 fault 4\r\nphase backend 1 kind 0 fault 5\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nchain case 1\r\nchain case 2\r\nchain case 3\r\nchain case 4\r\nchain case 5\r\nchain case 6\r\nchain case 7\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nPASS 720199 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "record-read-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "record_read": "phase backend 1 kind 0 fault 1\r\nphase backend 1 kind 0 fault 2\r\nphase backend 1 kind 0 fault 3\r\nphase backend 1 kind 0 fault 4\r\nphase backend 1 kind 0 fault 5\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nchain case 1\r\nchain case 2\r\nchain case 3\r\nchain case 4\r\nchain case 5\r\nchain case 6\r\nchain case 7\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nPASS 720199 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-open-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_open": "PASS 4449 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-open-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_open": "PASS 4449 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2902 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-probe-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2902 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "cache-probe-full-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "cache_probe": "PASS 524407 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "cache-probe-writeback-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "cache_probe": "PASS 475241 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "microsoft_622": {
+    "run_directory": "out/dwed-qemu-ic063wfh",
+    "case_count": 2,
+    "boot_image_sha256": "ca2c5347a0ab34a8b49774887eee2c74130acc493bccc57d87643e6ac323706f",
+    "boot_file_sha256": {
+      "HIMEM.SYS": "615b656d0d094a31cb10ab56ab31273062c535d819e8208d412ad5d022847c93",
+      "EMM386.EXE": "d4a011769db9415402d7be129fffb762fa7d174096bcc921aa5ce85734072635"
+    },
+    "results_sha256": "4459bfe0e468c2cf55da90d1728a225d95748f0c9d6ee651e40278e0f8fa3cb8",
+    "cases": [
+      {
+        "case": "record-read-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "record_read": "phase backend 1 kind 0 fault 1\r\nphase backend 1 kind 0 fault 2\r\nphase backend 1 kind 0 fault 3\r\nphase backend 1 kind 0 fault 4\r\nphase backend 1 kind 0 fault 5\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nchain case 1\r\nchain case 2\r\nchain case 3\r\nchain case 4\r\nchain case 5\r\nchain case 6\r\nchain case 7\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nPASS 720199 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "record-read-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "record_read": "phase backend 1 kind 0 fault 1\r\nphase backend 1 kind 0 fault 2\r\nphase backend 1 kind 0 fault 3\r\nphase backend 1 kind 0 fault 4\r\nphase backend 1 kind 0 fault 5\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nchain case 1\r\nchain case 2\r\nchain case 3\r\nchain case 4\r\nchain case 5\r\nchain case 6\r\nchain case 7\r\nphase backend 2 kind 0 fault 1\r\nphase backend 2 kind 0 fault 2\r\nphase backend 2 kind 0 fault 3\r\nphase backend 2 kind 0 fault 4\r\nphase backend 2 kind 0 fault 5\r\nPASS 720199 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "old_implementation_control": {
+    "run_directory": "out/dwed-qemu-cvgrwg8o",
+    "case_count": 1,
+    "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+    "boot_file_sha256": {
+      "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+      "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+    },
+    "results_sha256": "7aa168e06129349062c929c0432ff2244c8ac7b9567c5dc02674e2c6b8410b40",
+    "cases": [
+      {
+        "case": "record-read-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "completed": false,
+        "error": "b'phase backend 1 kind 0 fault 1\\r\\nFAIL backend 1 kind 0 fault 1 assertion 7 error 100 destination unchanged\\r\\n'"
+      }
+    ],
+    "base_revision": "8ded1615cd50cb244e3af01f9b13d4eada25b66c",
+    "compiler_define": "LEGACY_READ",
+    "adaptation": "Legacy Get plus ioresult success check; same first-fault destination assertion as the final probe.",
+    "probe_sha256": "c5085fb56c31db98b3fefb5144438f8cc0949afd1ac6e68f8dbba656d4bc62b8",
+    "expected_runner_exit_code": 1
+  },
+  "resolved_during_qualification": [
+    {
+      "run_log": "out/dwed-record-read-b-qemu.log",
+      "finding": "HIGH,UMB did not complete within the default startup deadline.",
+      "resolution": "Added flushed phase markers and a record-probe-specific startup budget; final probe completes in both DOS modes on both kernels."
+    },
+    {
+      "run_log": "out/dwed-record-read-d-regression.log",
+      "finding": "The low-mode database-close heap-refusal regression failed after a seek beyond EOF inflated logical file size.",
+      "resolution": "UpdateFileSize now accounts only for dirty buffers; the final record probe checks that an empty page beyond EOF does not extend either database."
+    }
+  ],
+  "remaining": [
+    "String-store and editor read-error propagation",
+    "Checked allocation and free-list mutation",
+    "Failure-safe record replacement",
+    "Alternative-store edit transactions and undo/redo",
+    "Actual SXMS document store",
+    "Full-command low-memory and final runtime qualification",
+    "Distribution promotion as EDIT"
+  ]
+}

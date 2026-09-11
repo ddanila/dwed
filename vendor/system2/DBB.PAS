@@ -55,6 +55,7 @@ FUNCTION dbb_IsOpen(VAR f : DBBFile) : BOOLEAN;
 
 FUNCTION dbb_Add(VAR f : DBBFile; VAR b) : LONGINT;
 PROCEDURE dbb_Put(VAR f : DBBFile; rec : LONGINT; VAR b);
+FUNCTION dbb_TryGet(VAR f : DBBFile; rec : LONGINT; VAR b):BOOLEAN;
 PROCEDURE dbb_Get(VAR f : DBBFile; rec : LONGINT; VAR b);
 
 PROCEDURE dbb_Free(VAR f : DBBFile; rec : LONGINT);
@@ -182,11 +183,34 @@ BEGIN
         _alloc := r;
 END;
 
+FUNCTION dbb_TryGet(VAR f : DBBFile; rec : LONGINT; VAR b):BOOLEAN;
+VAR staged:POINTER; count:WORD; physical:LONGINT;
+BEGIN
+        dbb_TryGet:=FALSE;
+        IF NOT dbb_IsOpen(f) THEN BEGIN
+                IF f.f.ioresult=0 THEN f.f.ioresult:=103;
+                EXIT;
+        END;
+        physical:=FileSize(f.f);
+        IF (rec<1) OR (rec>f.header.records) OR (f.header.size<SizeOf(LONGINT)) OR
+           (physical<DBB_HDR_SIZE) THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
+        IF rec>(physical-DBB_HDR_SIZE) DIV f.header.size THEN BEGIN f.f.ioresult:=DBB_INVALID; EXIT END;
+        IF MaxAvail<f.header.size THEN BEGIN f.f.ioresult:=8; EXIT END;
+        GetMem(staged,f.header.size);
+        _go(f,rec);
+        IF f.f.ioresult=0 THEN BEGIN
+                count:=BlockRead(f.f,staged^,f.header.size);
+                IF (f.f.ioresult=0) AND (count<>f.header.size) THEN f.f.ioresult:=100;
+        END;
+        IF f.f.ioresult=0 THEN BEGIN
+                Move(staged^,b,f.header.size); dbb_TryGet:=TRUE;
+        END;
+        FreeMem(staged,f.header.size);
+END;
+
 PROCEDURE dbb_Get(VAR f : DBBFile; rec : LONGINT; VAR b);
 BEGIN
-        IF (NOT dbb_IsOpen(f)) OR (rec = 0) THEN EXIT;
-        _go(f, rec);
-        BlockRead(f.f, b, f.header.size);
+        dbb_TryGet(f,rec,b);
 END;
 
 FUNCTION dbb_Add(VAR f : DBBFile; VAR b) : LONGINT;

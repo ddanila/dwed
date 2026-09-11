@@ -85,7 +85,9 @@ This qualifies request construction, not an actual SXMS driver's memory manager.
 The [checked transfer APIs](EXTENDED-TRANSFERS.md) expose driver failure and
 preserve EMS sources. Cache and buffered-file writeback preserve dirty ownership on refusal; their
 temporary page allocations check contiguous heap space. Configuration and resume metadata use checked DOS reads with staged
-publication. Alternative document stores remain runtime review work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
+publication. Checked database reads stage output behind contiguous-heap checks
+and release staging on both success and failure; see [DATABASE-READS.md](DATABASE-READS.md).
+Alternative document stores remain runtime review work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
 
 The heap review does not establish minimum physical RAM, supported file size,
 full-command operation at the startup boundary, or final legacy CPU coverage.

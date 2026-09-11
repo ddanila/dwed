@@ -58,6 +58,7 @@ FUNCTION dbm_GetRoot(VAR f : DBMFile):LONGINT;
 PROCEDURE dbm_SetRoot(VAR f : DBMFile; new_root : LONGINT);
 
 FUNCTION dbm_Add(VAR f : DBMFile; VAR b; size : WORD) : LONGINT;
+FUNCTION dbm_TryGet(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD):BOOLEAN;
 PROCEDURE dbm_Get(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD);
 PROCEDURE dbm_Put(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD);
 FUNCTION dbm_Size(VAR f : DBMFile; rec : LONGINT) : LONGINT;
@@ -211,35 +212,86 @@ BEGIN
         _alloc := r;
 END;
 
-FUNCTION dbm_Size(VAR f : DBMFile; rec : LONGINT) : LONGINT;
-VAR     r : LONGINT;
+{ Validate the complete chain, even when the caller requests only a prefix.
+  Brent's cycle detector needs constant memory and detects short cycles without
+  waiting for the database's record-count traversal bound. }
+FUNCTION scan_chain(VAR f:DBMFile; rec:LONGINT; target:PCHAR; requested:WORD;
+                    VAR total:LONGINT):BOOLEAN;
+VAR link:PACKED RECORD next:LONGINT; count:WORD END;
+    physical,visited,anchor,power,distance:LONGINT;
+    copied,take,count:WORD;
 BEGIN
-        r := 0;
-        IF dbm_IsOpen(f) THEN BEGIN
-                WHILE rec <> 0 DO BEGIN
-                        _go(f, rec);
-                        rec := ReadDWord(f.f);
-                        Inc(r, ReadWord(f.f));
+        scan_chain:=FALSE; total:=0; copied:=0; visited:=0;
+        IF NOT dbm_IsOpen(f) THEN BEGIN
+                IF f.f.ioresult=0 THEN f.f.ioresult:=103;
+                EXIT;
+        END;
+        physical:=FileSize(f.f);
+        IF (f.header.size<=ADDED_DATA) OR (f.rblk_size<>f.header.size-ADDED_DATA) OR
+           (physical<f.header.size) THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
+        anchor:=rec; power:=1; distance:=0;
+        WHILE rec<>0 DO BEGIN
+                IF (rec<1) OR (rec>f.header.records) OR
+                   (rec>physical DIV f.header.size-1) OR (visited>=f.header.records) THEN BEGIN
+                        f.f.ioresult:=DBM_INVALID; EXIT;
+                END;
+                Inc(visited); _go(f,rec);
+                IF f.f.ioresult<>0 THEN EXIT;
+                count:=BlockRead(f.f,link,SizeOf(link));
+                IF f.f.ioresult<>0 THEN EXIT;
+                IF count<>SizeOf(link) THEN BEGIN f.f.ioresult:=100; EXIT END;
+                IF (link.count=0) OR (link.count>f.rblk_size) OR
+                   (link.next<0) OR (link.next>f.header.records) OR
+                   (total>2147483647-link.count) THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
+                Inc(total,link.count);
+                take:=link.count;
+                IF take>requested-copied THEN take:=requested-copied;
+                IF (target<>NIL) AND (take<>0) THEN BEGIN
+                        count:=BlockRead(f.f,target[copied],take);
+                        IF f.f.ioresult<>0 THEN EXIT;
+                        IF count<>take THEN BEGIN f.f.ioresult:=100; EXIT END;
+                        Inc(copied,take);
+                END;
+                rec:=link.next; Inc(distance);
+                IF (rec<>0) AND (rec=anchor) THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
+                IF distance=power THEN BEGIN
+                        anchor:=rec; distance:=0;
+                        IF power<=1073741823 THEN power:=power*2 ELSE power:=2147483647;
                 END;
         END;
-        dbm_Size := r;
+        IF total<requested THEN BEGIN f.f.ioresult:=DBM_INVALID; EXIT END;
+        scan_chain:=TRUE;
+END;
+
+FUNCTION dbm_Size(VAR f : DBMFile; rec : LONGINT) : LONGINT;
+VAR total:LONGINT;
+BEGIN
+        dbm_Size:=0;
+        IF scan_chain(f,rec,NIL,0,total) THEN dbm_Size:=total;
+END;
+
+FUNCTION dbm_TryGet(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD):BOOLEAN;
+VAR staged:POINTER; total:LONGINT;
+BEGIN
+        dbm_TryGet:=FALSE; staged:=NIL;
+        IF NOT dbm_IsOpen(f) THEN BEGIN
+                IF f.f.ioresult=0 THEN f.f.ioresult:=103;
+                EXIT;
+        END;
+        IF size<>0 THEN BEGIN
+                IF MaxAvail<size THEN BEGIN f.f.ioresult:=8; EXIT END;
+                GetMem(staged,size);
+        END;
+        IF scan_chain(f,rec,PCHAR(staged),size,total) THEN BEGIN
+                IF size<>0 THEN Move(staged^,b,size);
+                dbm_TryGet:=TRUE;
+        END;
+        IF staged<>NIL THEN FreeMem(staged,size);
 END;
 
 PROCEDURE dbm_Get(VAR f : DBMFile; rec : LONGINT; VAR b; size : WORD);
-VAR     p : PCHAR;
-        g : WORD;
 BEGIN
-        IF NOT dbm_IsOpen(f) THEN EXIT;
-        p := @b;
-        WHILE (size <> 0) AND (rec <> 0) DO BEGIN
-                _go(f, rec);
-                rec := ReadDWord(f.f);
-                g := ReadWord(f.f);
-                IF g > size THEN g := size;
-                BlockRead(f.f, p^, g);
-                Dec(size, g);
-                Inc(p, g);
-        END;
+        dbm_TryGet(f,rec,b,size);
 END;
 
 FUNCTION dbm_Add(VAR f : DBMFile; VAR b; size : WORD) : LONGINT;
