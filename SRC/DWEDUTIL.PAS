@@ -599,6 +599,7 @@ procedure reset_file(p : PFileContext);
 begin
         with p^ do begin
                 sfname := mk_short_name(fname);
+                if fname='' then sfname:='Untitled';
                 if config^.hl_enable then st := find_SourceType_by_ext(get_filename_ext(sfname)) 
                 else st := SRC_DISABLE;
                 chg := false;

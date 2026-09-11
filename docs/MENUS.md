@@ -23,8 +23,9 @@ available. New creates an unnamed document; its Save command asks for a name.
 Find/Replace currently uses the inherited combined input flow. The menu
 structure is present, but this is not completion of the EDIT release gates.
 
-Remaining work includes undo/redo, consistent Save/Discard/Cancel handling
-(especially unnamed documents during Exit and Save All), tab-stop display,
+Save, Save As, Save All, Close and Exit now share the
+[save outcome and cancellation rules](SAVE-DIALOGS.md), including unnamed
+documents. Remaining work includes undo/redo, tab-stop display,
 clipboard fidelity, mouse qualification, monochrome/accessibility checks and
 the remaining command/dialog tests. No inactive Undo command is presented as
 working functionality.

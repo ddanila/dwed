@@ -102,6 +102,7 @@ begin
                         command := command_for(h^.proc,e);
                         if command <> CMD_NONE then r := execute_command(ctx,command)
                         else r := proc(ctx, @e);
+                        if r=SCRU_QUIT then begin process_event:=r; exit end;
                         if (command=CMD_NONE) and h^.reset_selection and ctx.current^.editor.selection then begin
                                 ctx.current^.editor.selection := false;
                                 r := SCRU_FULL;
@@ -424,119 +425,118 @@ begin
         hk_enter := r;
 end;
 
-function hk_esc(var ctx:TEditorContext; event:PEvent):integer;
-var     r, errCode : integer;
-        c, srcctx  : PFileContext;
+{ Save outcomes are shared by Save, Save As, Save All, Close and Exit. }
+{$F-}
+type TSaveOutcome = (SAVE_OK, SAVE_CANCELLED, SAVE_FAILED);
+
+function ask_choice(var ctx:TEditorContext; title, message, buttons:string):ANSWER;
+var e:TEvent; choice:ANSWER;
 begin
-        r := SCRU_QUIT;
-        commit(ctx);
-        c := ctx.all;
-        srcctx := ctx.current;
-        while (c <> nil) and (r = SCRU_QUIT) do begin
-                ctx.current := c;
-                commit(ctx);
-                if ctx.current^.chg then begin
-                        dwedscru.update(ctx, SCRU_FULL);
-                        with ctx.current^ do begin
-                                scr.cln(0, 0, config^.color.top);
-                                scr.printhl(1, 0, config^.color.top,
-                                        config^.color.top_hl,
-                                        'Do you want save "' + sfname + '" ? (~Y~/~N~/~C~)');
-                        end;
-                        scr.show;
-                        case scrui.yes_no_cancel of
-                        YES: begin
-                                        with ctx.current^ do begin
-                                                scr.cln(0, 0, config^.color.top);
-                                                scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
-                                                scr.show;
-                                                strs.to_file(fname, rline, format, errCode, @save_file_progress);
-                                                r := SCRU_FULL;
-                                                if errCode <> 0 then begin
-                                                        handle_error(ctx, errCode);
-                                                        break;
-                                                end else chg := false;
-                                        end;
-                                end;
-                        CANCEL: begin
-                                        r := SCRU_FULL;
-                                        break;
-                                end;
-                        NO:
-                        end;
+        scr.push;
+        scrui.msg_box(ctx.config.color.menu,title,message,buttons);
+        scr.cursor_off; scr.show;
+        choice:=MAYBE;
+        repeat
+                wait_event(e);
+                if e.etype=KEYBOARD then case e.scancode of
+                SCAN_Y,SCAN_ENTER:choice:=YES;
+                SCAN_N:choice:=NO;
+                SCAN_C,SCAN_ESC:choice:=CANCEL;
                 end;
-                c := c^.next;
+        until choice<>MAYBE;
+        scr.pop;
+        ask_choice:=choice;
+end;
+
+function save_document(var ctx:TEditorContext; choose_name:boolean):TSaveOutcome;
+var e:TEvent; newname,msg:string; errCode:integer; accepted:boolean;
+begin
+        save_document:=SAVE_CANCELLED;
+        commit(ctx);
+        newname:=ctx.current^.fname;
+        if choose_name or (newname='') then begin
+                msg:=' Save file to :'; accepted:=false;
+                fillchar(e,sizeof(e),0);
+                scr.cln(0,0,ctx.config.color.top);
+                scr.print(0,0,ctx.config.color.top,msg);
+                repeat
+                        scr.show;
+                        scrui.editstr(e,length(msg)+1,0,ctx.config.color.top,newname,32,255);
+                        if e.etype=KEYBOARD then begin
+                                if e.scancode=SCAN_ESC then exit;
+                                if e.scancode=SCAN_ENTER then accepted:=true;
+                        end else if e.etype<>MOUSE_MOVE then exit;
+                until accepted;
+                newname:=trim(newname);
+                if newname='' then exit;
         end;
-        ctx.current := srcctx;
-        hk_esc := r;
+        if (newname<>ctx.current^.fname) and FileExists(newname) then
+                if ask_choice(ctx,'Replace file',
+                        'Replace existing "'+mk_short_name(newname)+'"?',
+                        '[Y Replace]  [N Keep]  [C Cancel]')<>YES then exit;
+        scr.cln(0,0,ctx.config.color.top);
+        scr.print(1,0,ctx.config.color.top,'Save "'+newname+'"'); scr.show;
+        strs.to_file(newname,ctx.current^.rline,ctx.current^.format,errCode,@save_file_progress);
+        if errCode<>0 then begin
+                handle_error(ctx,errCode);
+                save_document:=SAVE_FAILED;
+        end else begin
+                ctx.current^.fname:=newname;
+                ctx.current^.sfname:=mk_short_name(newname);
+                ctx.current^.chg:=false;
+                save_document:=SAVE_OK;
+        end;
+end;
+
+function may_close_document(var ctx:TEditorContext):boolean;
+begin
+        commit(ctx);
+        may_close_document:=true;
+        if not ctx.current^.chg then exit;
+        dwedscru.update(ctx,SCRU_FULL);
+        case ask_choice(ctx,'Unsaved changes',
+                'Save changes to "'+ctx.current^.sfname+'"?',
+                '[Y Save]  [N Discard]  [C Cancel]') of
+        YES:may_close_document:=save_document(ctx,false)=SAVE_OK;
+        CANCEL:may_close_document:=false;
+        end;
+end;
+
+{$F+}
+function hk_esc(var ctx:TEditorContext; event:PEvent):integer;
+var current,original:PFileContext;
+begin
+        commit(ctx); original:=ctx.current; current:=ctx.all;
+        while current<>nil do begin
+                ctx.current:=current;
+                if not may_close_document(ctx) then begin hk_esc:=SCRU_FULL; exit end;
+                current:=current^.next;
+        end;
+        ctx.current:=original;
+        hk_esc:=SCRU_QUIT;
 end;
 
 function hk_save(var ctx:TEditorContext; event:PEvent):integer;
-var     srcctx  : PFileContext;
-        errCode : integer;
+var original:PFileContext; outcome:TSaveOutcome;
 begin
-        srcctx := ctx.current;
-        commit(ctx);
-        if event^.ctrl_keys = key_shift then begin
-                ctx.current := ctx.all;
-                while (ctx.current <> nil) do begin
+        hk_save:=SCRU_FULL; commit(ctx); original:=ctx.current;
+        if event^.ctrl_keys=key_shift then begin
+                ctx.current:=ctx.all;
+                while ctx.current<>nil do begin
                         commit(ctx);
-                        with ctx.current^ do begin
-                                if chg then begin
-                                        scr.cln(0, 0, config^.color.top);
-                                        scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
-                                        scr.show;
-                                        strs.to_file(fname, rline, format, errCode, @save_file_progress);
-                                        if errCode <> 0 then begin
-                                                handle_error(ctx, errCode);
-                                        end else chg := false;
-                                end;
-                        end;
-                        ctx.current := ctx.current^.next;
+                        if ctx.current^.chg then
+                                if save_document(ctx,false)<>SAVE_OK then exit;
+                        ctx.current:=ctx.current^.next;
                 end;
-        end else with ctx.current^ do begin
-                scr.cln(0, 0, config^.color.top);
-                scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
-                scr.show;
-                strs.to_file(fname, rline, format, errCode, @save_file_progress);
-                if errCode <> 0 then handle_error(ctx, errCode) else chg := false;
-        end;
-        ctx.current := srcctx;
-        hk_save := SCRU_FULL;
+                ctx.current:=original;
+        end else outcome:=save_document(ctx,false);
 end;
 
-
 function hk_save_as(var ctx:TEditorContext; event:PEvent):integer;
-var     errCode      : integer;
-        newname, msg : string;
-        start_save   : boolean;
+var outcome:TSaveOutcome;
 begin
-        commit(ctx);
-
-        newname := ctx.current^.fname;
-        msg := ' Save file to :';
-        scr.cln(0, 0, ctx.current^.config^.color.top);
-        scr.print(0, 0, ctx.current^.config^.color.top, msg);
-        while true do begin
-                scr.show;
-                scrui.editstr(event^, length(msg) + 1, 0, ctx.current^.config^.color.top, newname, 32, 255);
-                if event^.etype = KEYBOARD then begin
-                        if event^.scancode = SCAN_ESC then begin start_save := false; break; end;
-                        if event^.scancode = SCAN_ENTER then begin start_save := true; break; end;
-                end else if event^.etype <> MOUSE_MOVE then begin start_save := false; break; end;
-        end;
-        if start_save then begin
-                scr.cln(0, 0, ctx.current^.config^.color.top);
-                scr.print(1, 0, ctx.current^.config^.color.top, 'Save "' + newname + '"');
-                scr.show;
-                strs.to_file(newname, ctx.current^.rline, ctx.current^.format, errCode, @save_file_progress);
-                if errCode <> 0 then handle_error(ctx, errCode) else ctx.current^.chg := false;
-                if errCode = 0 then begin
-                        ctx.current^.fname := newname;
-                        ctx.current^.sfname := mk_short_name(newname);
-                end;
-        end;
-        hk_save_as := SCRU_FULL;
+        outcome:=save_document(ctx,true);
+        hk_save_as:=SCRU_FULL;
 end;
 
 function hk_dos_screen(var ctx:TEditorContext; event:PEvent):integer;
@@ -1152,41 +1152,10 @@ begin
 end;
 
 function hk_close(var ctx:TEditorContext; event:PEvent):integer;
-var     canclose   : boolean;
-        r          : PFileContext;
-        next, prev : PFileContext;
-        msg        : string;
-        res        : integer;
-        errCode    : integer;
+var canclose:boolean; r,next,prev:PFileContext; res:integer;
 begin
-        res := SCRU_FULL;
-        commit(ctx);
-        canclose := false;
-        if ctx.current^.chg then msg := 'Do you want save and close "' + ctx.current^.sfname + '" ? (~Y~/~N~)' 
-        else msg := 'Do you want close "' + ctx.current^.sfname + '" ? (~Y~/~N~)';
-
-        scr.cln(0, 0, ctx.current^.config^.color.top);
-        scr.printhl(1, 0, ctx.current^.config^.color.top,
-                ctx.current^.config^.color.top_hl, msg); 
-        scr.show;
-        case scrui.yes_no of
-        YES: begin
-                if ctx.current^.chg then begin
-                        with ctx.current^ do begin
-                                scr.cln(0, 0, config^.color.top);
-                                scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
-                                scr.show;
-                                strs.to_file(fname, rline, format, errCode, @save_file_progress);
-                                if errCode <> 0 then begin
-                                        handle_error(ctx, errCode);
-                                        canclose := false;
-                                end else begin chg := false; canclose := true; end;
-                        end;
-                end else canclose := true;
-            end;
-        NO: begin canclose := false; end
-        end;
-
+        res:=SCRU_FULL;
+        canclose:=may_close_document(ctx);
         if canclose then begin
                 next := ctx.current^.next;
                 prev := nil;
@@ -1418,8 +1387,8 @@ begin
         fillchar(e,sizeof(e),0); e.etype:=KEYBOARD;
         r:=SCRU_NONE;
         case command of
-        CMD_NEW:begin commit(ctx); new_file(ctx,''); ctx.current^.sfname:='Untitled'; r:=SCRU_FULL end;
-        CMD_SAVE:if ctx.current^.fname='' then r:=hk_save_as(ctx,@e) else r:=hk_save(ctx,@e);
+        CMD_NEW:begin commit(ctx); new_file(ctx,''); r:=SCRU_FULL end;
+        CMD_SAVE:r:=hk_save(ctx,@e);
         CMD_SAVE_ALL:begin e.ctrl_keys:=key_shift; r:=hk_save(ctx,@e) end;
         CMD_FIND:r:=hk_start_find(ctx,@e);
         CMD_FIND_CASE:begin e.ctrl_keys:=key_shift; r:=hk_start_find(ctx,@e) end;

@@ -236,7 +236,9 @@ begin
                 cline_num := atol(ss, 1);
                 inc(p);
                 fname := copy(s, p, length(s) - p + 1);
-                load_file(ctx, fname, errCode, @load_file_progress);
+                if fname='' then begin
+                        new_file(ctx,''); errCode:=0;
+                end else load_file(ctx, fname, errCode, @load_file_progress);
                 if errCode <> 0 then handle_error(ctx, errCode) else begin
                         ctx.current^.editor.x := x;
                         ctx.current^.scrx := scrx;
