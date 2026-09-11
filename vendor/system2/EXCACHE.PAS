@@ -42,6 +42,7 @@ TEXCACHE = RECORD
         h          : WORD;
         size       : INTEGER;
         allocated  : INTEGER;
+        spare      : INTEGER;
         items      : ARRAY[1..EXCACHE_ITEM_COUNT] OF TEXCACHE_ITEM;
 END;
 
@@ -49,6 +50,10 @@ FUNCTION excache_Create(size : INTEGER) : PEXCACHE;
 PROCEDURE excache_Free(c : PEXCACHE);
 FUNCTION excache_IsFull(c : PEXCACHE) : BOOLEAN;
 
+{ Peek returns zero for a hit, -1 for a miss, positive driver error otherwise.
+  Failure retains cache ownership but may partially modify the destination. }
+FUNCTION excache_Peek(c:PEXCACHE; recno:LONGINT; VAR b; VAR count:WORD):INTEGER;
+PROCEDURE excache_Discard(c:PEXCACHE; recno:LONGINT);
 FUNCTION excache_Get(c : PEXCACHE; recno : LONGINT; VAR b; VAR count : WORD) : BOOLEAN;
 FUNCTION excache_Put(c : PEXCACHE; recno : LONGINT; VAR b; count : WORD) : BOOLEAN;
 PROCEDURE excache_Truncate(c : PEXCACHE; recno : LONGINT; count : WORD);
@@ -67,12 +72,13 @@ BEGIN
         IF exms_check_driver THEN BEGIN
                 IF size < 1 THEN size := EXCACHE_ITEM_COUNT;
                 IF size > EXCACHE_ITEM_COUNT THEN size := EXCACHE_ITEM_COUNT;
-                h := exms_malloc(size);
+                h := exms_malloc(size+1);
                 IF h <> 0 THEN BEGIN
                         GetMem(r, SizeOf(TEXCACHE));
                         FillChar(r^, SizeOf(TEXCACHE), #0);
                         r^.h := h;
                         r^.size := size;
+                        r^.spare := size;
                         FOR h := 1 TO r^.size DO r^.items[h].page := h - 1;
                 END;
         END;
@@ -134,35 +140,49 @@ BEGIN
         make_top(c, r);
 END;
 
-FUNCTION excache_Get(c : PEXCACHE; recno : LONGINT; VAR b; VAR count : WORD) : BOOLEAN;
-VAR     r : BOOLEAN;
+FUNCTION excache_Peek(c:PEXCACHE; recno:LONGINT; VAR b; VAR count:WORD):INTEGER;
+VAR status:BYTE;
 BEGIN
-        r := FALSE;
-        IF c <> NIL THEN BEGIN
-                IF c^.h <> 0 THEN r := lookup_recno(c, recno);
-        END;
-        IF r THEN BEGIN
-                exms_copy(c^.h, c^.items[1].page, b, EXT2DOS);
-                count := c^.items[1].count;
-                c^.items[1].is_busy := FALSE;
-                Dec(c^.allocated);
-        END;
-        excache_Get := r;
+        excache_Peek:=-1;
+        IF c=NIL THEN EXIT;
+        IF c^.h=0 THEN EXIT;
+        IF NOT lookup_recno(c,recno) THEN EXIT;
+        status:=exms_try_copy(c^.h,c^.items[1].page,b,EXT2DOS);
+        excache_Peek:=status;
+        IF status=0 THEN count:=c^.items[1].count;
 END;
 
-FUNCTION excache_Put(c : PEXCACHE; recno : LONGINT; VAR b; count : WORD) : BOOLEAN;
+PROCEDURE excache_Discard(c:PEXCACHE; recno:LONGINT);
 BEGIN
-        IF c = NIL THEN excache_Put := FALSE
-        ELSE IF c^.h = 0 THEN excache_Put := FALSE
-        ELSE BEGIN
-                lookup_free(c);
-                IF NOT c^.items[1].is_busy THEN Inc(c^.allocated);
-                c^.items[1].recno := recno;
-                c^.items[1].count := count;
-                c^.items[1].is_busy := TRUE;
-                exms_copy(c^.h, c^.items[1].page, b, DOS2EXT);
-                excache_Put := TRUE;
+        IF c=NIL THEN EXIT;
+        IF lookup_recno(c,recno) THEN BEGIN
+                c^.items[1].is_busy:=FALSE; Dec(c^.allocated);
         END;
+END;
+
+FUNCTION excache_Get(c:PEXCACHE; recno:LONGINT; VAR b; VAR count:WORD):BOOLEAN;
+VAR status:INTEGER;
+BEGIN
+        status:=excache_Peek(c,recno,b,count);
+        IF status=0 THEN excache_Discard(c,recno);
+        excache_Get:=status=0;
+END;
+
+FUNCTION excache_Put(c:PEXCACHE; recno:LONGINT; VAR b; count:WORD):BOOLEAN;
+VAR old_page:INTEGER;
+BEGIN
+        excache_Put:=FALSE;
+        IF c=NIL THEN EXIT;
+        IF (c^.h=0) OR (count>EXT_PAGE_SIZE) THEN EXIT;
+        { The only live copy is never the destination of an uncommitted write. }
+        IF exms_try_copy(c^.h,c^.spare,b,DOS2EXT)<>0 THEN EXIT;
+        IF NOT lookup_recno(c,recno) THEN lookup_free(c);
+        old_page:=c^.items[1].page;
+        IF NOT c^.items[1].is_busy THEN Inc(c^.allocated);
+        c^.items[1].page:=c^.spare; c^.spare:=old_page;
+        c^.items[1].recno:=recno; c^.items[1].count:=count;
+        c^.items[1].is_busy:=TRUE;
+        excache_Put:=TRUE;
 END;
 
 PROCEDURE excache_Truncate(c : PEXCACHE; recno : LONGINT; count : WORD);

@@ -294,12 +294,16 @@ END;
 
 PROCEDURE lSeek(h : WORD; seek_typ : BYTE; pos : DWORD);ASSEMBLER;
 ASM
+        MOV RES,0
         MOV  BX, h
         MOV  DX, word ptr [pos]
         MOV  CX, word ptr [pos + 2]
         MOV  AH, $42
         MOV  AL, seek_typ
         INT  $21
+        JNC @ok
+        MOV RES,AX
+@ok:
 END;
 
 FUNCTION lTell(h : word) : DWORD;ASSEMBLER;
@@ -313,9 +317,13 @@ END;
 
 PROCEDURE lClose(h : WORD);ASSEMBLER;
 ASM
+        MOV RES,0
         MOV  BX, h
         MOV  AH, $3E
         INT  $21
+        JNC @ok
+        MOV RES,AX
+@ok:
 END;
 
 PROCEDURE lErase;ASSEMBLER;
@@ -747,53 +755,71 @@ BEGIN
 END;
 
 
-PROCEDURE FsSwitchPage(VAR f : BFILE; new_page : DWORD);
-VAR     ns        : DWORD;
-        csize     : WORD;
+{ Disk writeback does not release dirty ownership until the full write succeeds. }
+FUNCTION WritePage(VAR f:BFILE; page:DWORD; VAR data; count:WORD):BOOLEAN;
+VAR written:WORD;
+BEGIN
+        WritePage:=FALSE;
+        lSeek(f.f,SEEK_BEG,page*SizeOf(BFILE_BUF));
+        IF res<>0 THEN BEGIN f.ioresult:=101; EXIT END;
+        written:=lWrite(f.f,data,count);
+        IF (res<>0) OR (written<>count) THEN BEGIN f.ioresult:=101; EXIT END;
+        WritePage:=TRUE;
+END;
+
+PROCEDURE FsSwitchPage(VAR f:BFILE; new_page:DWORD);
+VAR scratch:^BFILE_BUF; count:WORD; status:INTEGER; dirty,stored:BOOLEAN;
 BEGIN
         IF f.buf_update THEN UpdateFileSize(f);
 {$IFDEF USE_CACHE}
-        IF (f.wcache <> NIL) AND (f.rcache <> NIL) THEN BEGIN
-                IF f.buf_update THEN BEGIN
-                        IF excache_Put(PEXCACHE(f.wcache), f.buf_page, f.buf^, f.buf_count) THEN BEGIN
-                                IF excache_IsFull(PEXCACHE(f.wcache)) THEN BEGIN
-                                        csize := excache_Size(PEXCACHE(f.wcache));
-                                        f.buf_page := PEXCACHE(f.wcache)^.items[csize].recno;
-                                        excache_Get(PEXCACHE(f.wcache), f.buf_page, f.buf^, f.buf_count);
-                                        excache_Put(PEXCACHE(f.rcache), f.buf_page, f.buf^, f.buf_count);
-                                        f.buf_update := TRUE;
-                                END ELSE f.buf_update := FALSE;
-                        END;
-                END ELSE excache_Put(PEXCACHE(f.rcache), f.buf_page, f.buf^, f.buf_count);
-        END;
+        { A full write cache is drained explicitly, never evicted by Put. }
+        IF f.buf_update AND (f.wcache<>NIL) THEN
+                IF excache_IsFull(PEXCACHE(f.wcache)) THEN BEGIN
+                        Flush(f); IF f.ioresult<>0 THEN EXIT;
+                END;
 {$ENDIF}
-        IF f.buf_update THEN BEGIN
-                lSeek(f.f, SEEK_BEG, f.buf_page * SizeOf(BFILE_BUF));
-                lWrite(f.f, f.buf^, f.buf_count);
-                f.buf_update := FALSE;
-        END;
-
-        f.buf_page := new_page;
-        f.buf_pos := 0;
+        IF MaxAvail<SizeOf(BFILE_BUF) THEN BEGIN f.ioresult:=8; EXIT END;
+        GetMem(scratch,SizeOf(BFILE_BUF));
+        count:=0; dirty:=FALSE; status:=-1;
 {$IFDEF USE_CACHE}
-        IF (f.rcache <> NIL) AND excache_Get(PEXCACHE(f.rcache), f.buf_page, f.buf^, f.buf_count) THEN BEGIN
-                f.buf_update := FALSE;
-        END ELSE IF (f.wcache <> NIL) AND excache_Get(PEXCACHE(f.wcache), f.buf_page, f.buf^, f.buf_count) THEN BEGIN
-                f.buf_update := TRUE;
-        END ELSE BEGIN
-                f.buf_update := FALSE;
-                lSeek(f.f, SEEK_BEG, f.buf_page * SizeOf(BFILE_BUF));
-                f.buf_count := lRead(f.f, f.buf^, SizeOf(BFILE_BUF));
-        END;
+        status:=excache_Peek(PEXCACHE(f.wcache),new_page,scratch^,count);
+        IF status=0 THEN dirty:=TRUE;
+        IF status>0 THEN f.ioresult:=100;
+        IF status=-1 THEN
+                status:=excache_Peek(PEXCACHE(f.rcache),new_page,scratch^,count);
+        { A clean cache can fall back to disk; a dirty cache cannot. }
 {$ENDIF}
-{$IFNDEF USE_CACHE}
-        f.buf_update := FALSE;
-        lSeek(f.f, SEEK_BEG, f.buf_page * SizeOf(BFILE_BUF));
-        f.buf_count := lRead(f.f, f.buf^, SizeOf(BFILE_BUF));
-{$ENDIF}
-        IF res <> 0 THEN BEGIN
-                f.ioresult := 100;
+        IF (f.ioresult=0) AND (status<>0) THEN BEGIN
+                lSeek(f.f,SEEK_BEG,new_page*SizeOf(BFILE_BUF));
+                IF res=0 THEN count:=lRead(f.f,scratch^,SizeOf(BFILE_BUF));
+                IF res<>0 THEN f.ioresult:=100;
         END;
+        IF f.ioresult=0 THEN BEGIN
+                stored:=FALSE;
+                IF f.buf_update THEN BEGIN
+{$IFDEF USE_CACHE}
+                        stored:=excache_Put(PEXCACHE(f.wcache),f.buf_page,f.buf^,f.buf_count);
+{$ENDIF}
+                        IF NOT stored THEN stored:=WritePage(f,f.buf_page,f.buf^,f.buf_count);
+{$IFDEF USE_CACHE}
+                        IF stored THEN excache_Discard(PEXCACHE(f.rcache),f.buf_page);
+{$ENDIF}
+                END ELSE BEGIN
+{$IFDEF USE_CACHE}
+                        excache_Put(PEXCACHE(f.rcache),f.buf_page,f.buf^,f.buf_count);
+{$ENDIF}
+                END;
+                IF f.ioresult=0 THEN BEGIN
+                        Move(scratch^,f.buf^,count);
+                        f.buf_page:=new_page; f.buf_count:=count; f.buf_pos:=0;
+                        f.buf_update:=dirty;
+{$IFDEF USE_CACHE}
+                        excache_Discard(PEXCACHE(f.wcache),new_page);
+                        excache_Discard(PEXCACHE(f.rcache),new_page);
+{$ENDIF}
+                END;
+        END;
+        FreeMem(scratch,SizeOf(BFILE_BUF));
 END;
 
 PROCEDURE SwitchPage(VAR f : BFILE; new_page : DWORD);
@@ -820,8 +846,8 @@ BEGIN
                 delta := SizeOf(BFILE_BUF) - f.buf_pos;
                 IF delta = 0 THEN BEGIN
                         SwitchPage(f, f.buf_page + 1);
-                        f.buf_pos := 0;
                         IF f.ioresult <> 0 THEN BREAK;
+                        f.buf_pos := 0;
                         delta := SizeOf(BFILE_BUF);
                 END;
                 IF delta > count THEN delta := count;
@@ -851,6 +877,7 @@ BEGIN
                 delta := f.buf_count - f.buf_pos;
                 IF delta = 0 THEN BEGIN
                         SwitchPage(f, f.buf_page + 1);
+                        IF f.ioresult <> 0 THEN BREAK;
                         f.buf_pos := 0;
                         IF f.buf_count = 0 THEN BREAK;
                         delta := f.buf_count;
@@ -933,53 +960,40 @@ BEGIN
         END;
 END;
 
-PROCEDURE Flush(VAR f : BFILE);
-VAR     i        : INTEGER;
-        bp       : DWORD;
-        bc       : WORD;
-        buf_used : BOOLEAN;
+PROCEDURE Flush(VAR f:BFILE);
+VAR i:INTEGER; scratch:^BFILE_BUF; page:DWORD; count:WORD; status:INTEGER;
 BEGIN
         IF NOT f.is_open THEN EXIT;
-        res := 0;
-        f.ioresult := 0;
-
-        IF f.filetype = FS_FILE THEN BEGIN
+        res:=0; f.ioresult:=0; scratch:=NIL;
+        IF f.buf_update THEN UpdateFileSize(f);
 {$IFDEF USE_CACHE}
-                IF f.buf_update THEN BEGIN
-                        f.buf_update := NOT excache_put(PEXCACHE(f.wcache), f.buf_page, f.buf^, f.buf_count);
+        IF f.wcache<>NIL THEN IF PEXCACHE(f.wcache)^.allocated<>0 THEN BEGIN
+                IF MaxAvail<SizeOf(BFILE_BUF) THEN BEGIN f.ioresult:=8; EXIT END;
+                GetMem(scratch,SizeOf(BFILE_BUF));
+                WHILE PEXCACHE(f.wcache)^.allocated<>0 DO BEGIN
+                        i:=1;
+                        WHILE NOT PEXCACHE(f.wcache)^.items[i].is_busy DO Inc(i);
+                        page:=PEXCACHE(f.wcache)^.items[i].recno;
+                        status:=excache_Peek(PEXCACHE(f.wcache),page,scratch^,count);
+                        IF status<>0 THEN BEGIN f.ioresult:=100; BREAK END;
+                        IF NOT WritePage(f,page,scratch^,count) THEN BREAK;
+                        excache_Discard(PEXCACHE(f.wcache),page);
                 END;
-{$ENDIF}
-                IF f.buf_update THEN BEGIN
-                        lSeek(f.f, SEEK_BEG, f.buf_page * SizeOf(BFILE_BUF));
-                        lWrite(f.f, f.buf^, f.buf_count);
-                        f.buf_update := FALSE;
-                END;
-{$IFDEF USE_CACHE}
-                buf_used := FALSE;
-                excache_put(PEXCACHE(f.rcache), f.buf_page, f.buf^, f.buf_count);
-                FOR i := 1 TO excache_size(PEXCACHE(f.wcache)) DO BEGIN
-                        IF PEXCACHE(f.wcache)^.items[i].is_busy THEN BEGIN
-                                bp := PEXCACHE(f.wcache)^.items[i].recno;
-                                bc := PEXCACHE(f.wcache)^.items[i].count;
-                                excache_get(PEXCACHE(f.wcache), bp, f.buf^, bc);
-                                lSeek(f.f, SEEK_BEG, bp * SizeOf(BFILE_BUF));
-                                lWrite(f.f, f.buf^, bc);
-                                buf_used := TRUE;
-                        END;
-                END;
-                IF NOT excache_get(PEXCACHE(f.rcache), f.buf_page, f.buf^, f.buf_count) THEN BEGIN
-                        IF buf_used THEN BEGIN
-                                lSeek(f.f, SEEK_BEG, f.buf_page * SizeOf(BFILE_BUF));
-                                lRead(f.f, f.buf^, f.buf_count);
-                        END;
-                END;
-{$ENDIF}
+                FreeMem(scratch,SizeOf(BFILE_BUF));
         END;
+{$ENDIF}
+        IF (f.ioresult=0) AND f.buf_update THEN
+                IF WritePage(f,f.buf_page,f.buf^,f.buf_count) THEN BEGIN
+                        f.buf_update:=FALSE;
+{$IFDEF USE_CACHE}
+                        excache_Discard(PEXCACHE(f.rcache),f.buf_page);
+{$ENDIF}
+                END;
 END;
-
 PROCEDURE FsClose(VAR f : BFILE);
 BEGIN
         lClose(f.f);
+        IF res<>0 THEN BEGIN f.ioresult:=res; EXIT END;
         f.is_open := FALSE;
         f.buf_count := 0;
         f.buf_pos := 0;
@@ -995,7 +1009,9 @@ BEGIN
 
         IF NOT f.is_open THEN EXIT;
         IF NOT f.delonclose THEN Flush(f);
+        IF f.ioresult<>0 THEN EXIT;
         IF f.filetype = FS_FILE THEN FsClose(f);
+        IF f.is_open THEN EXIT;
 {$IFDEF USE_CACHE}
         excache_free(PEXCACHE(f.rcache));
         excache_free(PEXCACHE(f.wcache));

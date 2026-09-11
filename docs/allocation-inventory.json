@@ -43,11 +43,11 @@
     "vendor/system2/DBB.PAS": "32d6be4413fb8b486c890363a4336e469ff43617ef2d6a0b7a0e65479832d0a1",
     "vendor/system2/DBM.PAS": "20d9c7999d3fe1cf268371fa406448a1ac6736d3e2ac64e67f0c6a6c32e5160b",
     "vendor/system2/DETECT.PAS": "ae81be855f8c7a00ba43c0cb5e54c981992d95c52908ae96a439f644ca07ee26",
-    "vendor/system2/EXCACHE.PAS": "18fa49480307be30d949e7a97ea1cfafc46d7a2a3998f462bc3dcaa5aace46b8",
+    "vendor/system2/EXCACHE.PAS": "43a4c12b1fe98d5a98da22408593e98b4b64dd183b9731e912dc9c0b7002e687",
     "vendor/system2/EXMS.PAS": "809f8e47e6240bfa1c534540d94165dfac221c06e32345c42216533484616cb0",
     "vendor/system2/KMINPUT.PAS": "142a50bfa3a9755e3938c7bb4cc198294080a2d394dfe669549e24639aba850e",
     "vendor/system2/STR.PAS": "8810c6e77a7a087863e91b10f99e51e5a96689bdc12ec1dcf179dd6e2ed53664",
-    "vendor/system2/SYSTEM2.PAS": "bcfd96c11682a8e6b9b793bfde8123c79b071b56da8e064badc92f3bdcfce778",
+    "vendor/system2/SYSTEM2.PAS": "2372afe9d84251067a9467d4abbae2c4cb4fa532c17bca248faa9235cb5bb9f7",
     "vendor/system2/WINCB.PAS": "af27829d65fe6fabe66bfb4561206345a338522be0a59df732b1d671daf17c07"
   },
   "unit_dependencies": {
@@ -804,10 +804,10 @@
     },
     {
       "path": "vendor/system2/EXCACHE.PAS",
-      "line": 72,
+      "line": 77,
       "allocator": "getmem",
       "preceding_routine_declaration": "excache_Create",
-      "context_start_line": 60,
+      "context_start_line": 65,
       "context": [
         "",
         "FUNCTION excache_Create(size : INTEGER) : PEXCACHE;",
@@ -819,21 +819,21 @@
         "        IF exms_check_driver THEN BEGIN",
         "                IF size < 1 THEN size := EXCACHE_ITEM_COUNT;",
         "                IF size > EXCACHE_ITEM_COUNT THEN size := EXCACHE_ITEM_COUNT;",
-        "                h := exms_malloc(size);",
+        "                h := exms_malloc(size+1);",
         "                IF h <> 0 THEN BEGIN",
         "                        GetMem(r, SizeOf(TEXCACHE));",
         "                        FillChar(r^, SizeOf(TEXCACHE), #0);",
         "                        r^.h := h;",
         "                        r^.size := size;",
-        "                        FOR h := 1 TO r^.size DO r^.items[h].page := h - 1;"
+        "                        r^.spare := size;"
       ]
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 634,
+      "line": 642,
       "allocator": "getmem",
       "preceding_routine_declaration": "ReWrite",
-      "context_start_line": 622,
+      "context_start_line": 630,
       "context": [
         "PROCEDURE Assign(VAR f : BFILE; fname : STRING);",
         "BEGIN",
@@ -856,10 +856,10 @@
     },
     {
       "path": "vendor/system2/SYSTEM2.PAS",
-      "line": 662,
+      "line": 670,
       "allocator": "getmem",
       "preceding_routine_declaration": "ResetMode",
-      "context_start_line": 650,
+      "context_start_line": 658,
       "context": [
         "                f.rcache := excache_create(READ_CACHE_SIZE);",
         "                f.wcache := excache_create(WRITE_CACHE_SIZE);",
@@ -879,7 +879,59 @@
         "        fname := f.filename + #0;",
         "        f.f := lReset(access);"
       ]
+    },
+    {
+      "path": "vendor/system2/SYSTEM2.PAS",
+      "line": 782,
+      "allocator": "getmem",
+      "preceding_routine_declaration": "FsSwitchPage",
+      "context_start_line": 770,
+      "context": [
+        "PROCEDURE FsSwitchPage(VAR f:BFILE; new_page:DWORD);",
+        "VAR scratch:^BFILE_BUF; count:WORD; status:INTEGER; dirty,stored:BOOLEAN;",
+        "BEGIN",
+        "        IF f.buf_update THEN UpdateFileSize(f);",
+        "{$IFDEF USE_CACHE}",
+        "        { A full write cache is drained explicitly, never evicted by Put. }",
+        "        IF f.buf_update AND (f.wcache<>NIL) THEN",
+        "                IF excache_IsFull(PEXCACHE(f.wcache)) THEN BEGIN",
+        "                        Flush(f); IF f.ioresult<>0 THEN EXIT;",
+        "                END;",
+        "{$ENDIF}",
+        "        IF MaxAvail<SizeOf(BFILE_BUF) THEN BEGIN f.ioresult:=8; EXIT END;",
+        "        GetMem(scratch,SizeOf(BFILE_BUF));",
+        "        count:=0; dirty:=FALSE; status:=-1;",
+        "{$IFDEF USE_CACHE}",
+        "        status:=excache_Peek(PEXCACHE(f.wcache),new_page,scratch^,count);",
+        "        IF status=0 THEN dirty:=TRUE;"
+      ]
+    },
+    {
+      "path": "vendor/system2/SYSTEM2.PAS",
+      "line": 972,
+      "allocator": "getmem",
+      "preceding_routine_declaration": "Flush",
+      "context_start_line": 960,
+      "context": [
+        "        END;",
+        "END;",
+        "",
+        "PROCEDURE Flush(VAR f:BFILE);",
+        "VAR i:INTEGER; scratch:^BFILE_BUF; page:DWORD; count:WORD; status:INTEGER;",
+        "BEGIN",
+        "        IF NOT f.is_open THEN EXIT;",
+        "        res:=0; f.ioresult:=0; scratch:=NIL;",
+        "        IF f.buf_update THEN UpdateFileSize(f);",
+        "{$IFDEF USE_CACHE}",
+        "        IF f.wcache<>NIL THEN IF PEXCACHE(f.wcache)^.allocated<>0 THEN BEGIN",
+        "                IF MaxAvail<SizeOf(BFILE_BUF) THEN BEGIN f.ioresult:=8; EXIT END;",
+        "                GetMem(scratch,SizeOf(BFILE_BUF));",
+        "                WHILE PEXCACHE(f.wcache)^.allocated<>0 DO BEGIN",
+        "                        i:=1;",
+        "                        WHILE NOT PEXCACHE(f.wcache)^.items[i].is_busy DO Inc(i);",
+        "                        page:=PEXCACHE(f.wcache)^.items[i].recno;"
+      ]
     }
   ],
-  "heap_call_count": 20
+  "heap_call_count": 22
 }

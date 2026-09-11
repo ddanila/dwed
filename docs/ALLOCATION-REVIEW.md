@@ -74,8 +74,10 @@ including wide SXMS sizes and failure returns. Its test-only multiplex shim
 intercepts XMS discovery and chains all unrelated requests to the real handler.
 This qualifies request construction, not an actual SXMS driver's memory manager.
 The [checked transfer APIs](EXTENDED-TRANSFERS.md) expose driver failure and
-preserve EMS sources. Cache error propagation and alternative document stores
-remain runtime review work.
+preserve EMS sources. Cache and buffered-file writeback preserve dirty ownership on refusal; their
+temporary page allocations check contiguous heap space. The higher-level
+buffered-file callers and alternative document stores remain runtime review
+work. See the cache scope in [EXTENDED-TRANSFERS.md](EXTENDED-TRANSFERS.md).
 
 The heap review does not establish minimum physical RAM, supported file size,
 full-command operation at the startup boundary, or final legacy CPU coverage.
