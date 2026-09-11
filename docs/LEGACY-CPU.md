@@ -60,3 +60,12 @@ package and core fingerprints, official download provenance and guest results.
 The runner also supports `--mode high`, but that mode is not established by
 this report. This is BIOS and functional evidence under emulation, not physical
 hardware acceptance, boot-speed measurement or coverage of all editor commands.
+
+
+The HIGH-mode attempt is recorded separately in
+`ibmat-high-investigation.json`. DOS reports HMA residency and the text probe
+passes, but packaged EDIT does not complete. A separate diagnostic boot reaches
+the point immediately before EDIT after installing the keyboard driver. The
+launcher/startup failure remains unresolved; these results do not qualify HIGH
+mode. The parent runner retains a failed status and last guest stage when a
+run fails, so partial probe success cannot be mistaken for a complete pass.

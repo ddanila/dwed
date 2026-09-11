@@ -1,0 +1,206 @@
+{
+  "package": {
+    "status": "development",
+    "build": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 221306,
+          "sha256": "44c71c47402947abdfa2cc8ee4b10904bc30829b69a6dd2966faf787c5efee96"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 8448,
+          "sha256": "06360aff586bd0b7e5af09ae0dc85e9d203ccf65a911830f2a4314575346995e"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37604,
+          "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+        },
+        "STORTEST.exe": {
+          "bytes": 155592,
+          "sha256": "81470267910701db88cf62507f8465a0e4983c776c6f04fc6e8f675b68545701"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 156148,
+          "sha256": "019c1dc518ab69db8b4d5f12daf5a217b1f9dfe740d39b16a9e4c55fe25effa0"
+        },
+        "TABTEST.exe": {
+          "bytes": 213560,
+          "sha256": "d59a5561c8d8c271f3521f09f119f5894c35f1927dedb23e9c0d64cacb2de26f"
+        },
+        "SAVETEST.exe": {
+          "bytes": 162672,
+          "sha256": "1322f752ffb3ee73e2812ba4d5ad3f72d89bb1c131106559b988d075dd3c8d9c"
+        },
+        "RECVTEST.exe": {
+          "bytes": 36648,
+          "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+        },
+        "MEMTEST.exe": {
+          "bytes": 216702,
+          "sha256": "db62211a73902b44c5fad6014816fb060c99ac9b07a30613cf1f49c0f15890f9"
+        }
+      }
+    },
+    "files": {
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "DWEDOVL.EXE": {
+        "bytes": 221306,
+        "sha256": "44c71c47402947abdfa2cc8ee4b10904bc30829b69a6dd2966faf787c5efee96"
+      },
+      "EDIT.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "LICENSES/DWED.TXT": {
+        "bytes": 1086,
+        "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+      },
+      "LICENSES/FPC/COPYING.FPC": {
+        "bytes": 1238,
+        "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+      },
+      "LICENSES/FPC/COPYING.TXT": {
+        "bytes": 26940,
+        "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+      },
+      "LICENSES/SYSTEM2.TXT": {
+        "bytes": 1086,
+        "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+      },
+      "README.TXT": {
+        "bytes": 684,
+        "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+      },
+      "SOURCES.TXT": {
+        "bytes": 307,
+        "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+      }
+    },
+    "archive": {
+      "bytes": 256362,
+      "sha256": "dea4b386afac77446615bc501182172867007f071b433c1a7d3e8f7fbff6e3c8"
+    }
+  },
+  "emulator_sha256": "c74e7e3a085c624260f0d144c02968d00fa9383f5d7fc46b32f1dc80d371d7ff",
+  "emulator_payload_sha256": "ae3dc231824cf0c2facd1af4e2164814cbbb15bb1a9fa0603cdd8e9ee0ad2969",
+  "core_sha256": {
+    "IO.SYS": "21c9cd0a1548eb3245ebd39f7dcb6ecb06a0c7b397012bc22fc6cd9ca50ef14e",
+    "MSDOS.SYS": "b495ab1ccc6fd3e7672b4724a7cccde519d8a65171c0c0ed6bad73cd331a42e9",
+    "COMMAND.COM": "6742b5889141a9c61d41e336445014d8055c19758febf4263f4f8ebe3c2f2c29",
+    "HIMEM.SYS": "d5ea7b0e775c2eb6eb2b7dab42eb7471a7a84bfb32cf2021215d4ed6f8a7850a"
+  },
+  "boot_source_sha256": "523534c0ded7c62a8bba0d5da753cb3c70e425fd0a59b89ddc3a6159eefff297",
+  "sysmenu_sha256": "8e40405ba7be2bfde3e088380551112d8d470bf052a442b5386de827cc45bbd3",
+  "qt_platform": "xcb",
+  "rom_sha256": {
+    "machines/ibmat/BIOS_5170_15NOV85_U27.BIN": "096ce496a06002eb68a5bc5db128a38dd7f27a4eda16ad7342c8076f1fc40683",
+    "machines/ibmat/BIOS_5170_15NOV85_U47.BIN": "4e4692031297e74053e37c8632dc73706de97d847d8f0e12995b4f009e5c71fe",
+    "video/vga/ibm_vga.bin": "51b49761f72780a696c36f3d2e74a8168c1c99b865070f7f90b8e621a8b5ae17"
+  },
+  "cases": [],
+  "status": "failed",
+  "failure": "Full HIGH-mode run reached the text probe PASS and copied its log but did not complete packaged EDIT before the runner deadline.",
+  "qualification": "Failure investigation only; HIGH mode is not accepted.",
+  "guest_artifacts": {
+    "CPU.TXT": {
+      "present": true,
+      "sha256": "1149f74c1d6c2b651fc7109d9afe08270f83ca4037e0d5dbe8d1135dad9f3444",
+      "text": "CPU MODEL PASS\r\n"
+    },
+    "HMA.TXT": {
+      "present": true,
+      "sha256": "1666ed929639bb7d3c2039a874f4d50ebf451109496cdca75f6879981cf8cde4",
+      "text": "HMA_PASS \r\n"
+    },
+    "TAB.LOG": {
+      "present": true,
+      "sha256": "30caf80a2f9624f1f5c569fb227f6f2a1ee0b9c67df91847a995670300142495",
+      "text": "PASS 10725 assertions\r\n"
+    },
+    "TABPRE.LOG": {
+      "present": true,
+      "sha256": "30caf80a2f9624f1f5c569fb227f6f2a1ee0b9c67df91847a995670300142495",
+      "text": "PASS 10725 assertions\r\n"
+    },
+    "TAB.OK": {
+      "present": true,
+      "sha256": "52f2170fdc42a2995f079926df96b25565cac3514dd91cd605bba9defe05c370",
+      "text": "TAB DISPLAY PASS\r\n"
+    },
+    "DONE.TXT": {
+      "present": false,
+      "sha256": null,
+      "text": null
+    },
+    "SAMPLE.TXT": {
+      "present": true,
+      "sha256": "e849f89907a6d0ea62b6a072691fa3ab2201c5074fbf717a10d0de2dcdbe03ae",
+      "text": "DWED_MARKER\r\nsecond line\r\n"
+    }
+  },
+  "startup_config": "[General]\nconfirm_exit = 0\nconfirm_reset = 0\nconfirm_save = 0\nvid_renderer = qt_software\n\n[Machine]\nmachine = ibmat\ncpu_family = 286\ncpu_speed = 8000000\ncpu_multi = 1\ncpu_use_dynarec = 0\nmem_size = 512\ntime_sync = disabled\n\n[IBM AT]\nbios = ibm5170_111585\n\n[Video]\ngfxcard = vga\n\n[Input devices]\nmouse_type = none\n\n[Ports (COM & LPT)]\nserial1_device = stdio\nserial2_enabled = 0\nlpt1_enabled = 0\n\n[Virtual Console (COM) #1]\nmode = 0\n\n[Floppy and CD-ROM drives]\nfdd_01_fn = test.img\nfdd_01_type = 525_2hd\nfdd_02_type = none\nfdd_host_buffering = 1\n\n[Other peripherals]\nisamem0_type = ibmat_128k\nisamem1_type = ibmat\n\n[IBM PC/AT Memory Expansion]\nsize = 512\nstart = 1024\n",
+  "config_sys": {
+    "present": true,
+    "sha256": "ca7719e58caca79af9c4c984478c3bdc125276e605a7c59109eda050150375c7",
+    "text": "DEVICE=A:\\HIMEM.SYS /TESTMEM:OFF\r\nDOS=HIGH\r\nFILES=40\r\nBUFFERS=15\r\n"
+  },
+  "autoexec": {
+    "present": true,
+    "sha256": "d20065d595fca9ccf778f54297666210a8be2a1de88291269d0742f64a8c97ea",
+    "text": "@ECHO OFF\r\nCPUCHECK.COM >CPU.TXT\r\nIF ERRORLEVEL 1 GOTO FAIL\r\nHMACHECK.COM\r\nIF ERRORLEVEL 1 GOTO FAIL\r\nECHO HMA_PASS >HMA.TXT\r\nTABTEST.EXE\r\nIF ERRORLEVEL 1 GOTO FAIL\r\nCOPY A:\\TAB.LOG A:\\TABPRE.LOG >NUL\r\nKEYDRV.COM\r\nEDIT.COM A:\\SAMPLE.TXT\r\nIF ERRORLEVEL 1 GOTO FAIL\r\nECHO PASS >DONE.TXT\r\nFINISH.COM\r\n:FAIL\r\nECHO FAIL >DONE.TXT\r\nFINISH.COM FAIL\r\n"
+  },
+  "final_image_sha256": "d5159ed0f11162ee4d6e7d5bd0ec2d1d2abf7252189c5ae7f731c7b16109458e",
+  "runner_log_sha256": "90ec102b38cf075fcf6dc41b63fc41325b6412410453296099d78dbafaba3407",
+  "serial_log_sha256": "c178ab5e8953299d7a54e143643b414bdf415fc112992b8df622ccfea07ed3fa",
+  "diagnostic": {
+    "scope": "Private boot omitting the probe to isolate launcher startup; manually stopped after observing the EDIT stage without completion. This is not a passing qualification run.",
+    "stage": {
+      "present": true,
+      "sha256": "960511cfa64455357ab065c234419b23e71731f47c1676e84ce8cd0b6feb57a5",
+      "text": "EDIT \r\n"
+    },
+    "autoexec": {
+      "present": true,
+      "sha256": "b247cf5fd158310ab23e8dda62ffc9c5ceea0cbf7684028a3cf761939338a76b",
+      "text": "@ECHO OFF\r\nECHO CPU >STAGE.TXT\r\nCPUCHECK.COM >CPU.TXT\r\nHMACHECK.COM\r\nIF ERRORLEVEL 1 GOTO FAIL\r\nECHO KEYDRV >STAGE.TXT\r\nKEYDRV.COM\r\nECHO EDIT >STAGE.TXT\r\nEDIT.COM A:\\SAMPLE.TXT\r\nIF ERRORLEVEL 1 GOTO FAIL\r\nECHO PASS >STAGE.TXT\r\nFINISH.COM\r\n:FAIL\r\nECHO FAIL >STAGE.TXT\r\nFINISH.COM FAIL\r\n"
+    },
+    "sample": {
+      "present": true,
+      "sha256": "e849f89907a6d0ea62b6a072691fa3ab2201c5074fbf717a10d0de2dcdbe03ae",
+      "text": "DWED_MARKER\r\nsecond line\r\n"
+    },
+    "image_sha256": "47547647b326c6af5612f2886b792a254edc322436eb2bd51f5ae4ebe7265414",
+    "screen_sha256": "e015626b177ef7d7ab27c602319c37103a6a7a30b22c0de65f0a4ff674183d41"
+  },
+  "host_failure_control": {
+    "emulator_sha256": "48893b0fb21436b54619db80486e83ef39dfccaf1aefe83dfa00c02d6146e8c0",
+    "status": "failed",
+    "failure": "(PosixPath('/home/ddanila/fun/msdos/out/dwed-286-w6hirivm/high'), 1)",
+    "report_sha256": "fbf3f64231bda935b7a3abc616999fc1acc88429cb1992276b91de6caa3b6e32"
+  }
+}
