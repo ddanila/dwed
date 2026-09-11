@@ -3,7 +3,9 @@
 `SAFESAVE.PAS` writes a newly created temporary file in the destination's
 directory. Create-new semantics protect temporary files belonging to another
 save. Writes must report the complete requested count, and DOS commit and
-close must succeed before the destination is renamed.
+close must succeed before the destination is renamed. A
+[persistent recovery record](SAVE-JOURNAL.md) is also written, committed and
+closed before replacement begins.
 
 When a backup already exists, it is parked under an unused `$EB*.TMP` name.
 DOS rename must refuse an existing target, so a competing file is never
@@ -45,13 +47,13 @@ negative control and LOW/HIGH results together with the regression suite.
 ## Remaining recovery work
 
 These are synchronous DOS-call failures, not simulated power cuts inside a
-filesystem write. The editor still needs persistent recovery metadata,
-startup discovery and recovery decisions after an interrupted replacement.
+filesystem write. The writer now records persistent recovery metadata, but the
+editor still needs startup discovery and recovery decisions after an interrupted replacement.
 A recoverable temporary filename alone does not identify its destination or
 prove that it is safe to restore.
 
 The editor now retains the transaction in its context and reports secondary
 errors and retained paths through the [session recovery screen](SAVE-RECOVERY.md).
-Persistent metadata, restart recovery, read-only media and interruption tests
-remain release gates. The synchronous fault milestone does not establish
-crash-safe save or complete recovery support.
+Editor restart recovery, read-only media and interruption testing beyond the
+recorded DOS-call boundaries remain release gates. The synchronous fault
+milestone does not establish crash-safe save or complete recovery support.

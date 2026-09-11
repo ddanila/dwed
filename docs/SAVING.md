@@ -19,8 +19,9 @@ replacement, inspect the destination, its backup and the `$ED*.TMP` and
 `$EB*.TMP` files in that directory before deleting anything. Depending on where
 the save stopped, these may contain new contents, the original destination or
 the previous backup. Exclusive creation skips existing payload temporaries,
-including files from interrupted saves. Persistent metadata and automatic
-restart recovery prompts are still release gates. Session recovery and retained
+including files from interrupted saves. A [persistent record](SAVE-JOURNAL.md)
+identifies planned paths and the new contents; automatic restart recovery
+prompts remain a release gate. Session recovery and retained
 handle ownership are described in [SAVE-RECOVERY.md](SAVE-RECOVERY.md).
 
 The parent `tests/test_dwed_qemu.py` checks ordinary saves, disk-full failures,

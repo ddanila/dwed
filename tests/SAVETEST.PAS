@@ -1,9 +1,9 @@
 { SPDX-License-Identifier: MIT }
 program savetest;
-uses dos,safesave,strs,dwedtype,dwedutil,unredo;
+uses dos,safesave,saveinfo,strs,dwedtype,dwedutil,unredo;
 var output:text; tests:longint; sf:TSaveFile; error,kind:integer;
     old21,old60:pointer; armed,hooked:boolean; fault,hits,renames,temp_handle:word;
-    payload:string; regs:registers;
+    payload:string; regs:registers; journal_handle:word; journal_active:boolean;
 const original='OLD_SOURCE'; older='OLDER_BACKUP';
 
 { FPC's interrupt stack parameters are declared in reverse stack order. }
@@ -12,6 +12,15 @@ var r:registers; service:byte; reject:boolean;
 begin
         service:=hi(ax); reject:=false;
         if armed then begin
+                if (service=$5B) and (mem[ds:dx+3]=ord('$')) and
+                   (mem[ds:dx+4]=ord('E')) and (mem[ds:dx+5]=ord('R')) and (fault=18) then reject:=true;
+                if journal_active and (bx=journal_handle) then begin
+                        if (service=$40) and (fault=19) then reject:=true;
+                        if (service=$68) and (fault=21) then reject:=true;
+                        if (service=$3E) and (fault=22) then reject:=true;
+                end;
+                if (service=$41) and (fault=24) and (mem[ds:dx+3]=ord('$')) and
+                   (mem[ds:dx+4]=ord('E')) and (mem[ds:dx+5]=ord('R')) then reject:=true;
                 if (service=$40) and (bx=temp_handle) and (fault in [1,12]) then reject:=true;
                 if (service=$68) and (bx=temp_handle) and (fault=3) then reject:=true;
                 if (service=$3E) and (bx=temp_handle) and
@@ -36,12 +45,23 @@ begin
         if armed and (fault=2) and (service=$40) and (bx=temp_handle) then begin
                 if r.cx>0 then dec(r.cx); inc(hits);
         end;
+        if armed and journal_active and (fault=20) and (service=$40) and (bx=journal_handle) then begin
+                if r.cx>0 then dec(r.cx); inc(hits);
+        end;
         { The original DOS vector is invoked through a private interrupt. }
         intr($60,r);
         if armed and (fault=15) and (service=$3E) and (bx=temp_handle) and (hits=0) then begin
                 r.ax:=5; r.flags:=r.flags or 1; inc(hits);
         end;
-        if armed and (service=$5B) and (r.flags and 1=0) then temp_handle:=r.ax;
+        if armed and journal_active and (fault=23) and (service=$3E) and
+           (bx=journal_handle) and (hits=0) then begin
+                r.ax:=5; r.flags:=r.flags or 1; inc(hits);
+        end;
+        if armed and (service=$5B) and (r.flags and 1=0) and
+           (mem[ds:dx+3]=ord('$')) and (mem[ds:dx+4]=ord('E')) then begin
+                if mem[ds:dx+5]=ord('D') then temp_handle:=r.ax;
+                if mem[ds:dx+5]=ord('R') then begin journal_handle:=r.ax; journal_active:=true end;
+        end;
         ax:=r.ax; bx:=r.bx; cx:=r.cx; dx:=r.dx; si:=r.si; di:=r.di;
         ds:=r.ds; es:=r.es; bp:=r.bp;
         flags:=(flags and $0300) or (r.flags and $FCFF);
@@ -98,7 +118,7 @@ begin
         fixture('C:\SAVE.TXT',original); fixture('C:\SAVE.BAK',older);
         if kind=10 then begin System.Assign(f,'C:\SAVE.BAK'); SetFAttr(f,1) end;
         if kind=14 then remove('C:\SAVE.TXT');
-        hits:=0; renames:=0; temp_handle:=$FFFF; fault:=kind; armed:=true;
+        hits:=0; renames:=0; temp_handle:=$FFFF; journal_handle:=$FFFF; journal_active:=false; fault:=kind; armed:=true;
         start_save(sf,'C:\SAVE.TXT',error);
         if error=0 then begin
                 write_save(sf,payload[1],length(payload),error); finish_save(sf,error);
@@ -140,6 +160,7 @@ begin
         if not (kind in [8,9,11,12]) then
                 check((sf.temporary='') and (sf.previous_backup=''),'completed cleanup');
         expect_file('C:\$EB0000.TMP','OTHER_BACKUP_TRANSACTION');
+        expect_file('C:\$ER0000.REC','OTHER_RECOVERY_RECORD');
         if kind in [8,9,11,12] then begin
                 check(save_pending_files(sf),'failed cleanup remains pending');
                 retry_save_cleanup(sf);
@@ -234,16 +255,87 @@ begin
         writeln(output,'CASE ',kind,' PASS');
 end;
 
+procedure journal_faults;
+var info:TSaveRecord; file_in:file; got:word;
+begin
+        for kind:=18 to 24 do begin
+                fixture('C:\SAVE.TXT',original); fixture('C:\SAVE.BAK',older);
+                fault:=kind; hits:=0; renames:=0; temp_handle:=$FFFF;
+                journal_handle:=$FFFF; journal_active:=false; armed:=true;
+                start_save(sf,'C:\SAVE.TXT',error);
+                if error=0 then begin
+                        write_save(sf,payload[1],length(payload),error); finish_save(sf,error);
+                end;
+                armed:=false;
+                if kind=24 then check(error=0,'publication succeeds despite journal removal error')
+                else if kind=20 then check(error=101,'short journal write detected')
+                else check(error=5,'journal DOS failure reported');
+                check(hits>0,'journal fault reached actual DOS operation');
+                if kind<>24 then begin
+                        check(renames=0,'journal failure precedes every rename');
+                        expect_file('C:\SAVE.TXT',original); expect_file('C:\SAVE.BAK',older);
+                end else begin
+                        expect_file('C:\SAVE.TXT',payload); expect_file('C:\SAVE.BAK',original);
+                end;
+                if kind in [22,24] then begin
+                        check(save_pending_files(sf),'journal ownership remains pending');
+                        check(sf.journal_opened=(kind=22),'journal handle ownership');
+                        if kind=22 then begin
+                                regs.ah:=$45; regs.bx:=sf.journal_handle; intr($21,regs);
+                                check(regs.flags and 1=0,'journal handle still exists');
+                                regs.bx:=regs.ax; regs.ah:=$3E; intr($21,regs);
+                        end;
+                        System.Assign(file_in,sf.journal); System.Reset(file_in,1);
+                        System.BlockRead(file_in,info,sizeof(info),got); System.Close(file_in);
+                        check((got=sizeof(info)) and valid_record(info,sf.journal),'retained recovery record validates');
+                        check((info.payload_size=length(payload)) and
+                              (info.payload_crc=(crc_update($FFFFFFFF,payload[1],length(payload)) xor $FFFFFFFF)),
+                              'recovery record identifies payload');
+                        retry_save_cleanup(sf);
+                end;
+                check(not save_pending_files(sf),'journal cleanup finishes');
+                expect_file('C:\$ER0000.REC','OTHER_RECOVERY_RECORD');
+                writeln(output,'CASE ',kind,' PASS');
+        end;
+end;
+
+procedure reserved_destinations;
+var name,backup,body:string; i:integer;
+begin
+        kind:=25;
+        for i:=0 to 2 do begin
+                case i of
+                0:name:='C:\$ED0001.TMP';
+                1:name:='C:\$er0001.rec';
+                2:name:='C:\$EB0001.TMP';
+                end;
+                remove(name); backup:=backup_name(name); remove(backup);
+                start_save(sf,name,error);
+                check((error=0) and not same_path(sf.temporary,name),'payload creation excludes its destination');
+                write_save(sf,payload[1],length(payload),error); finish_save(sf,error);
+                check((error=0) and not save_pending_files(sf),'reserved-looking destination saves');
+                expect_file(name,payload); fixture(backup,older);
+                body:='CHANGED'; start_save(sf,name,error);
+                write_save(sf,body[1],length(body),error); finish_save(sf,error);
+                check((error=0) and not save_pending_files(sf),'reserved-looking destination replaces');
+                expect_file(name,body); expect_file(backup,payload);
+                remove(name); remove(backup);
+        end;
+        expect_file('C:\$ER0000.REC','OTHER_RECOVERY_RECORD');
+        writeln(output,'CASE ',kind,' PASS');
+end;
+
 begin
         System.Assign(output,'A:\SAVE.LOG'); System.Rewrite(output); tests:=0; armed:=false; hooked:=false;
         payload:='NEW'+#9#128#255;
         fixture('C:\$EB0000.TMP','OTHER_BACKUP_TRANSACTION');
+        fixture('C:\$ER0000.REC','OTHER_RECOVERY_RECORD');
         GetIntVec($21,old21); GetIntVec($60,old60);
         SetIntVec($60,old21); SetIntVec($21,@intercept); hooked:=true;
         for kind:=0 to 15 do run_case;
-        writer_lifecycle; path_lifecycle;
+        writer_lifecycle; path_lifecycle; journal_faults; reserved_destinations;
         SetIntVec($21,old21); SetIntVec($60,old60); hooked:=false;
-        remove('C:\$EB0000.TMP'); remove('C:\SAVE.TXT'); remove('C:\SAVE.BAK');
+        remove('C:\$EB0000.TMP'); remove('C:\$ER0000.REC'); remove('C:\SAVE.TXT'); remove('C:\SAVE.BAK');
         writeln(output,'PASS ',tests,' assertions'); close(output);
         System.Assign(output,'A:\SAVE.OK'); System.Rewrite(output);
         writeln(output,'SAVE FAULTS PASS'); close(output);

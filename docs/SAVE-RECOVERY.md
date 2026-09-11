@@ -12,18 +12,19 @@ file is created rather than silently naming a truncated destination.
 The recovery screen appears after the primary save error, or directly after a
 successful publication whose backup cleanup failed. It shows the destination,
 retained temporary and backup paths, secondary DOS errors and whether the
-handle remains open. Paths wrap and the screen scrolls with Up/Down. The
-screen repaints the live editor on return, including its cursor; it does not
+payload or recovery-record handle remains open. Paths wrap and the screen
+scrolls with Up/Down. The screen repaints the live editor on return, including its cursor; it does not
 allocate a saved-screen copy.
 
 - **R Retry cleanup** retries the owned close and remaining rollback or cleanup.
   For an unpublished save it restores the old files and removes the temporary
   after successful rollback. It does not mark the unsaved document as saved.
-  For a published save it only removes the parked previous backup.
+  For a published save it removes the parked previous backup and completed
+  recovery record.
 - **Enter/Esc Return** keeps the transaction pending and returns to editing.
   Save and Save Clipboard remain guarded until cleanup succeeds.
-- **K Keep files and leave** is available when leaving the editor and the
-  temporary handle is closed. This explicitly leaves the displayed recovery
+- **K Keep files and leave** is available when leaving the editor and both
+  owned handles are closed. This explicitly leaves the displayed recovery
   files on disk. An open handle prevents that choice.
 
 Exit, closing the last document and handing control to an external command
@@ -49,8 +50,9 @@ retention of recoverable generations, and monochrome recovery display. The
 preceding editor fails the recovery-screen negative control. Results and
 reproducibility evidence are in `save-lifecycle-milestone.json`.
 
-This is in-process recovery, not restart recovery. Keeping files and leaving
-currently requires manual inspection of the displayed paths. Persistent
-metadata, startup discovery, interrupted-save tests, read-only media, low
-memory and broader platform qualification remain release gates. The recovery
-screen currently uses keyboard controls; mouse interaction remains unqualified.
+The writer now leaves a [persistent recovery record](SAVE-JOURNAL.md), with
+DOS-call boundary interruption tests. Editor recovery is still in-process:
+keeping files and leaving currently requires manual inspection of the displayed
+paths. Startup discovery, verified recovery into an editor document, read-only
+media, low memory and broader platform qualification remain release gates.
+The recovery screen currently uses keyboard controls; mouse interaction remains unqualified.
