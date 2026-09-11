@@ -10,7 +10,7 @@ var output:text; checks:longint; backend,kind,i,j,error:integer;
     selected,fault,hits,reads,writes,payload_writes,payload_closes:word;
     root,last,target,added,n,p,other:EditorStr; body,oldbody,actual:string;
     ctx:TEditorContext; filectx,snapshot,secondctx,second_snapshot:TFileContext; ok:boolean; baseline:longint;
-    held:array[0..63] of pointer; held_count:integer; amount:word; command_index,command_fault,result_code,key_reads:integer; e:TEvent;
+    held:array[0..63] of pointer; held_count:integer; amount:word; command_index,command_fault,axis,result_code,key_reads:integer; e:TEvent;
 procedure intercept(flags,cs,ip,ax,bx,cx,dx,si,di,ds,es,bp:word); interrupt;
 var r:registers; service:byte; matching,reject:boolean;
 begin
@@ -212,16 +212,25 @@ begin
                                       'handoff preserves other document');
                         if command_fault=2 then check(strs.pending_update,'handoff retains index rollback');
                 end;
+                for axis:=1 to 2 do
                 for command_fault:=1 to 4 do
                 for command_index:=1 to 4 do
                 for j:=0 to 1 do begin
-                        kind:=50+command_index;
+                        kind:=50+command_index+10*(axis-1);
                         check(strs.retry_update(error),'settle previous movement rollback');
                         check(strs.try_put(target,oldbody,error),'restore movement fixture'); evict;
                         body:='unsaved movement text'; prepare_context; ctx.all:=@filectx;
-                        filectx.editor.selection:=j=1; filectx.editor.desired_cell:=37; snapshot:=filectx;
+                        filectx.editor.selection:=j=1; filectx.editor.desired_cell:=37;
+                        if axis=2 then begin
+                                if command_index in [1,3] then filectx.editor.x:=1
+                                else filectx.editor.x:=length(body)+1;
+                        end;
+                        snapshot:=filectx;
                         FillChar(e,sizeof(e),0); e.etype:=KEYBOARD;
                         if command_index in [1,3] then e.scancode:=SCAN_UP else e.scancode:=SCAN_DOWN;
+                        if axis=2 then begin
+                                if command_index in [1,3] then e.scancode:=SCAN_LEFT else e.scancode:=SCAN_RIGHT;
+                        end;
                         if command_index>=3 then e.ctrl_keys:=key_shift;
                         case command_fault of
                         1:begin selected:=1; fault:=1 end;
@@ -240,13 +249,37 @@ begin
                         check(filectx.cline=other,'movement retry selects destination');
                         check((length(filectx.editor.line)=255) and (filectx.editor.line[1]=chr(65+longint(other) mod 26)),
                               'movement publishes exact destination text');
-                        check((filectx.editor.desired_cell=37) and (filectx.editor.x=38),'movement retains desired visual column');
+                        if axis=1 then
+                                check((filectx.editor.desired_cell=37) and (filectx.editor.x=38),'movement retains desired visual column')
+                        else begin
+                                check(filectx.editor.desired_cell=-1,'horizontal success clears desired column');
+                                if command_index in [1,3] then check(filectx.editor.x=256,'left crossing reaches previous line end')
+                                else check((filectx.editor.x=1) and (filectx.scrx=0),'right crossing reaches next line start');
+                        end;
                         check(filectx.editor.selection=(command_index>=3),'movement selection semantics');
                         if (command_index>=3) and (j=0) then
-                                check((filectx.editor.sel_row=910) and (filectx.editor.sel_x=3),'movement publishes new selection anchor');
+                                check((filectx.editor.sel_row=910) and (filectx.editor.sel_x=snapshot.editor.x),'movement publishes new selection anchor');
                         if (command_index>=3) and (j=1) then
                                 check((filectx.editor.sel_row=909) and (filectx.editor.sel_x=2),'movement retains existing selection anchor');
                         expect_target(body);
+                end;
+                for command_index:=1 to 4 do begin
+                        check(strs.retry_update(error),'settle before inline movement');
+                        check(strs.try_put(target,oldbody,error),'restore inline fixture');
+                        body:='unsaved inline text'; prepare_context; filectx.editor.selection:=false;
+                        filectx.editor.desired_cell:=37; ctx.all:=@filectx;
+                        FillChar(e,sizeof(e),0); e.etype:=KEYBOARD;
+                        if command_index in [1,3] then e.scancode:=SCAN_LEFT else e.scancode:=SCAN_RIGHT;
+                        if command_index>=3 then e.ctrl_keys:=key_shift;
+                        selected:=1; fault:=1; key_reads:=0; SetIntVec($16,@acknowledge); arm;
+                        result_code:=process_event(ctx,e); disarm; SetIntVec($16,old16);
+                        check((hits=0) and (payload_writes=0) and (key_reads=0),'inline movement needs no payload write');
+                        check(filectx.editor.chg and not filectx.chg and (filectx.editor.line=body),'inline movement retains unsaved buffer');
+                        if command_index in [1,3] then check(filectx.editor.x=2,'inline left moves one byte')
+                        else check(filectx.editor.x=4,'inline right moves one byte');
+                        if command_index>=3 then
+                                check(filectx.editor.selection and (filectx.editor.sel_row=910) and (filectx.editor.sel_x=3),'inline shift anchors without committing');
+                        expect_target(oldbody);
                 end;
                 kind:=11; check(strs.retry_update(error),'settle before discard test');
                 check(strs.try_put(target,oldbody,error),'discard fixture'); evict;
@@ -294,9 +327,19 @@ begin
                 check((ctx.current=@filectx) and (ctx.all=@filectx) and (ctx.exit_code=0),'DOS handoff retains document ownership');
                 unchanged;
         end;
+        for axis:=1 to 2 do
         for command_index:=1 to 4 do begin
+                filectx.editor.x:=3; filectx.editor.desired_cell:=37;
+                if axis=2 then begin
+                        if command_index in [1,3] then filectx.editor.x:=1
+                        else filectx.editor.x:=length(filectx.editor.line)+1;
+                end;
+                snapshot:=filectx;
                 FillChar(e,sizeof(e),0); e.etype:=KEYBOARD;
                 if command_index in [1,3] then e.scancode:=SCAN_UP else e.scancode:=SCAN_DOWN;
+                if axis=2 then begin
+                        if command_index in [1,3] then e.scancode:=SCAN_LEFT else e.scancode:=SCAN_RIGHT;
+                end;
                 if command_index>=3 then e.ctrl_keys:=key_shift;
                 key_reads:=0; SetIntVec($16,@acknowledge);
                 result_code:=process_event(ctx,e); SetIntVec($16,old16);

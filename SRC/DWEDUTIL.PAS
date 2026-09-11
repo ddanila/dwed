@@ -52,6 +52,8 @@ function try_move_line(var ctx:TEditorContext; forward,extend:boolean; var redra
 function move_line(var ctx:TEditorContext; forward,extend:boolean):integer;
 function go_line_up(var ctx : TEditorContext) : integer;
 function go_line_down(var ctx : TEditorContext) : integer;
+function try_move_char(var ctx:TEditorContext; forward,extend:boolean; var redraw,error:integer):boolean;
+function move_char(var ctx:TEditorContext; forward,extend:boolean):integer;
 function go_char_left(var ctx : TEditorContext) : integer;
 function go_char_right(var ctx : TEditorContext) : integer;
 function go_word_left(var ctx : TEditorContext) : integer;
@@ -289,6 +291,53 @@ begin
         with ctx.current^ do
                 editor.x:=byte_at_cell(editor.line,editor.desired_cell,config^.tab_size);
         go_line_down := r;
+end;
+
+function try_move_char(var ctx:TEditorContext; forward,extend:boolean; var redraw,error:integer):boolean;
+var next,prev,dest:EditorStr; boundary:boolean; anchor:longint;
+begin
+        try_move_char:=false; error:=0; redraw:=SCRU_NONE;
+        if ctx.current=nil then begin error:=103; exit end;
+        with ctx.current^ do
+                if forward then boundary:=editor.x>length(editor.line)
+                else boundary:=editor.x<=1;
+        if boundary then begin
+                if ctx.current^.cline=nil then begin error:=DBB_INVALID; exit end;
+                if not strs.try_links(ctx.current^.cline,next,prev,error) then exit;
+                if forward then dest:=next else dest:=prev;
+                if dest<>nil then begin
+                        if not try_move_line(ctx,forward,extend,redraw,error) then exit;
+                        with ctx.current^ do begin
+                                if forward then begin editor.x:=1; scrx:=0 end
+                                else editor.x:=length(editor.line)+1;
+                                editor.desired_cell:=-1;
+                        end;
+                        if redraw<SCRU_CLINE then redraw:=SCRU_CLINE;
+                        try_move_char:=true; exit;
+                end;
+        end;
+        { Movement inside a buffered line needs no backing-store replacement. }
+        if extend and not ctx.current^.editor.selection then
+                if not strs.try_number(ctx.current^.cline,anchor,error) then exit;
+        with ctx.current^ do begin
+                if extend and not editor.selection then begin
+                        editor.selection:=true; editor.sel_row:=anchor; editor.sel_x:=editor.x;
+                end;
+                if not boundary then begin
+                        if forward then inc(editor.x) else dec(editor.x);
+                        redraw:=SCRU_CLINE;
+                end;
+                editor.desired_cell:=-1;
+        end;
+        if extend and (redraw<SCRU_CLINE) then redraw:=SCRU_CLINE;
+        try_move_char:=true;
+end;
+
+function move_char(var ctx:TEditorContext; forward,extend:boolean):integer;
+var redraw,error:integer;
+begin
+        if try_move_char(ctx,forward,extend,redraw,error) then move_char:=redraw
+        else begin handle_error(ctx,error); move_char:=SCRU_FAILED end;
 end;
 
 function go_char_left(var ctx : TEditorContext) : integer;

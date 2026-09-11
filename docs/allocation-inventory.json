@@ -14,7 +14,7 @@
     "SRC/DWEDCMD.PAS": "04fadfde4f2d9b89652c859f86bc8a6254090f4f0ae12e40ecff1de8acc56bd9",
     "SRC/DWEDHELP.PAS": "8f452dbba947bf1acfd26498382b7ca80c3b07e3d7e7d2996d962ee8ac88e5b8",
     "SRC/DWEDHL.PAS": "ce580cb0b9064221b3a65f0381c65b7d918fa4aaa3e69d43e8e3a22da7d4c219",
-    "SRC/DWEDHNDL.PAS": "447419ffe08714286140b2cbd709ad2344d860a86d3458554f276b037ecd7161",
+    "SRC/DWEDHNDL.PAS": "da5f5253c6f7af247367ee1f8b2e7094c586548eac34a30057cd2ce3177faf6a",
     "SRC/DWEDINIT.PAS": "38831e73348b701e83679cc7073cd7b8798ae1002bf65cfccc16797a9cc420cf",
     "SRC/DWEDLNCH.PAS": "bf9fbb5c509d507b148e659521f3931a3b5e86760fb34022dcd02172ff90ea04",
     "SRC/DWEDMENU.PAS": "debdc2410e6dd1a47f2f72f300e0aadb39248e00604e01fa0f4df232ec863b78",
@@ -26,7 +26,7 @@
     "SRC/DWEDTBL.PAS": "a8fa30250272d5c20372bff3b9ac0c0a891566dcbb6327ffa65b154112f4e834",
     "SRC/DWEDTYPE.PAS": "55e4fcb1d4c41b479a184940386f1426dbff30c86ef0f7ff906610a7051375ba",
     "SRC/DWEDUNDO.PAS": "160abba70955d5f3adc2515e41b2ccaf31cc5f80b6f9c3d1b9e8fd8125a35127",
-    "SRC/DWEDUTIL.PAS": "7dadd1a68f5d0d26cffe9916cbc1091aa7a702259335713a799944a1e679699a",
+    "SRC/DWEDUTIL.PAS": "a4e52f47b4a85c034a6bece3a28798c6d0ccd298371ba00b24dd24d3bdaffbd2",
     "SRC/EVENT.PAS": "c4b3971028a49c7bcd6f9d4fadc5803ef26dd1c501f5a3cb039ff500ad2eafe9",
     "SRC/HELP.PAS": "168151a184ea7c69b6974d07b719aaf8c648b37f5e5f13f6d4e758b17abf536d",
     "SRC/SAFESAVE.PAS": "0100d53d32713cce5898843e14e406e42a2ab74fd661957aedfd82811f7f85b5",
@@ -445,10 +445,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 523,
+      "line": 572,
       "allocator": "getmem",
       "preceding_routine_declaration": "load_clipboard",
-      "context_start_line": 511,
+      "context_start_line": 560,
       "context": [
         "        p:=nil; allocated:=0; size:=0;",
         "        System.Assign(f,fname);",
@@ -471,10 +471,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 633,
+      "line": 682,
       "allocator": "getmem",
       "preceding_routine_declaration": "copy_selected",
-      "context_start_line": 621,
+      "context_start_line": 670,
       "context": [
         "                                if number<se_y then begin",
         "                                        dest[position]:=#13; dest[position+1]:=#10;",
@@ -497,10 +497,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 712,
+      "line": 761,
       "allocator": "getmem",
       "preceding_routine_declaration": "refresh_clipboard",
-      "context_start_line": 700,
+      "context_start_line": 749,
       "context": [
         "begin",
         "        delete_selected:=true;",
@@ -523,10 +523,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 745,
+      "line": 794,
       "allocator": "getmem",
       "preceding_routine_declaration": "go_win_list",
-      "context_start_line": 733,
+      "context_start_line": 782,
       "context": [
         "        i := 0;",
         "        memlen := 0; sitem := 0; cctx := 0;",
@@ -549,10 +549,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 819,
+      "line": 868,
       "allocator": "getmem",
       "preceding_routine_declaration": "new_file",
-      "context_start_line": 807,
+      "context_start_line": 856,
       "context": [
         "                scry := 0;",
         "                total := strs.renum(rline);",
@@ -575,10 +575,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 840,
+      "line": 889,
       "allocator": "getmem",
       "preceding_routine_declaration": "load_file",
-      "context_start_line": 828,
+      "context_start_line": 877,
       "context": [
         "        ctx.current := p;",
         "        load_ed(ctx);",
@@ -601,10 +601,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 1026,
+      "line": 1075,
       "allocator": "getmem",
       "preceding_routine_declaration": "create_fast_jmp_list",
-      "context_start_line": 1014,
+      "context_start_line": 1063,
       "context": [
         "                        end else if starts_with(uline, 'IMPLEMENTATION') then begin",
         "                                upstr(line);",
@@ -627,10 +627,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 1067,
+      "line": 1116,
       "allocator": "getmem",
       "preceding_routine_declaration": "fast_jmp",
-      "context_start_line": 1055,
+      "context_start_line": 1104,
       "context": [
         "        r := SCRU_NONE; fast_jmp:=r;",
         "        if fjl=nil then exit;",

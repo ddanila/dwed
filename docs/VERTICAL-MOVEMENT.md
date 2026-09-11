@@ -26,8 +26,9 @@ columns, unchanged contexts on failure, and successful retries. Existing tab
 layout, undo, and reference-DOS tests cover the relevant integration paths.
 
 This qualifies the four vertical keyboard actions at the checked read/commit
-boundary. Page, word, horizontal boundary, mouse, search, and editing callers
-still use legacy movement or commit helpers and require migration. Subsequent
+boundary. [Horizontal keyboard movement](HORIZONTAL-MOVEMENT.md) uses this staging path
+when crossing lines. Page, word, mouse, search, and editing callers still use
+legacy movement or commit helpers and require migration. Subsequent
 viewport normalization and rendering still need checked storage access. The
 local link check does not validate an entire document chain. This work does not
 qualify alternative-store editing or promote the editor as a release.

@@ -88,7 +88,15 @@ var     h         : PEventHandler;
         command   : TEditorCommand;
         group     : integer;
         vertical  : boolean;
+        original  : PFileContext;
+        desired   : integer;
+function refused:integer;
 begin
+        if ctx.current=original then ctx.current^.editor.desired_cell:=desired;
+        refused:=SCRU_FULL;
+end;
+begin
+        original:=ctx.current; desired:=ctx.current^.editor.desired_cell;
         r := SCRU_NONE;
         vertical:=(e.etype=KEYBOARD) and (e.scancode in [SCAN_UP,SCAN_DOWN])
                   and ((e.ctrl_keys and (key_ctrl or key_alt))=0);
@@ -97,7 +105,7 @@ begin
         if group >= 0 then begin
                 command := choose_menu(ctx,group);
                 r := run_action(ctx,e,command,nil,false);
-                if r=SCRU_FAILED then begin process_event:=SCRU_FULL; exit end;
+                if r=SCRU_FAILED then begin process_event:=refused; exit end;
                 if r <> SCRU_QUIT then r := norm_xy(ctx,SCRU_FULL);
                 process_event := r;
                 exit;
@@ -110,13 +118,13 @@ begin
                         command := command_for(h^.proc,e);
                         r := run_action(ctx,e,command,h^.proc,h^.reset_selection);
                         if r=SCRU_QUIT then begin process_event:=r; exit end;
-                        if r=SCRU_FAILED then begin process_event:=SCRU_FULL; exit end;
+                        if r=SCRU_FAILED then begin process_event:=refused; exit end;
                         if (command=CMD_NONE) and h^.reset_selection and ctx.current^.editor.selection then begin
                                 ctx.current^.editor.selection := false;
                                 r := SCRU_FULL;
                         end;
                 end else r := run_action(ctx,e,CMD_NONE,@hk_default,false);
-                if r=SCRU_FAILED then begin process_event:=SCRU_FULL; exit end;
+                if r=SCRU_FAILED then begin process_event:=refused; exit end;
                 if prev_scrx <> ctx.current^.scrx then r := SCRU_FULL;
         end else if e.etype in [MOUSE_MOVE,
                 MOUSE_PRESS_B1, MOUSE_PRESS_B2,
@@ -254,12 +262,12 @@ end;
 
 function hk_left(var ctx : TEditorContext; event : PEvent):integer;
 begin
-        hk_left := go_char_left(ctx);
+        hk_left := move_char(ctx,false,false);
 end;
 
 function hk_right(var ctx : TEditorContext; event : PEvent):integer;
 begin
-        hk_right := go_char_right(ctx);
+        hk_right := move_char(ctx,true,false);
 end;
 
 function hk_pgup(var ctx : TEditorContext; event : PEvent):integer;
@@ -306,21 +314,13 @@ begin
 end;
 
 function hk_sleft(var ctx:TEditorContext; event:PEvent):integer;
-var     r : integer;
 begin
-        check_begin_selection(ctx);
-        r := go_char_left(ctx);
-        if r < SCRU_CLINE then r := SCRU_CLINE;
-        hk_sleft := r;
+        hk_sleft:=move_char(ctx,false,true);
 end;
 
 function hk_sright(var ctx:TEditorContext; event:PEvent):integer;
-var     r : integer;
 begin
-        check_begin_selection(ctx);
-        r := go_char_right(ctx);
-        if r < SCRU_CLINE then r := SCRU_CLINE;
-        hk_sright := r;
+        hk_sright:=move_char(ctx,true,true);
 end;
 
 function hk_spgup(var ctx:TEditorContext; event:PEvent):integer;
