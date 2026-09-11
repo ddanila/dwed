@@ -6,6 +6,10 @@ On Linux x86_64 with Python 3.12 or later and NASM:
 python3 tools/build.py
 ```
 
+Add `--tests` to build the DOS regression probes required by the parent
+`make test-dwed-qemu` target. These probes are test artifacts, not editor
+distribution files.
+
 The command downloads and verifies the compiler archive pinned in
 `tools/toolchain.json`, extracts it privately, regenerates the help and compiles
 the editor for 8086 DOS. The output directory must be new. Use `--output PATH`

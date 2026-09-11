@@ -29,7 +29,7 @@ editing and saving cannot replace the rejected source file.
 
 The shared loader and saver cover every storage backend through `strs`, but
 the alternate backing stores still need runtime qualification. Raw metadata
-does not establish undo correctness or clipboard fidelity. Modifier-key
-handling also needs attention during the command/menu work: the QEMU Ctrl-End
-probe did not move to EOF, while ordinary Down/Home/Backspace removed the final
-newline correctly.
+does not establish undo correctness or clipboard fidelity. The event decoder
+now recovers modifiers encoded in BIOS key words, fixing queued Ctrl-End and
+Ctrl-S after key release. BIOS entries do not encode every modifier combination;
+Shift navigation and mouse selection still need qualification during menu work.

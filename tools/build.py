@@ -23,6 +23,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--archive', type=Path, help='use a previously downloaded pinned archive')
+    parser.add_argument('--tests', action='store_true', help='also build DOS regression probes')
     parser.add_argument('--output', type=Path, default=ROOT / 'out/build')
     args = parser.parse_args()
     assembler = shutil.which('nasm')
@@ -68,8 +69,13 @@ def main():
                    '-FU' + str(output), '-FE' + str(output), str(ROOT / 'SRC/DWEDOVL.PAS')]
         with (output / 'compiler.log').open('wb') as log:
             subprocess.run(command, cwd=output, stdout=log, stderr=subprocess.STDOUT, check=True)
+            if args.tests:
+                subprocess.run(command[:-1] + [str(ROOT / 'tests/KEYTEST.PAS')],
+                               cwd=output, stdout=log, stderr=subprocess.STDOUT, check=True)
     shutil.copyfile(ROOT / 'BIN/DWED.CFG', output / 'DWED.CFG')
     artifacts = ['DWED.COM', 'DWEDOVL.exe', 'DWED.CFG', 'dwedhelp.hlp']
+    if args.tests:
+        artifacts.append('KEYTEST.exe')
     report = {'toolchain': PIN, 'target': '8086-msdos-large',
               'assembler': assembler_version,
               'scope': 'source-built launcher, editor overlay and help',

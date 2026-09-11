@@ -50,6 +50,7 @@ end;
 
 procedure wait_event(var e : TEvent);
 function has_event : boolean;
+function keyboard_modifiers(key : word; flags : byte) : word;
 function ctrl_key_word(is_ctrl, is_shift, is_alt : boolean) : word;
 
 implementation
@@ -59,6 +60,26 @@ uses kminput;
 function has_event:boolean;
 begin
         has_event := kbd_haskey;
+end;
+
+function keyboard_modifiers(key : word; flags : byte) : word;
+var modifiers : word; scan, ascii : byte;
+begin
+        modifiers := ctrl_key_word(is_ctrl(flags), is_shift(flags), is_alt(flags));
+        scan := hi(key); ascii := lo(key);
+        { BIOS queue entries outlive the physical modifier key press. }
+        case scan of
+        $5E..$67, $73..$77, $84, $89, $8A, $8D, $91..$94:
+                modifiers := modifiers or key_ctrl;
+        $54..$5D, $87, $88: modifiers := modifiers or key_shift;
+        $68..$71, $8B, $8C: modifiers := modifiers or key_alt;
+        end;
+        if scan in [$10..$19, $1E..$26, $2C..$32] then begin
+                if (ascii >= 1) and (ascii <= 26) then
+                        modifiers := modifiers or key_ctrl
+                else if ascii = 0 then modifiers := modifiers or key_alt;
+        end;
+        keyboard_modifiers := modifiers;
 end;
 
 procedure wait_event(var e : TEvent);
@@ -119,7 +140,8 @@ begin
         end;
         if e.etype <> MOUSE_MOVE  then begin
                 flags := kbd_getflags;
-                e.ctrl_keys := ctrl_key_word(is_ctrl(flags), is_shift(flags), is_alt(flags));
+                if e.etype = KEYBOARD then e.ctrl_keys := keyboard_modifiers(key, flags)
+                else e.ctrl_keys := ctrl_key_word(is_ctrl(flags), is_shift(flags), is_alt(flags));
         end;
 end;
 
