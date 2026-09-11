@@ -50,6 +50,7 @@ function create(next, prev : EditorStr; var body : string) : EditorStr;
 procedure free(r : EditorStr);
 
 function put(r : EditorStr; var body : string) : EditorStr;
+function try_read(r:EditorStr; var dest:string; var next,prev:EditorStr; var error:integer):boolean;
 procedure get(r : EditorStr; var dest : string);
 function delete(r : EditorStr; num_from, num_to : longint) : EditorStr;
 function merge(r : EditorStr; var merged : boolean) : EditorStr;
@@ -77,7 +78,7 @@ function is_nil(r : EditorStr) : boolean;
 
 implementation
 
-uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, dwedutil, saveinfo, unredo;
+uses system2, dbb, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, dwedutil, saveinfo, unredo;
 
 const
 memType : MemoryType = MT_DOS;
@@ -206,26 +207,68 @@ begin
         spinner_stop;
 end;
 
+function try_links(r:EditorStr; var next,prev:EditorStr; var error:integer):boolean;
+var n,p:dword; ok:boolean;
+begin
+        error:=0; ok:=true;
+        if memType=MT_SWAP then ok:=strsswap.try_links(dword(r),n,p,error)
+        else if memType=MT_SXMS then ok:=strssxms.try_links(dword(r),n,p,error)
+        else begin n:=dword(strsdos.go_next(r)); p:=dword(strsdos.go_prev(r)) end;
+        if ok then begin next:=EditorStr(n); prev:=EditorStr(p) end;
+        try_links:=ok;
+end;
+
+function try_read(r:EditorStr; var dest:string; var next,prev:EditorStr; var error:integer):boolean;
+var n,p:dword; ok:boolean;
+begin
+        error:=0; ok:=true;
+        if memType=MT_SWAP then ok:=strsswap.try_read(dword(r),dest,n,p,error)
+        else if memType=MT_SXMS then ok:=strssxms.try_read(dword(r),dest,n,p,error)
+        else begin
+                strsdos.get(r,dest); n:=dword(strsdos.go_next(r)); p:=dword(strsdos.go_prev(r));
+        end;
+        if ok then begin next:=EditorStr(n); prev:=EditorStr(p) end;
+        try_read:=ok;
+end;
+
+{ Reciprocal previous links also reject cycles: a repeated node cannot name
+  both its original predecessor and the node that closes the cycle. }
+function count_lines(r:EditorStr; var error:integer):longint;
+var previous,next,prev:EditorStr; total:longint;
+begin
+        count_lines:=0; total:=0; previous:=nil; error:=0;
+        while r<>nil do begin
+                if not try_links(r,next,prev,error) then exit;
+                if (prev<>previous) or (total=2147483647) then begin error:=DBB_INVALID; exit end;
+                inc(total); previous:=r; r:=next;
+        end;
+        count_lines:=total;
+end;
+
 procedure to_file(var f:TSaveFile; fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
 var     s : string;
         current,total,start_date : longint;
+        previous,next,prev:EditorStr;
         scrup : TPercentUpdateProc;
 begin
         if save_pending_files(f) then begin errCode:=SAVE_PENDING; exit end;
         spinner_start;
-        start_save(f,fname,errCode);
+        total:=count_lines(r,errCode);
+        if errCode=0 then start_save(f,fname,errCode);
         if errCode=0 then begin
-                total:=renum(r); current:=0; start_date:=get_ticks;
+                current:=0; previous:=nil; start_date:=get_ticks;
                 scrup:=TPercentUpdateProc(scrupdate);
-                while not is_nil(r) and (errCode=0) do begin
-                        get(r,s);
+                while (r<>nil) and (errCode=0) do begin
+                        if not try_read(r,s,next,prev,errCode) then break;
+                        if (prev<>previous) or (current>=total) then begin errCode:=DBB_INVALID; break end;
                         write_save(f,s[1],length(s),errCode);
-                        if not is_last(r) then
+                        if next<>nil then
                                 write_save(f,format.newline[1],length(format.newline),errCode);
-                        r:=go_next(r); inc(current);
+                        previous:=r; r:=next; inc(current);
                         if (scrupdate<>nil) and (current mod 64=0) then
                                 scrup(current,total,start_date);
                 end;
+                if (errCode=0) and (current<>total) then errCode:=DBB_INVALID;
                 finish_save(f,errCode);
         end;
         spinner_stop;

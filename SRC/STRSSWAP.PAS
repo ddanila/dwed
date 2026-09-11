@@ -37,6 +37,8 @@ procedure free(r : dword);
 function create(next, prev : dword; body : string) : dword;
 
 function put(r : dword; var body : string) : dword;
+function try_links(r:dword; var next,prev:dword; var error:integer):boolean;
+function try_read(r:dword; var dest:string; var next,prev:dword; var error:integer):boolean;
 procedure get(r : dword; var dest : string);
 function delete(r : dword; num_from, num_to : dword) : dword;
 function merge(r : dword; var merged : boolean) : dword;
@@ -136,14 +138,52 @@ begin
         new := create(0, 0, '');
 end;
 
-procedure get(r : dword; var dest : string);
-var     rec : TExtStringRec;
+{ Read metadata into a private record before interpreting lengths or links. }
+function read_index(r:dword; var rec:TExtStringRec; var error:integer):boolean;
 begin
-        dest[0] := #0;
-        if r <> 0 then begin
-                dbb_get(dbb_idx, r, rec);
-                if rec.recno <> 0 then dbm_get(dbm_mem, rec.recno, dest, rec.len);
+        read_index:=false; error:=0;
+        if not dbb_TryGet(dbb_idx,r,rec) then begin error:=dbb_idx.f.ioresult; exit end;
+        if (rec.len<1) or (rec.len>256) or
+           ((rec.len=1)<>(rec.recno=0)) or (rec.recno<0) or
+           (rec.next<0) or (rec.next>dbb_idx.header.records) or
+           (rec.prev<0) or (rec.prev>dbb_idx.header.records) then begin
+                error:=DBB_INVALID; exit;
         end;
+        read_index:=true;
+end;
+
+function try_links(r:dword; var next,prev:dword; var error:integer):boolean;
+var rec:TExtStringRec;
+begin
+        try_links:=false; error:=0;
+        if r=0 then begin next:=0; prev:=0; try_links:=true; exit end;
+        if not read_index(r,rec,error) then exit;
+        next:=rec.next; prev:=rec.prev; try_links:=true;
+end;
+
+function try_read(r:dword; var dest:string; var next,prev:dword; var error:integer):boolean;
+var rec:TExtStringRec; staged:string; count:longint;
+begin
+        try_read:=false; error:=0;
+        if r=0 then begin dest:=''; next:=0; prev:=0; try_read:=true; exit end;
+        if not read_index(r,rec,error) then exit;
+        staged:='';
+        if rec.recno<>0 then begin
+                count:=dbm_Size(dbm_mem,rec.recno);
+                if dbm_mem.f.ioresult<>0 then begin error:=dbm_mem.f.ioresult; exit end;
+                if count<>rec.len then begin error:=DBB_INVALID; exit end;
+                if not dbm_TryGet(dbm_mem,rec.recno,staged,rec.len) then begin
+                        error:=dbm_mem.f.ioresult; exit;
+                end;
+                if length(staged)+1<>rec.len then begin error:=DBB_INVALID; exit end;
+        end;
+        dest:=staged; next:=rec.next; prev:=rec.prev; try_read:=true;
+end;
+
+procedure get(r : dword; var dest : string);
+var next,prev:dword; error:integer;
+begin
+        try_read(r,dest,next,prev,error);
 end;
 
 function is_first(r : dword) : boolean;

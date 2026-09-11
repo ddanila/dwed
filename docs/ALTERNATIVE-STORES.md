@@ -37,11 +37,12 @@ record mutation or complete editor behavior with these stores.
 rewriting failed input and retains cleanup ownership. Database allocation,
 free-list traversal and updates, and replacement still need checked status
 propagation and failure-safe publication. [Checked record reads](DATABASE-READS.md)
-stage output and validate chains; their failures still need propagation through
-the string-store and editor callers. Existing
-string-store replacement frees the old payload before installing its
-replacement. Shared loading and saving must receive backing-store failures
-instead of treating an empty result as successful input or output.
+stage output and validate chains. [Checked string-store saves](STORE-SAVES.md)
+propagate metadata and payload failures into safe-save cleanup. Loading,
+navigation, rendering, and editing still need checked error propagation.
+Existing string-store replacement frees the old payload before installing its
+replacement; that operation needs failure-safe publication before the stores
+can be qualified for editing.
 
 The alternative stores also need edit transaction and undo/redo integration,
 exact-text and clipboard tests, and end-to-end disk-full, allocation, transfer,

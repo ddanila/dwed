@@ -29,7 +29,7 @@ opening. The old implementation control uses legacy reads with the same
 unchanged-destination assertion. Build identity and observed results are in
 [record-read-milestone.json](record-read-milestone.json).
 
-This is a backing-database API contract. Alternative string-store callers still
-need to propagate read failures into loading, saving, and editor operations.
+This is a backing-database API contract. [Checked string-store saves](STORE-SAVES.md) propagate read failures into the
+shared writer. Loading, navigation, and editing still need checked propagation.
 Record allocation, free-list mutation, replacement, transactions, and undo
 remain separate release work; see [ALTERNATIVE-STORES.md](ALTERNATIVE-STORES.md).
