@@ -25,6 +25,10 @@ def main():
     parser.add_argument('--archive', type=Path, help='use a previously downloaded pinned archive')
     parser.add_argument('--output', type=Path, default=ROOT / 'out/build')
     args = parser.parse_args()
+    assembler = shutil.which('nasm')
+    if assembler is None:
+        parser.error('NASM is required to build the 8086 launcher')
+    assembler_version = subprocess.check_output([assembler, '-v'], text=True).strip()
     output = args.output.resolve()
     if output.exists():
         parser.error('output must not exist; use a new directory for a clean build')
@@ -54,6 +58,8 @@ def main():
             bundle.extractall(compiler_root, filter='data')
         lib = compiler_root / 'lib/fpc' / PIN['version']
         output.mkdir(parents=True)
+        subprocess.run([assembler, '-f', 'bin', str(ROOT / 'SRC/LAUNCH.ASM'),
+                        '-o', str(output / 'DWED.COM')], check=True)
         subprocess.run(['python3', str(ROOT / 'tools/build_help.py'),
                         str(ROOT / 'SRC/DWED.TXT'), str(output)], check=True)
         command = [str(lib / 'ppcross8086'), '-n', '-Mtp', '-Cp8086', '-Wmlarge', '-XX',
@@ -62,9 +68,11 @@ def main():
                    '-FU' + str(output), '-FE' + str(output), str(ROOT / 'SRC/DWEDOVL.PAS')]
         with (output / 'compiler.log').open('wb') as log:
             subprocess.run(command, cwd=output, stdout=log, stderr=subprocess.STDOUT, check=True)
-    artifacts = ['DWEDOVL.exe', 'dwedhelp.hlp']
+    shutil.copyfile(ROOT / 'BIN/DWED.CFG', output / 'DWED.CFG')
+    artifacts = ['DWED.COM', 'DWEDOVL.exe', 'DWED.CFG', 'dwedhelp.hlp']
     report = {'toolchain': PIN, 'target': '8086-msdos-large',
-              'scope': 'editor overlay only; launcher replacement is still pending',
+              'assembler': assembler_version,
+              'scope': 'source-built launcher, editor overlay and help',
               'artifacts': {name: {'bytes': (output / name).stat().st_size,
                                    'sha256': digest(output / name)} for name in artifacts}}
     (output / 'build.json').write_text(json.dumps(report, indent=2) + '\n')

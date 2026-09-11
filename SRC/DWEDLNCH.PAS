@@ -28,6 +28,8 @@ const
 EXEC_USER_CMD = 254;
 
 function is_installed : boolean;
+function is_resuming : boolean;
+procedure set_temp_name(name : string);
 function get_temp_name : string;
 procedure set_exec_cmd(cmd : string);
 
@@ -40,7 +42,17 @@ var     parent : pchar;
 
 function is_installed : boolean;
 begin
-        is_installed := PString(parent)^ = 'DWED';
+        is_installed := PString(parent)^ = 'DWE2';
+end;
+
+function is_resuming : boolean;
+begin
+        is_resuming := PByte(parent + 274)^ = 1;
+end;
+
+procedure set_temp_name(name : string);
+begin
+        PString(parent + 5)^ := copy(name, 1, 12);
 end;
 
 function get_temp_name : string;

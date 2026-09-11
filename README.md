@@ -1,5 +1,10 @@
 # DWED
 
+This fork is developing an MS-DOS EDIT replacement on `custom`. See the
+[open-toolchain build](docs/BUILD.md) and [release gates](docs/EDIT-PLAN.md).
+The original project overview follows; it is not a qualification statement
+for the evolving fork.
+
 Text file editor and IDE for MS-DOS and 8086/88 CPU (IBM XT-grade PC) designed in modern style.
 
 Main features:

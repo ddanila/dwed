@@ -1,6 +1,6 @@
 # Open-toolchain build
 
-On Linux x86_64 with Python 3.12 or later:
+On Linux x86_64 with Python 3.12 or later and NASM:
 
 ```
 python3 tools/build.py
@@ -13,9 +13,15 @@ for another clean build and `--archive PATH` to reuse a downloaded archive
 offline. Compare the artifact hashes in each output's `build.json` to check
 reproducibility. Compiler diagnostics are retained in `compiler.log`.
 
-This is an intermediate overlay build, not a complete EDIT distribution.
-The historical launcher is still required to run it. Bundled EXE/OBJ files are
-not inputs to this build command. The [save protocol](SAVING.md) protects the
+Copy `DWED.COM`, `DWEDOVL.exe` and `DWED.CFG` to the same DOS directory, then run
+`DWED filename`. Help is embedded in the overlay. The NASM version is recorded
+in `build.json`; `LAUNCH.ASM` enforces the 8086 instruction set. The launcher
+releases unused memory, locates the overlay next to itself and supports the
+external-command/session-resume protocol. No bundled EXE/OBJ is a build or
+runtime dependency.
+
+This is an intermediate editor build, not a qualified EDIT distribution.
+The [save protocol](SAVING.md) protects the
 destination against detected write failures, but recovery qualification and
 lossless file handling remain release gates; see `EDIT-PLAN.md`.
 

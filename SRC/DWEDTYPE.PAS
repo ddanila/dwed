@@ -45,7 +45,7 @@ MEM_SXMS = 'SXMS';
 ENV_TEMP = 'TEMP';
 ENV_TMP  = 'TMP';
 
-OVERLAY_MSG             = 'This is overlay. Run DWED.EXE';
+OVERLAY_MSG             = 'This is overlay. Run DWED.COM';
 WELCOME_MSG             = 'Welcome!  Press ~F1~ for help';
 DEFAULT_FILE_NAME       = 'NONAME.TXT';
 

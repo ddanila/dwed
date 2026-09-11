@@ -80,7 +80,7 @@ end;
 
 procedure reset_context(var ctx : TEditorContext);
 var     f      : file;
-        path   : string;
+        path, session_name, number : string;
         i      : integer;
 begin
         fillchar(ctx, sizeof(TEditorContext), #0);
@@ -128,6 +128,19 @@ begin
         if length(path) = 0 then path := getenv(ENV_TMP);
         if (length(path) <> 0) and (path[length(path)] <> '\') then path := path + '\';
         ctx.temp := path + ctx.temp;
+        { A stale context file is never permission to restore or overwrite it. }
+        if not is_resuming then begin
+                i := 0;
+                while FileExists(ctx.temp) do begin
+                        if i > 9999 then halt(1);
+                        system.str(i, number);
+                        while length(number) < 4 do number := '0' + number;
+                        session_name := 'ED' + number + '.TMP';
+                        set_temp_name(session_name);
+                        ctx.temp := path + session_name;
+                        inc(i);
+                end;
+        end;
 end;
 
 procedure process_param(var ctx : TEditorContext; key, value : string);
@@ -305,7 +318,7 @@ begin
         unredo.init;
         scr.push;
         scr.cls(7);
-        if FileExists(ctx.temp) then begin
+        if is_resuming and FileExists(ctx.temp) then begin
                 show_welcome_msg := false;
                 parse_temp(ctx);
                 FileDelete(ctx.temp);
