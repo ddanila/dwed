@@ -10,20 +10,20 @@ uses scr,scrui,kminput,unredo,strs;
 const
 MenuX:array[0..4] of integer=(0,7,14,23,34);
 MenuTitle:array[0..4] of string[9]=(' File ',' Edit ',' Search ',' Options ',' Help ');
-MenuCount:array[0..4] of integer=(8,5,3,2,2);
+MenuCount:array[0..4] of integer=(8,5,4,2,2);
 Captions:array[0..4,0..7] of string[28]=(
  ('New','Open...             F3','Save                F2','Save as...    Shift-F2',
   'Save all','Close           Alt-F4','Windows...      Alt-F6','Exit               Esc'),
  ('Undo            Ctrl-Z','Redo      Ctrl-Shift-Z','Cut             Ctrl-X',
   'Copy            Ctrl-C','Paste           Ctrl-V','','',''),
- ('Find / Replace... Ctrl-F','Next match      Ctrl-K','Go to line...   Ctrl-L','','','','',''),
+ ('Find...         Ctrl-F','Replace...      Ctrl-R','Next match      Ctrl-K','Go to line...   Ctrl-L','','','',''),
  ('Syntax highlighting...','Insert / Overwrite','','','','','',''),
  ('Contents            F1','About','','','','','',''));
-Mnemonics:array[0..4] of string[8]=('NOSALCWX','URTCP','FNG','SI','CA');
+Mnemonics:array[0..4] of string[8]=('NOSALCWX','URTCP','FRNG','SI','CA');
 Commands:array[0..4,0..7] of TEditorCommand=(
  (CMD_NEW,CMD_OPEN,CMD_SAVE,CMD_SAVE_AS,CMD_SAVE_ALL,CMD_CLOSE,CMD_WINDOWS,CMD_EXIT),
  (CMD_UNDO,CMD_REDO,CMD_CUT,CMD_COPY,CMD_PASTE,CMD_NONE,CMD_NONE,CMD_NONE),
- (CMD_FIND,CMD_FIND_NEXT,CMD_GOTO,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE),
+ (CMD_FIND,CMD_REPLACE,CMD_FIND_NEXT,CMD_GOTO,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE),
  (CMD_HIGHLIGHT,CMD_INSERT_MODE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE),
  (CMD_HELP,CMD_ABOUT,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE,CMD_NONE));
 

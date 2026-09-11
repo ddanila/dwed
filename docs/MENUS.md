@@ -22,8 +22,9 @@ per-document history in conventional-memory mode; see [UNDO.md](UNDO.md).
 Unavailable history entries are disabled. Cut and Copy are
 disabled without selection, and Paste is disabled when no clipboard source is
 available. New creates an unnamed document; its Save command asks for a name.
-Find/Replace currently uses the inherited combined input flow. The menu
-structure is present, but this is not completion of the EDIT release gates.
+Find and Replace have separate commands with shared menu/keyboard actions;
+see [search behaviour](SEARCH-REPLACE.md). The menu structure is present, but
+this is not completion of the EDIT release gates.
 
 Save, Save As, Save All, Close and Exit now share the
 [save outcome and cancellation rules](SAVE-DIALOGS.md), including unnamed

@@ -418,7 +418,7 @@ begin
         while r = MAYBE do begin
                 kbd_reset;
                 case hi(kbd_getkey) of
-                SCAN_ESC: r := NO;
+                SCAN_ESC,SCAN_C: r := CANCEL;
                 SCAN_N: r := NO;
                 SCAN_ENTER: r := YES;
                 SCAN_Y: r := YES;

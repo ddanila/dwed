@@ -126,8 +126,9 @@ cut, paste, indentation, line movement, save checkpoints, branching, independent
 windows and cancellation of an oversized edit. The generated
 `undo-live-milestone.json` records the build and runtime evidence.
 
-Remaining qualification includes search/replace and optional addon/table
-commands, constrained-memory editor runs beyond the tested capacity failure,
+Replacement command grouping, saved-state behaviour and failure rollback are
+covered in [SEARCH-REPLACE.md](SEARCH-REPLACE.md) and its generated evidence.
+Remaining qualification includes optional addon/table commands, constrained-memory editor runs beyond the tested capacity failure,
 legacy CPUs and modifier-key queues under delayed input, and swap/XMS support.
 The broader whitespace-editing, host clipboard, mouse, display and safe-save recovery gates
 in `EDIT-PLAN.md` also remain open.

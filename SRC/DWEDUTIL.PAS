@@ -797,6 +797,7 @@ begin
         READ_CHANGED: errMsg := 'File changed during read';
         RECORD_INVALID: errMsg := 'Invalid recovery record';
         RECOVERY_MISMATCH: errMsg := 'Recovery contents do not match the record';
+        1016: errMsg := 'Search and replacement must be single-line text';
         1005: errMsg := 'Text exceeds clipboard capacity';
         1006: errMsg := 'Resulting line exceeds 255 bytes';
         1007: errMsg := 'Unsupported control byte in clipboard';

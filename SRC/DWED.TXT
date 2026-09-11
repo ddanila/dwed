@@ -132,12 +132,23 @@ Oversized or unsupported input is rejected.
 A host clipboard may be used when the environment
 provides one; interoperability depends on the host.
 ///1SEARCH
-~Ctrl-F~ or ~F7~ opens Find/Replace.
-~Ctrl-Shift-F~ uses case-sensitive matching.
-~Ctrl-K~ searches or replaces again.
+~Ctrl-F~ finds text; ~Ctrl-R~ or ~F7~ replaces it.
+Add Shift to Ctrl-F/R for case-sensitive matching.
+Search menu commands use the same actions.
+~Ctrl-K~ finds the next match without replacing it.
+A found match is selected and can be copied.
 
-Search and replacement use the combined prompt.
-Read its displayed options before confirming.
+Spaces are literal in both input fields.
+An empty replacement deletes matched text.
+At each match, ~Y~ replaces, ~N~ skips, ~A~ replaces
+all remaining matches, and ~Esc~ stops.
+Search proceeds forward from the cursor; it does
+not wrap to the start of the document.
+
+Undo/Redo treats a replacement command as one edit.
+An overflowing replacement is refused without
+truncating text. If undo cannot record the edit,
+the command is rolled back and reports an error.
 ///1FILES
 ~F3~ opens a file. A missing name starts a new file.
 Other open errors leave existing documents intact.
