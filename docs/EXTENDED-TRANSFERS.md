@@ -54,6 +54,6 @@ These guarantees apply to cache and buffered-file operations whose callers
 check their results and retain the file object on failure. Configuration and
 resume metadata now use the [checked metadata reader](METADATA-READERS.md).
 External-command checkpoints use the checked transaction described in
-[SESSION-SAFETY.md](SESSION-SAFETY.md). Optional document stores still need
-end-to-end qualification of their buffered-I/O failures. A successful cache
+[SESSION-SAFETY.md](SESSION-SAFETY.md). The [alternative-store review](ALTERNATIVE-STORES.md) describes database close
+ownership and the remaining end-to-end buffered-I/O qualification. A successful cache
 operation alone does not establish safe behavior for those callers.

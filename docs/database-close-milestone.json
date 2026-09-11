@@ -1,0 +1,1194 @@
+{
+  "scope": "DBB/DBM retained database ownership through header-seek, flush and handle-close failure",
+  "dwed_base_revision": "2050858d989248293d3f33fa21af2d07cffaba3e",
+  "parent_base_revision": "7fb43ac45a2a1a7b6f71fcf4f47d721cf3b9310f",
+  "source_sha256": {
+    "vendor/system2/DBB.PAS": "b21dd7f47f17606dbe546c1cf75c177cbba8e85493f6c952e05c480f0c0f2167",
+    "vendor/system2/DBM.PAS": "67e5a28853d2e4b20d24b0e5707b400ea24acdc25ef7cfc3f08fa8e5188da6ba",
+    "tests/DBPROBE.PAS": "230f03488a7827147981c51a0d5ffbf4de1fab7f887cdab933fbf40d05e91bbe",
+    "tools/build.py": "dda48f12d48d81feed3ccd6ac848176531fff8bb71562c22a2ee7b81c2617d07"
+  },
+  "test_source_sha256": {
+    "tests/test_dwed_qemu.py": "14ab5028fb3c23661385bb99a49ac2d72c22f91aea961fecc2f4ed4c3dfc0031"
+  },
+  "database_probes": {
+    "run_directory": "out/dwed-qemu-wi7u0vrk",
+    "case_count": 2,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 238420,
+              "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10752,
+              "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "XMSTEST.exe": {
+              "bytes": 29516,
+              "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+            },
+            "XFERTEST.exe": {
+              "bytes": 30670,
+              "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+            },
+            "MEMXFER.exe": {
+              "bytes": 28982,
+              "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+            },
+            "CACHETEST.exe": {
+              "bytes": 53762,
+              "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160766,
+              "sha256": "bc1177f31fb9684f96b7130c39807fb0b6b1b5585818b84fcb75f7d002a80f74"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 161306,
+              "sha256": "23326c6c573c7212f00c311959ade525f774bfbe2a8950f8005e85803bc85add"
+            },
+            "TABTEST.exe": {
+              "bytes": 237218,
+              "sha256": "b1834f9eda4c4745284af98f68d31a7b91e37a7b7335e97d6d58c80b237e62b3"
+            },
+            "SESSPROB.exe": {
+              "bytes": 234570,
+              "sha256": "3a04355ff0c1ceeff59706b7d57bcb8c12d6cd9eeb3330a6549d241d82c9eed6"
+            },
+            "INITPROB.exe": {
+              "bytes": 167342,
+              "sha256": "b8cfd13323f961f46ea2f0d864c4ba13d432d3588a3afbef2e6b7994bb02df9d"
+            },
+            "DBPROBE.exe": {
+              "bytes": 54822,
+              "sha256": "13498bdb951bc77e08ebd28773b51a3d2ff555ef3869dd665614716ad89e205f"
+            },
+            "SAVETEST.exe": {
+              "bytes": 169316,
+              "sha256": "39abe66e548aec920edda1d0d8766a480e8d7b876af194669a45699a8fb831ed"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 236930,
+              "sha256": "1f701f2d65c26fe310e807a808eef6dd36b31f7afbc0874ab1121fe3ddff062b"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 238420,
+            "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 273476,
+          "sha256": "5db3e11e905fc1d20d6af49b8c9251e01be2d20c8077d86a541b3a1a426df9d3"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 238420,
+            "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "XMSTEST.exe": {
+            "bytes": 29516,
+            "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+          },
+          "XFERTEST.exe": {
+            "bytes": 30670,
+            "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+          },
+          "MEMXFER.exe": {
+            "bytes": 28982,
+            "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+          },
+          "CACHETEST.exe": {
+            "bytes": 53762,
+            "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160766,
+            "sha256": "bc1177f31fb9684f96b7130c39807fb0b6b1b5585818b84fcb75f7d002a80f74"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 161306,
+            "sha256": "23326c6c573c7212f00c311959ade525f774bfbe2a8950f8005e85803bc85add"
+          },
+          "TABTEST.exe": {
+            "bytes": 237218,
+            "sha256": "b1834f9eda4c4745284af98f68d31a7b91e37a7b7335e97d6d58c80b237e62b3"
+          },
+          "SESSPROB.exe": {
+            "bytes": 234570,
+            "sha256": "3a04355ff0c1ceeff59706b7d57bcb8c12d6cd9eeb3330a6549d241d82c9eed6"
+          },
+          "INITPROB.exe": {
+            "bytes": 167342,
+            "sha256": "b8cfd13323f961f46ea2f0d864c4ba13d432d3588a3afbef2e6b7994bb02df9d"
+          },
+          "DBPROBE.exe": {
+            "bytes": 54822,
+            "sha256": "13498bdb951bc77e08ebd28773b51a3d2ff555ef3869dd665614716ad89e205f"
+          },
+          "SAVETEST.exe": {
+            "bytes": 169316,
+            "sha256": "39abe66e548aec920edda1d0d8766a480e8d7b876af194669a45699a8fb831ed"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 236930,
+            "sha256": "1f701f2d65c26fe310e807a808eef6dd36b31f7afbc0874ab1121fe3ddff062b"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "database-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2902 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-probe-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2902 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "reference_microsoft_622": {
+    "run_directory": "out/dwed-qemu-vxfu1847",
+    "case_count": 2,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 238420,
+              "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10752,
+              "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "XMSTEST.exe": {
+              "bytes": 29516,
+              "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+            },
+            "XFERTEST.exe": {
+              "bytes": 30670,
+              "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+            },
+            "MEMXFER.exe": {
+              "bytes": 28982,
+              "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+            },
+            "CACHETEST.exe": {
+              "bytes": 53762,
+              "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160766,
+              "sha256": "bc1177f31fb9684f96b7130c39807fb0b6b1b5585818b84fcb75f7d002a80f74"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 161306,
+              "sha256": "23326c6c573c7212f00c311959ade525f774bfbe2a8950f8005e85803bc85add"
+            },
+            "TABTEST.exe": {
+              "bytes": 237218,
+              "sha256": "b1834f9eda4c4745284af98f68d31a7b91e37a7b7335e97d6d58c80b237e62b3"
+            },
+            "SESSPROB.exe": {
+              "bytes": 234570,
+              "sha256": "3a04355ff0c1ceeff59706b7d57bcb8c12d6cd9eeb3330a6549d241d82c9eed6"
+            },
+            "INITPROB.exe": {
+              "bytes": 167342,
+              "sha256": "b8cfd13323f961f46ea2f0d864c4ba13d432d3588a3afbef2e6b7994bb02df9d"
+            },
+            "DBPROBE.exe": {
+              "bytes": 54822,
+              "sha256": "13498bdb951bc77e08ebd28773b51a3d2ff555ef3869dd665614716ad89e205f"
+            },
+            "SAVETEST.exe": {
+              "bytes": 169316,
+              "sha256": "39abe66e548aec920edda1d0d8766a480e8d7b876af194669a45699a8fb831ed"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 236930,
+              "sha256": "1f701f2d65c26fe310e807a808eef6dd36b31f7afbc0874ab1121fe3ddff062b"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 238420,
+            "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 273476,
+          "sha256": "5db3e11e905fc1d20d6af49b8c9251e01be2d20c8077d86a541b3a1a426df9d3"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "ca2c5347a0ab34a8b49774887eee2c74130acc493bccc57d87643e6ac323706f",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "615b656d0d094a31cb10ab56ab31273062c535d819e8208d412ad5d022847c93",
+        "EMM386.EXE": "d4a011769db9415402d7be129fffb762fa7d174096bcc921aa5ce85734072635"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 238420,
+            "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "XMSTEST.exe": {
+            "bytes": 29516,
+            "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+          },
+          "XFERTEST.exe": {
+            "bytes": 30670,
+            "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+          },
+          "MEMXFER.exe": {
+            "bytes": 28982,
+            "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+          },
+          "CACHETEST.exe": {
+            "bytes": 53762,
+            "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160766,
+            "sha256": "bc1177f31fb9684f96b7130c39807fb0b6b1b5585818b84fcb75f7d002a80f74"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 161306,
+            "sha256": "23326c6c573c7212f00c311959ade525f774bfbe2a8950f8005e85803bc85add"
+          },
+          "TABTEST.exe": {
+            "bytes": 237218,
+            "sha256": "b1834f9eda4c4745284af98f68d31a7b91e37a7b7335e97d6d58c80b237e62b3"
+          },
+          "SESSPROB.exe": {
+            "bytes": 234570,
+            "sha256": "3a04355ff0c1ceeff59706b7d57bcb8c12d6cd9eeb3330a6549d241d82c9eed6"
+          },
+          "INITPROB.exe": {
+            "bytes": 167342,
+            "sha256": "b8cfd13323f961f46ea2f0d864c4ba13d432d3588a3afbef2e6b7994bb02df9d"
+          },
+          "DBPROBE.exe": {
+            "bytes": 54822,
+            "sha256": "13498bdb951bc77e08ebd28773b51a3d2ff555ef3869dd665614716ad89e205f"
+          },
+          "SAVETEST.exe": {
+            "bytes": 169316,
+            "sha256": "39abe66e548aec920edda1d0d8766a480e8d7b876af194669a45699a8fb831ed"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 236930,
+            "sha256": "1f701f2d65c26fe310e807a808eef6dd36b31f7afbc0874ab1121fe3ddff062b"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "database-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2902 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-probe-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2902 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "regression": {
+    "run_directory": "out/dwed-qemu-67izltob",
+    "case_count": 6,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 238420,
+              "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10752,
+              "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "XMSTEST.exe": {
+              "bytes": 29516,
+              "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+            },
+            "XFERTEST.exe": {
+              "bytes": 30670,
+              "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+            },
+            "MEMXFER.exe": {
+              "bytes": 28982,
+              "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+            },
+            "CACHETEST.exe": {
+              "bytes": 53762,
+              "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160766,
+              "sha256": "bc1177f31fb9684f96b7130c39807fb0b6b1b5585818b84fcb75f7d002a80f74"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 161306,
+              "sha256": "23326c6c573c7212f00c311959ade525f774bfbe2a8950f8005e85803bc85add"
+            },
+            "TABTEST.exe": {
+              "bytes": 237218,
+              "sha256": "b1834f9eda4c4745284af98f68d31a7b91e37a7b7335e97d6d58c80b237e62b3"
+            },
+            "SESSPROB.exe": {
+              "bytes": 234570,
+              "sha256": "3a04355ff0c1ceeff59706b7d57bcb8c12d6cd9eeb3330a6549d241d82c9eed6"
+            },
+            "INITPROB.exe": {
+              "bytes": 167342,
+              "sha256": "b8cfd13323f961f46ea2f0d864c4ba13d432d3588a3afbef2e6b7994bb02df9d"
+            },
+            "DBPROBE.exe": {
+              "bytes": 54646,
+              "sha256": "39e58c2287155bf14e15099ca031d44143caff1688ee99ae1265dc7045d92cfe"
+            },
+            "SAVETEST.exe": {
+              "bytes": 169316,
+              "sha256": "39abe66e548aec920edda1d0d8766a480e8d7b876af194669a45699a8fb831ed"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 236930,
+              "sha256": "1f701f2d65c26fe310e807a808eef6dd36b31f7afbc0874ab1121fe3ddff062b"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 238420,
+            "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 273476,
+          "sha256": "5db3e11e905fc1d20d6af49b8c9251e01be2d20c8077d86a541b3a1a426df9d3"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 238420,
+            "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "XMSTEST.exe": {
+            "bytes": 29516,
+            "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+          },
+          "XFERTEST.exe": {
+            "bytes": 30670,
+            "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+          },
+          "MEMXFER.exe": {
+            "bytes": 28982,
+            "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+          },
+          "CACHETEST.exe": {
+            "bytes": 53762,
+            "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160766,
+            "sha256": "bc1177f31fb9684f96b7130c39807fb0b6b1b5585818b84fcb75f7d002a80f74"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 161306,
+            "sha256": "23326c6c573c7212f00c311959ade525f774bfbe2a8950f8005e85803bc85add"
+          },
+          "TABTEST.exe": {
+            "bytes": 237218,
+            "sha256": "b1834f9eda4c4745284af98f68d31a7b91e37a7b7335e97d6d58c80b237e62b3"
+          },
+          "SESSPROB.exe": {
+            "bytes": 234570,
+            "sha256": "3a04355ff0c1ceeff59706b7d57bcb8c12d6cd9eeb3330a6549d241d82c9eed6"
+          },
+          "INITPROB.exe": {
+            "bytes": 167342,
+            "sha256": "b8cfd13323f961f46ea2f0d864c4ba13d432d3588a3afbef2e6b7994bb02df9d"
+          },
+          "DBPROBE.exe": {
+            "bytes": 54646,
+            "sha256": "39e58c2287155bf14e15099ca031d44143caff1688ee99ae1265dc7045d92cfe"
+          },
+          "SAVETEST.exe": {
+            "bytes": 169316,
+            "sha256": "39abe66e548aec920edda1d0d8766a480e8d7b876af194669a45699a8fb831ed"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 236930,
+            "sha256": "1f701f2d65c26fe310e807a808eef6dd36b31f7afbc0874ab1121fe3ddff062b"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "external-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2900 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "database-probe-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "database_probe": "PASS 2900 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "metadata-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "metadata_probe": "PASS 605 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "cache-probe-full-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "cache_probe": "PASS 524407 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "cache-probe-writeback-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "cache_probe": "PASS 475241 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "earlier_regression_identity": "Every declared artifact except DBPROBE.exe is byte-identical between database-close-f and final database-close-h. The final probe adds two allocation-retry closure assertions and clears its destination before temporary-record reads.",
+  "negative_control": {
+    "run_directory": "out/dwed-qemu-elsw2j4l",
+    "case_count": 1,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 238292,
+              "sha256": "0f179c897ef17225260cd3059c648315d5c90350b6b4927e313700bab301ec80"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10752,
+              "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "XMSTEST.exe": {
+              "bytes": 29516,
+              "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+            },
+            "XFERTEST.exe": {
+              "bytes": 30670,
+              "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+            },
+            "MEMXFER.exe": {
+              "bytes": 28982,
+              "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+            },
+            "CACHETEST.exe": {
+              "bytes": 53762,
+              "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160622,
+              "sha256": "12f90b02ba7b2cce92ff96d05f5a46433885e0fe5430754562eb092d2fe4ce4b"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 161178,
+              "sha256": "08df8a62f67d8c2cb6a6b5927a11a9ec0ff64ad76436c92dc4de6ce63d18339b"
+            },
+            "TABTEST.exe": {
+              "bytes": 237090,
+              "sha256": "f31ccdbd6ab5b21e610d92e45645e846676cc29804deefab622a5bac724c73ac"
+            },
+            "SESSPROB.exe": {
+              "bytes": 234426,
+              "sha256": "bf66acf8923cd0c765ddfbd1c1d9d04246a3249209b6ea2d2a08b542f0262179"
+            },
+            "INITPROB.exe": {
+              "bytes": 167214,
+              "sha256": "30c34b223295d9b56bafb9fcb4c183b07a3a2f9cf443880b5af680faa0b851c3"
+            },
+            "DBPROBE.exe": {
+              "bytes": 54518,
+              "sha256": "e300a979f1a68563116cb45131bbd9f1b1b2d087785b6866c544febe9913c965"
+            },
+            "SAVETEST.exe": {
+              "bytes": 169204,
+              "sha256": "7870d984aa269932688dc58270d326083d57dca367bb38babdcca2aaec20bbcb"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 236802,
+              "sha256": "d23e287d0495313161f07d9d3cc6edb122f47e024f9a7d266f90c690ef7a34e5"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 238292,
+            "sha256": "0f179c897ef17225260cd3059c648315d5c90350b6b4927e313700bab301ec80"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 273348,
+          "sha256": "19e5e225d7c3ebcc085a8bf5ad0674b08933b4f311947c42c00335621cd96ded"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 238292,
+            "sha256": "0f179c897ef17225260cd3059c648315d5c90350b6b4927e313700bab301ec80"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "XMSTEST.exe": {
+            "bytes": 29516,
+            "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+          },
+          "XFERTEST.exe": {
+            "bytes": 30670,
+            "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+          },
+          "MEMXFER.exe": {
+            "bytes": 28982,
+            "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+          },
+          "CACHETEST.exe": {
+            "bytes": 53762,
+            "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160622,
+            "sha256": "12f90b02ba7b2cce92ff96d05f5a46433885e0fe5430754562eb092d2fe4ce4b"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 161178,
+            "sha256": "08df8a62f67d8c2cb6a6b5927a11a9ec0ff64ad76436c92dc4de6ce63d18339b"
+          },
+          "TABTEST.exe": {
+            "bytes": 237090,
+            "sha256": "f31ccdbd6ab5b21e610d92e45645e846676cc29804deefab622a5bac724c73ac"
+          },
+          "SESSPROB.exe": {
+            "bytes": 234426,
+            "sha256": "bf66acf8923cd0c765ddfbd1c1d9d04246a3249209b6ea2d2a08b542f0262179"
+          },
+          "INITPROB.exe": {
+            "bytes": 167214,
+            "sha256": "30c34b223295d9b56bafb9fcb4c183b07a3a2f9cf443880b5af680faa0b851c3"
+          },
+          "DBPROBE.exe": {
+            "bytes": 54518,
+            "sha256": "e300a979f1a68563116cb45131bbd9f1b1b2d087785b6866c544febe9913c965"
+          },
+          "SAVETEST.exe": {
+            "bytes": 169204,
+            "sha256": "7870d984aa269932688dc58270d326083d57dca367bb38babdcca2aaec20bbcb"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 236802,
+            "sha256": "d23e287d0495313161f07d9d3cc6edb122f47e024f9a7d266f90c690ef7a34e5"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "database-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "completed": false,
+        "error": "b'FAIL backend 1 fault 1 assertion 4 failed close retains open owner\\r\\n'"
+      }
+    ]
+  },
+  "negative_control_method": "Pristine base source with only the database probe and build registration copied in. The probe first confirms the DOS write fault was reached, then the old DBB close fails the retained-open-owner assertion. This control does not separately exercise the old DBM routine.",
+  "reproducibility": {
+    "builds": [
+      "dwed/out/database-close-h",
+      "dwed/out/database-close-i"
+    ],
+    "build_manifest": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 238420,
+          "sha256": "4b404ea8a517c0a9f9771ba7ae810ac2d5d694d3f1e7f5f4d3b82967dc04a403"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 10752,
+          "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "XMSTEST.exe": {
+          "bytes": 29516,
+          "sha256": "09ee61abb2284b57855b544599dae6d9bcdae74263759e7682f1554e40a363f4"
+        },
+        "XFERTEST.exe": {
+          "bytes": 30670,
+          "sha256": "7ca6573b461a6ce63c67090fd17261ff3103d0314f179a4f92c8c1bc9083d6c4"
+        },
+        "MEMXFER.exe": {
+          "bytes": 28982,
+          "sha256": "94e7504b9564cbd2aedba777ff475fd1735712fd1dc5c6a6f0cb7cccb7b2a978"
+        },
+        "CACHETEST.exe": {
+          "bytes": 53762,
+          "sha256": "3eee16667900aad31fd9b779e86c3feb9ff5271dbfb8defa9f6364dcd973e2cf"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37604,
+          "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+        },
+        "STORTEST.exe": {
+          "bytes": 160766,
+          "sha256": "bc1177f31fb9684f96b7130c39807fb0b6b1b5585818b84fcb75f7d002a80f74"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 161306,
+          "sha256": "23326c6c573c7212f00c311959ade525f774bfbe2a8950f8005e85803bc85add"
+        },
+        "TABTEST.exe": {
+          "bytes": 237218,
+          "sha256": "b1834f9eda4c4745284af98f68d31a7b91e37a7b7335e97d6d58c80b237e62b3"
+        },
+        "SESSPROB.exe": {
+          "bytes": 234570,
+          "sha256": "3a04355ff0c1ceeff59706b7d57bcb8c12d6cd9eeb3330a6549d241d82c9eed6"
+        },
+        "INITPROB.exe": {
+          "bytes": 167342,
+          "sha256": "b8cfd13323f961f46ea2f0d864c4ba13d432d3588a3afbef2e6b7994bb02df9d"
+        },
+        "DBPROBE.exe": {
+          "bytes": 54822,
+          "sha256": "13498bdb951bc77e08ebd28773b51a3d2ff555ef3869dd665614716ad89e205f"
+        },
+        "SAVETEST.exe": {
+          "bytes": 169316,
+          "sha256": "39abe66e548aec920edda1d0d8766a480e8d7b876af194669a45699a8fb831ed"
+        },
+        "RECVTEST.exe": {
+          "bytes": 37584,
+          "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+        },
+        "MEMTEST.exe": {
+          "bytes": 236930,
+          "sha256": "1f701f2d65c26fe310e807a808eef6dd36b31f7afbc0874ab1121fe3ddff062b"
+        }
+      }
+    },
+    "all_declared_artifacts_identical": true,
+    "packages_identical": true,
+    "package_sha256": "5db3e11e905fc1d20d6af49b8c9251e01be2d20c8077d86a541b3a1a426df9d3"
+  },
+  "remaining": [
+    "Checked database initialization, mutation and read status propagation",
+    "Alternative-store transaction/undo integration and end-to-end failure qualification",
+    "Temporary-file creation/deletion ownership review",
+    "SXMS implementation versus existing disk-backed stub",
+    "Final memory/runtime qualification and distribution promotion"
+  ]
+}

@@ -1,0 +1,44 @@
+# Alternative document stores
+
+The default DOS store has the editor's transaction and undo integration.
+`STRSSWAP` uses a fixed-record `DBB` index and a chained-block `DBM` payload
+store, both backed by `SYSTEM2` temporary files. `STRSSXMS` currently duplicates
+that disk-backed implementation; its unit explicitly says the SXMS store is
+not implemented. Selecting that name does not establish XMS-backed document
+storage. The optional XMS cache in `SYSTEM2` is a separate layer.
+
+## Database close ownership
+
+`dbb_Close` and `dbm_Close` stop when seeking to or writing the header fails.
+They preserve the database object when buffered-file flush or handle close
+fails. Callers can inspect `f.f.ioresult`, retain the object, and retry close.
+The object is cleared only after the underlying file is closed, preserving the
+header, record geometry, handle, working buffer, and cache owners on refusal.
+
+The DOS probe covers repeated write, short-write, seek, and close failures,
+then reads and appends records and verifies them after retry and reopening.
+It also exhausts the scratch allocation needed to seek back to the header,
+and checks temporary-file ownership through a refused close and later discard.
+Its interrupt hook is installed only during close: forwarding an unrelated
+long-filename probe through the Pascal interrupt helper would change its
+incoming-carry fallback behavior and invalidate file setup.
+
+See [database-close-milestone.json](database-close-milestone.json) for build
+identity, fault evidence, reference-DOS coverage, and the old implementation
+control. This contract covers database close ownership, not transactional
+record mutation or complete editor behavior with these stores.
+
+## Remaining qualification
+
+Database allocation, free-list updates, reads, replacement, and initialization
+still need checked status propagation and failure-safe publication. Existing
+string-store replacement frees the old payload before installing its
+replacement. Shared loading and saving must receive backing-store failures
+instead of treating an empty result as successful input or output.
+
+The alternative stores also need edit transaction and undo/redo integration,
+exact-text and clipboard tests, and end-to-end disk-full, allocation, transfer,
+and cleanup failures. Temporary-file creation and deletion failures need their
+own ownership review. The intended SXMS implementation must be distinguished
+from the present disk-backed stub during that work. Keep these release gates
+open; successful low-level cache or close tests do not satisfy them.
