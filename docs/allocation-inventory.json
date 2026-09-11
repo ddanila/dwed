@@ -14,7 +14,7 @@
     "SRC/DWEDCMD.PAS": "04fadfde4f2d9b89652c859f86bc8a6254090f4f0ae12e40ecff1de8acc56bd9",
     "SRC/DWEDHELP.PAS": "8f452dbba947bf1acfd26498382b7ca80c3b07e3d7e7d2996d962ee8ac88e5b8",
     "SRC/DWEDHL.PAS": "ce580cb0b9064221b3a65f0381c65b7d918fa4aaa3e69d43e8e3a22da7d4c219",
-    "SRC/DWEDHNDL.PAS": "5306a213691483a27662f0be3839df6a651ee4d90c6088289718007c7dbfdb97",
+    "SRC/DWEDHNDL.PAS": "447419ffe08714286140b2cbd709ad2344d860a86d3458554f276b037ecd7161",
     "SRC/DWEDINIT.PAS": "38831e73348b701e83679cc7073cd7b8798ae1002bf65cfccc16797a9cc420cf",
     "SRC/DWEDLNCH.PAS": "bf9fbb5c509d507b148e659521f3931a3b5e86760fb34022dcd02172ff90ea04",
     "SRC/DWEDMENU.PAS": "debdc2410e6dd1a47f2f72f300e0aadb39248e00604e01fa0f4df232ec863b78",
@@ -24,9 +24,9 @@
     "SRC/DWEDSCRU.PAS": "9ec3b0ee4dd4a7e6893fa1793bc0c59e6094e29d3f276872c262f6f2725c7b10",
     "SRC/DWEDSESS.PAS": "95f931d8da08242d9b53adccf5f822ce683386094ddce2d7eb12b9d6e0a2a01c",
     "SRC/DWEDTBL.PAS": "a8fa30250272d5c20372bff3b9ac0c0a891566dcbb6327ffa65b154112f4e834",
-    "SRC/DWEDTYPE.PAS": "b811c94cb1a6abafae2cf87ee7cf69822243eeb2c48fa5e7ee25a4ef0d2031b6",
+    "SRC/DWEDTYPE.PAS": "55e4fcb1d4c41b479a184940386f1426dbff30c86ef0f7ff906610a7051375ba",
     "SRC/DWEDUNDO.PAS": "160abba70955d5f3adc2515e41b2ccaf31cc5f80b6f9c3d1b9e8fd8125a35127",
-    "SRC/DWEDUTIL.PAS": "f6a1c383007be99059a552e0f6f0a85dbbddfff7b0e5a8445353a94670f516bd",
+    "SRC/DWEDUTIL.PAS": "7dadd1a68f5d0d26cffe9916cbc1091aa7a702259335713a799944a1e679699a",
     "SRC/EVENT.PAS": "c4b3971028a49c7bcd6f9d4fadc5803ef26dd1c501f5a3cb039ff500ad2eafe9",
     "SRC/HELP.PAS": "168151a184ea7c69b6974d07b719aaf8c648b37f5e5f13f6d4e758b17abf536d",
     "SRC/SAFESAVE.PAS": "0100d53d32713cce5898843e14e406e42a2ab74fd661957aedfd82811f7f85b5",
@@ -34,10 +34,10 @@
     "SRC/SCR.PAS": "66d353eaae1c56975fe6a8ee196703f66c4cf5f3a837bc27f9b48a9d53575f84",
     "SRC/SCRUI.PAS": "af6bcd7660800506ed8f8a10e946611e55b9d294b69299a382c06fac9547a412",
     "SRC/STARTMEM.PAS": "579a6c373fb549d1dff0e29e5a2559a848d4b3f4089f589e22a639fa868a24e8",
-    "SRC/STRS.PAS": "28fe28deb44551d9b596ca68fb1f7db25a41327652a6215fd9c542b287f50954",
+    "SRC/STRS.PAS": "874ca23eb9fd5abe3b7f7a32f564565e34a63d75eb563ab4c9c394ff88d79de1",
     "SRC/STRSDOS.PAS": "9eda1f3053ccf14494e8884154b8805e50b7ab38b4734a4930bdae376bf30878",
-    "SRC/STRSSWAP.PAS": "ca87bff1319db719912e5f0928d5f81421142eefa83e81b967a348f6d1f36958",
-    "SRC/STRSSXMS.PAS": "88cc7173d105d64cc4400a1a92a973e1d06f8d23b2c3d15fcb3c2eb0d846b89e",
+    "SRC/STRSSWAP.PAS": "0f5ac14cf7cb0c0ab8bdba7139b3da61301fb1bb07cd50e03d525ef9d43cfa18",
+    "SRC/STRSSXMS.PAS": "9cbf545d0971af82e91729451597e57a7c9e093f67ce1dfa3073c50e506b4b5a",
     "SRC/STRUTIL.PAS": "70211b805803e3fe1c3283e3661bf62bbca2aa00594357574990a9c4d8ad7d5c",
     "SRC/TEXTCELL.PAS": "c02a11c1a53aa1d1458f0739c7be07e0318938e93a1d99521c975f8474deb41f",
     "SRC/UNREDO.PAS": "e3ae9e7f50c77ff90219f22d2be1c4c37ce7736676349a5370984acf716cb19e",
@@ -248,6 +248,7 @@
     "SRC/DWEDUTIL.PAS": [
       "cliptext",
       "cstring",
+      "dbb",
       "dosread",
       "dwedhl",
       "dwedlnch",
@@ -444,10 +445,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 469,
+      "line": 523,
       "allocator": "getmem",
       "preceding_routine_declaration": "load_clipboard",
-      "context_start_line": 457,
+      "context_start_line": 511,
       "context": [
         "        p:=nil; allocated:=0; size:=0;",
         "        System.Assign(f,fname);",
@@ -470,10 +471,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 579,
+      "line": 633,
       "allocator": "getmem",
       "preceding_routine_declaration": "copy_selected",
-      "context_start_line": 567,
+      "context_start_line": 621,
       "context": [
         "                                if number<se_y then begin",
         "                                        dest[position]:=#13; dest[position+1]:=#10;",
@@ -496,10 +497,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 658,
+      "line": 712,
       "allocator": "getmem",
       "preceding_routine_declaration": "refresh_clipboard",
-      "context_start_line": 646,
+      "context_start_line": 700,
       "context": [
         "begin",
         "        delete_selected:=true;",
@@ -522,10 +523,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 691,
+      "line": 745,
       "allocator": "getmem",
       "preceding_routine_declaration": "go_win_list",
-      "context_start_line": 679,
+      "context_start_line": 733,
       "context": [
         "        i := 0;",
         "        memlen := 0; sitem := 0; cctx := 0;",
@@ -548,10 +549,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 765,
+      "line": 819,
       "allocator": "getmem",
       "preceding_routine_declaration": "new_file",
-      "context_start_line": 753,
+      "context_start_line": 807,
       "context": [
         "                scry := 0;",
         "                total := strs.renum(rline);",
@@ -574,10 +575,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 786,
+      "line": 840,
       "allocator": "getmem",
       "preceding_routine_declaration": "load_file",
-      "context_start_line": 774,
+      "context_start_line": 828,
       "context": [
         "        ctx.current := p;",
         "        load_ed(ctx);",
@@ -600,10 +601,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 972,
+      "line": 1026,
       "allocator": "getmem",
       "preceding_routine_declaration": "create_fast_jmp_list",
-      "context_start_line": 960,
+      "context_start_line": 1014,
       "context": [
         "                        end else if starts_with(uline, 'IMPLEMENTATION') then begin",
         "                                upstr(line);",
@@ -626,10 +627,10 @@
     },
     {
       "path": "SRC/DWEDUTIL.PAS",
-      "line": 1013,
+      "line": 1067,
       "allocator": "getmem",
       "preceding_routine_declaration": "fast_jmp",
-      "context_start_line": 1001,
+      "context_start_line": 1055,
       "context": [
         "        r := SCRU_NONE; fast_jmp:=r;",
         "        if fjl=nil then exit;",

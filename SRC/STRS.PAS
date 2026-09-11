@@ -54,6 +54,8 @@ function try_put(var r:EditorStr; var body:string; var error:integer):boolean;
 function pending_update:boolean;
 function retry_update(var error:integer):boolean;
 function put(r : EditorStr; var body : string) : EditorStr;
+function try_links(r:EditorStr; var next,prev:EditorStr; var error:integer):boolean;
+function try_number(r:EditorStr; var number:longint; var error:integer):boolean;
 function try_read(r:EditorStr; var dest:string; var next,prev:EditorStr; var error:integer):boolean;
 procedure get(r : EditorStr; var dest : string);
 function delete(r : EditorStr; num_from, num_to : longint) : EditorStr;
@@ -241,6 +243,17 @@ begin
         end;
         from_file := root;
         spinner_stop;
+end;
+
+function try_number(r:EditorStr; var number:longint; var error:integer):boolean;
+var value:dword; ok:boolean;
+begin
+        error:=0; try_number:=false;
+        if r=nil then begin error:=DBB_INVALID; exit end;
+        if memType=MT_SWAP then ok:=strsswap.try_number(dword(r),value,error)
+        else if memType=MT_SXMS then ok:=strssxms.try_number(dword(r),value,error)
+        else begin value:=strsdos.get_num(r); ok:=true end;
+        if ok then number:=value; try_number:=ok;
 end;
 
 function try_links(r:EditorStr; var next,prev:EditorStr; var error:integer):boolean;

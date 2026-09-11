@@ -27,6 +27,8 @@ interface
 uses strs, dwedhl, event, unredo, safesave, dosread, saveinfo;
 
 const
+{ Internal action refusal: skip selection reset and viewport normalization. }
+SCRU_FAILED = 0;
 SCRU_QUIT   = 1;
 SCRU_NONE   = 2;
 SCRU_TOP    = 3;

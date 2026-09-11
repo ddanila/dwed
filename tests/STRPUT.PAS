@@ -1,6 +1,6 @@
 { SPDX-License-Identifier: MIT }
 program strput;
-uses cachehook,dos,strs,dwedtype,dwedutil,system2,dwedhndl,dwedcmd,event,kminput;
+uses cachehook,dos,strs,dwedtype,dwedutil,system2,dwedhndl,dwedcmd,event,kminput,unredo;
 const lines=1100; target_number=910;
       external_keys:array[1..3] of byte=(SCAN_F5,SCAN_F8,SCAN_F9);
       commands:array[1..9] of TEditorCommand=(CMD_SAVE,CMD_SAVE_AS,CMD_SAVE_ALL,CMD_CLOSE,CMD_EXIT,
@@ -212,6 +212,42 @@ begin
                                       'handoff preserves other document');
                         if command_fault=2 then check(strs.pending_update,'handoff retains index rollback');
                 end;
+                for command_fault:=1 to 4 do
+                for command_index:=1 to 4 do
+                for j:=0 to 1 do begin
+                        kind:=50+command_index;
+                        check(strs.retry_update(error),'settle previous movement rollback');
+                        check(strs.try_put(target,oldbody,error),'restore movement fixture'); evict;
+                        body:='unsaved movement text'; prepare_context; ctx.all:=@filectx;
+                        filectx.editor.selection:=j=1; filectx.editor.desired_cell:=37; snapshot:=filectx;
+                        FillChar(e,sizeof(e),0); e.etype:=KEYBOARD;
+                        if command_index in [1,3] then e.scancode:=SCAN_UP else e.scancode:=SCAN_DOWN;
+                        if command_index>=3 then e.ctrl_keys:=key_shift;
+                        case command_fault of
+                        1:begin selected:=1; fault:=1 end;
+                        2:begin selected:=2; fault:=4 end;
+                        3:begin selected:=1; fault:=7 end;
+                        4:begin selected:=2; fault:=6 end;
+                        end;
+                        key_reads:=0; SetIntVec($16,@acknowledge); arm;
+                        result_code:=process_event(ctx,e); disarm; SetIntVec($16,old16);
+                        check((hits>0) and (key_reads=1) and (result_code=SCRU_FULL),'movement reports read or commit refusal');
+                        unchanged; expect_target(oldbody);
+                        if command_fault=2 then check(strs.pending_update,'movement retains index rollback');
+                        result_code:=process_event(ctx,e);
+                        check(result_code<>SCRU_QUIT,'movement retry returns to editor');
+                        if command_index in [1,3] then other:=EditorStr(909) else other:=EditorStr(911);
+                        check(filectx.cline=other,'movement retry selects destination');
+                        check((length(filectx.editor.line)=255) and (filectx.editor.line[1]=chr(65+longint(other) mod 26)),
+                              'movement publishes exact destination text');
+                        check((filectx.editor.desired_cell=37) and (filectx.editor.x=38),'movement retains desired visual column');
+                        check(filectx.editor.selection=(command_index>=3),'movement selection semantics');
+                        if (command_index>=3) and (j=0) then
+                                check((filectx.editor.sel_row=910) and (filectx.editor.sel_x=3),'movement publishes new selection anchor');
+                        if (command_index>=3) and (j=1) then
+                                check((filectx.editor.sel_row=909) and (filectx.editor.sel_x=2),'movement retains existing selection anchor');
+                        expect_target(body);
+                end;
                 kind:=11; check(strs.retry_update(error),'settle before discard test');
                 check(strs.try_put(target,oldbody,error),'discard fixture'); evict;
                 body:='unsaved replacement'; prepare_context; selected:=2; fault:=3; arm;
@@ -239,6 +275,7 @@ begin
         backend:=0; kind:=12; strs.init(MT_DOS); oldbody:='old'; root:=strs.create(nil,nil,oldbody);
         body:='neighbor'; last:=strs.create(nil,root,body); target:=root;
         check(strs.renum(root)=2,'DOS fixture'); body[0]:=chr(200); FillChar(body[1],200,ord('N')); prepare_context;
+        undo_init(filectx.history,UNDO_DEFAULT_LIMIT,UNDO_DEFAULT_RESERVE); snapshot:=filectx;
         held_count:=0;
         while (MaxAvail>=17000) and (held_count<64) do begin GetMem(held[held_count],16384); inc(held_count) end;
         amount:=MaxAvail-512; GetMem(other,amount);
@@ -257,12 +294,20 @@ begin
                 check((ctx.current=@filectx) and (ctx.all=@filectx) and (ctx.exit_code=0),'DOS handoff retains document ownership');
                 unchanged;
         end;
+        for command_index:=1 to 4 do begin
+                FillChar(e,sizeof(e),0); e.etype:=KEYBOARD;
+                if command_index in [1,3] then e.scancode:=SCAN_UP else e.scancode:=SCAN_DOWN;
+                if command_index>=3 then e.ctrl_keys:=key_shift;
+                key_reads:=0; SetIntVec($16,@acknowledge);
+                result_code:=process_event(ctx,e); SetIntVec($16,old16);
+                check((result_code=SCRU_FULL) and (key_reads=1),'movement reports DOS allocation refusal'); unchanged;
+        end;
         FreeMem(other,amount); while held_count>0 do begin dec(held_count); FreeMem(held[held_count],16384) end;
         check(checked_commit,'DOS growth retry'); target:=filectx.cline; root:=filectx.rline;
         check((root=target) and (filectx.scrline=target),'DOS relocation updates root and scroll aliases');
         check(strs.try_read(target,actual,n,p,error) and (actual=body) and (n=last) and (p=nil),'DOS grown line exact');
         check(strs.go_prev(last)=target,'DOS neighbor points to relocated line');
-        strs.free(root); check(strs.try_done(error),'DOS store cleanup');
+        strs.free(root); undo_done(filectx.history); check(strs.try_done(error),'DOS store cleanup');
 {$ENDIF}
         SetIntVec($60,old60); restore_cache_hook;
         System.Writeln(output,'PASS ',checks,' assertions'); System.Close(output);

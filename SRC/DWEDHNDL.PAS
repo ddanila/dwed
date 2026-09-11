@@ -97,6 +97,7 @@ begin
         if group >= 0 then begin
                 command := choose_menu(ctx,group);
                 r := run_action(ctx,e,command,nil,false);
+                if r=SCRU_FAILED then begin process_event:=SCRU_FULL; exit end;
                 if r <> SCRU_QUIT then r := norm_xy(ctx,SCRU_FULL);
                 process_event := r;
                 exit;
@@ -109,11 +110,13 @@ begin
                         command := command_for(h^.proc,e);
                         r := run_action(ctx,e,command,h^.proc,h^.reset_selection);
                         if r=SCRU_QUIT then begin process_event:=r; exit end;
+                        if r=SCRU_FAILED then begin process_event:=SCRU_FULL; exit end;
                         if (command=CMD_NONE) and h^.reset_selection and ctx.current^.editor.selection then begin
                                 ctx.current^.editor.selection := false;
                                 r := SCRU_FULL;
                         end;
                 end else r := run_action(ctx,e,CMD_NONE,@hk_default,false);
+                if r=SCRU_FAILED then begin process_event:=SCRU_FULL; exit end;
                 if prev_scrx <> ctx.current^.scrx then r := SCRU_FULL;
         end else if e.etype in [MOUSE_MOVE,
                 MOUSE_PRESS_B1, MOUSE_PRESS_B2,
@@ -241,12 +244,12 @@ end;
 
 function hk_up(var ctx : TEditorContext; event : PEvent) : integer;
 begin
-        hk_up := go_line_up(ctx);
+        hk_up := move_line(ctx,false,false);
 end;
 
 function hk_down(var ctx : TEditorContext; event : PEvent) : integer;
 begin
-        hk_down := go_line_down(ctx);
+        hk_down := move_line(ctx,true,false);
 end;
 
 function hk_left(var ctx : TEditorContext; event : PEvent):integer;
@@ -293,21 +296,13 @@ begin
 end;
 
 function hk_sup(var ctx:TEditorContext; event:PEvent):integer;
-var     r : integer;
 begin
-        check_begin_selection(ctx);
-        r := go_line_up(ctx);
-        if r = SCRU_NONE then r := SCRU_CLINE;
-        hk_sup := r;
+        hk_sup:=move_line(ctx,false,true);
 end;
 
 function hk_sdown(var ctx:TEditorContext; event:PEvent):integer;
-var     r : integer;
 begin
-        check_begin_selection(ctx);
-        r := go_line_down(ctx);
-        if r = SCRU_NONE then r := SCRU_CLINE;
-        hk_sdown := r;
+        hk_sdown:=move_line(ctx,true,true);
 end;
 
 function hk_sleft(var ctx:TEditorContext; event:PEvent):integer;
@@ -1364,13 +1359,17 @@ begin
                 r:=SCRU_NONE;
                 if command<>CMD_NONE then r:=execute_command(ctx,command)
                 else if callback<>nil then begin action:=TEventProc(callback); r:=action(ctx,@e) end;
+                if r=SCRU_FAILED then begin
+                        if record_edit then transaction_cancel;
+                        run_action:=r; exit;
+                end;
                 if (r<>SCRU_QUIT) and (command=CMD_NONE) and reset_selection and
                    ctx.current^.editor.selection then begin
                         ctx.current^.editor.selection:=false; r:=SCRU_FULL;
                 end;
                 if record_edit then finish_edit(ctx);
         end else begin
-                cancel_edit(ctx); r:=SCRU_FULL;
+                cancel_edit(ctx); r:=SCRU_FAILED;
         end;
         run_action:=r;
 end;

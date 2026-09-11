@@ -48,6 +48,8 @@ procedure load_ed(var ctx : TEditorContext);
 
 function go_line_begin(var ctx : TEditorContext) : integer;
 function go_line_end(var ctx : TEditorContext) : integer;
+function try_move_line(var ctx:TEditorContext; forward,extend:boolean; var redraw,error:integer):boolean;
+function move_line(var ctx:TEditorContext; forward,extend:boolean):integer;
 function go_line_up(var ctx : TEditorContext) : integer;
 function go_line_down(var ctx : TEditorContext) : integer;
 function go_char_left(var ctx : TEditorContext) : integer;
@@ -87,7 +89,7 @@ function get_ticks : longint;
 
 implementation
 
-uses system2, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo, cliptext, safesave, textcell, dosread;
+uses system2, dbb, wincb, kminput, event, cstring, scr, scrui, strs, str, dwedhl, dwedlnch, unredo, cliptext, safesave, textcell, dosread;
 
 function get_ticks : longint;
 begin
@@ -185,6 +187,58 @@ begin
                 editor.x := length(editor.line) + 1;
                 go_line_end := SCRU_CLINE;
         end;
+end;
+
+{ Stage the destination and selection anchor before publishing any movement. }
+function try_move_line(var ctx:TEditorContext; forward,extend:boolean; var redraw,error:integer):boolean;
+var oldline,dest,next,prev,n,p:EditorStr; body:string; desired:integer; anchor:longint;
+begin
+        try_move_line:=false; error:=0; redraw:=SCRU_NONE;
+        if ctx.current=nil then begin error:=103; exit end;
+        oldline:=ctx.current^.cline;
+        if oldline=nil then begin error:=DBB_INVALID; exit end;
+        if not strs.try_links(oldline,next,prev,error) then exit;
+        if forward then dest:=next else dest:=prev;
+        if dest=oldline then begin error:=DBB_INVALID; exit end;
+        if dest<>nil then begin
+                if not strs.try_read(dest,body,n,p,error) then exit;
+                if (forward and (p<>oldline)) or ((not forward) and (n<>oldline)) then begin
+                        error:=DBB_INVALID; exit;
+                end;
+        end;
+        if extend and not ctx.current^.editor.selection then
+                if not strs.try_number(oldline,anchor,error) then exit;
+        desired:=ctx.current^.editor.desired_cell;
+        if desired<0 then with ctx.current^ do desired:=cell_of(editor.line,editor.x,config^.tab_size);
+        if not try_commit(ctx,error) then exit;
+        with ctx.current^ do begin
+                if extend and not editor.selection then begin
+                        editor.selection:=true; editor.sel_row:=anchor; editor.sel_x:=editor.x;
+                end;
+                editor.desired_cell:=desired;
+                if dest<>nil then begin
+                        cline:=dest; editor.line:=body;
+                        if forward then begin
+                                if scry<config^.height-2 then begin inc(scry); redraw:=SCRU_CLINE end
+                                else redraw:=SCRU_SU;
+                        end else begin
+                                if scry>0 then begin dec(scry); redraw:=SCRU_CLINE end
+                                else redraw:=SCRU_SD;
+                        end;
+                        if editor.selection then redraw:=SCRU_FULL;
+                end;
+                editor.x:=byte_at_cell(editor.line,desired,config^.tab_size);
+        end;
+        try_move_line:=true;
+end;
+
+function move_line(var ctx:TEditorContext; forward,extend:boolean):integer;
+var redraw,error:integer;
+begin
+        if try_move_line(ctx,forward,extend,redraw,error) then begin
+                if extend and (redraw=SCRU_NONE) then redraw:=SCRU_CLINE;
+                move_line:=redraw;
+        end else begin handle_error(ctx,error); move_line:=SCRU_FAILED end;
 end;
 
 function go_line_up(var ctx : TEditorContext) : integer;

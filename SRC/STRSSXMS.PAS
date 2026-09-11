@@ -59,6 +59,7 @@ function go_next(r : dword) : dword;
 function is_nil(r : dword) : boolean;
 
 function renum(r : dword) : dword;
+function try_number(r:dword; var number:dword; var error:integer):boolean;
 function get_num(r : dword) : dword;
 function append(r : dword; var pos : integer; p : pchar; var lnum:word) : dword;
 function split(r : dword; pos : integer) : dword;
@@ -301,6 +302,15 @@ begin
                 r := rec.next;
         end;
         renum := res;
+end;
+
+function try_number(r:dword; var number:dword; var error:integer):boolean;
+var rec:TExtStringRec;
+begin
+        try_number:=false;
+        if not read_index(r,rec,error) then exit;
+        if (rec.num<1) or (rec.num>dbb_idx.header.records) then begin error:=DBB_INVALID; exit end;
+        number:=rec.num; try_number:=true;
 end;
 
 function get_num(r : dword) : dword;

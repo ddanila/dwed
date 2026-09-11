@@ -44,7 +44,9 @@ and ordinary launch/resume and recursive-launch regression checks.
 A BIOS keyboard hook acknowledges only the error dialog; filesystem failures use real DOS file handles with optional cache
 allocation refused during fixture setup.
 
-Remaining command callers still use legacy `commit`/`put`, whose own updates
+[Vertical keyboard movement](VERTICAL-MOVEMENT.md) stages destination reads
+before committing and moving. Remaining command callers still use legacy
+`commit`/`put`, whose own updates
 are unchecked. Multi-line mutation, free-list updates, navigation, loading,
 rendering, undo for alternative stores, and application-level cleanup ownership
 still need migration and qualification. This milestone does not qualify the

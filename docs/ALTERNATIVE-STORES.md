@@ -43,7 +43,9 @@ free-list traversal and updates, and replacement still need checked status
 propagation and failure-safe publication. [Checked record reads](DATABASE-READS.md)
 stage output and validate chains. [Checked string-store saves](STORE-SAVES.md)
 propagate metadata and payload failures into safe-save cleanup. Loading,
-navigation, rendering, and editing still need checked error propagation.
+page/word/mouse navigation, rendering, and editing still need checked error
+propagation. [Vertical keyboard movement](VERTICAL-MOVEMENT.md) now checks its
+source links and destination text before committing or moving.
 Legacy string-store replacement frees the old payload before installing its
 replacement. The checked path retains old and orphaned payloads until discard;
 checked reclamation and migration of remaining editing callers are required
