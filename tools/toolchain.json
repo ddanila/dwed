@@ -1,0 +1,7 @@
+{
+  "version": "3.2.2",
+  "host": "Linux x86_64",
+  "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+  "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+  "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+}

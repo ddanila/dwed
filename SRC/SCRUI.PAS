@@ -338,7 +338,8 @@ begin
                         SCAN_ENTER: break;
                         SCAN_ESC: break;
                         SCAN_TAB: break;
-                        0, 2..$39: begin
+                        { Exclude Backspace, Tab and Enter, handled above. }
+                        0, 2..$0D, $10..$1B, $1D..$39: begin
                                 pos := del_selected(str, pos, selb, sele);
                                 selb := 0;
                                 sele := 0;

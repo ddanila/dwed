@@ -33,8 +33,12 @@ implementation
 
 uses kminput, event, scr, scrui, str, help;
 
+{$IFDEF FPC}
+{$I helpdata.inc}
+{$ELSE}
 procedure helpbin;external;
 {$L dwedhelp.obj}
+{$ENDIF}
 
 var     topic_list : PHelpTopicList;
         topic_menu : pchar;

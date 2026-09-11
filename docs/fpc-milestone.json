@@ -1,0 +1,47 @@
+{
+  "toolchain": {
+    "version": "3.2.2",
+    "host": "Linux x86_64",
+    "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+    "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+    "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+  },
+  "target": "8086-msdos-large",
+  "scope": "editor overlay only; launcher replacement is still pending",
+  "artifacts": {
+    "DWEDOVL.exe": {
+      "bytes": 172610,
+      "sha256": "56d44eb8d6c294df82fd56c3127b3baab1ef8b13f3879ecb0e321f9577b55424"
+    },
+    "dwedhelp.hlp": {
+      "bytes": 6656,
+      "sha256": "9e476091cab746652ff9a5137f77f8f94c646a7fa3d2eb485fed2879afa8afa2"
+    }
+  },
+  "verification": {
+    "clean_builds_identical": true,
+    "help_matches_historical_resource": true,
+    "runtime": [
+      {
+        "case": "edit-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_original": true,
+        "exact_match": true
+      },
+      {
+        "case": "edit-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_original": true,
+        "exact_match": true
+      }
+    ],
+    "runtime_launcher": "Historical BIN/DWED.EXE; source-built replacement pending",
+    "dos": "Parent msdos checkout private copies of out/floppy.img; QEMU 486 TCG"
+  }
+}

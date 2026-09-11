@@ -23,7 +23,12 @@ SOFTWARE. }
 {$M 16000, 128000, 256000}
 {$ENDIF}
 {$IFNDEF DEBUG}
+{$IFDEF FPC}
+{ FPC reserves the initial heap in DGROUP; grow the far heap on demand. }
+{$M 16000, 16384, 655360}
+{$ELSE}
 {$M 16000, 128000, 655360}
+{$ENDIF}
 {$ENDIF}
 
 uses system2, dos, str, strutil, wincb, kminput, event,

@@ -1,0 +1,3 @@
+# Preserve historical DOS source bytes and CRLF without whitespace false alarms.
+SRC/** -text whitespace=cr-at-eol
+vendor/system2/** -text whitespace=cr-at-eol
