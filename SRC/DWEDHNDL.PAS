@@ -440,7 +440,7 @@ type TSaveOutcome = (SAVE_OK, SAVE_CANCELLED, SAVE_FAILED);
 function ask_choice(var ctx:TEditorContext; title, message, buttons:string):ANSWER;
 var e:TEvent; choice:ANSWER;
 begin
-        scr.push;
+        if not scr.push then begin ask_choice:=CANCEL; exit end;
         scrui.msg_box(ctx.config.color.menu,title,message,buttons);
         scr.cursor_off; scr.show;
         choice:=MAYBE;
@@ -553,11 +553,10 @@ end;
 
 function hk_dos_screen(var ctx:TEditorContext; event:PEvent):integer;
 begin
-        scr.pop;
+        scr.pick;
         scr.show;
         kbd_reset;
         kbd_getkey;
-        scr.push;
         hk_dos_screen := SCRU_FULL;
 end;
 
@@ -849,7 +848,7 @@ end;
 
 procedure search_not_found(var ctx:TEditorContext);
 begin
-        scr.push;
+        if not scr.push then exit;
         scrui.msg_box(ctx.current^.config^.color.top, 'Search / Replace', 'Substring not found.', '[ OK ]');
         scr.show;
         kbd_reset;
@@ -915,7 +914,7 @@ begin
                         line := search(ctx, is_replace);
                 end;
                 if (ans = ALL) and (count <> 0) then begin
-                        scr.push;
+                        if not scr.push then begin hk_find_again:=SCRU_FULL; exit end;
                         scrui.msg_box(ctx.current^.config^.color.top, 'Search / Replace', 'Replaced ' +
                                 ltoa(count) +
                                 ' string(s).', '[ OK ]');
@@ -1379,12 +1378,13 @@ begin
         CMD_WINDOWS:r:=hk_winlist(ctx,@e);
         CMD_NEXT_WINDOW:r:=hk_nextwin(ctx,@e);
         CMD_ABOUT:begin
-                scr.push;
+                if scr.push then begin
                 scrui.msg_box(ctx.config.color.menu,'About','DWED - MS-DOS EDIT project','[ OK ]');
                 scr.show;
                 repeat wait_event(e) until (e.etype=KEYBOARD) and
                         (e.scancode in [SCAN_ENTER,SCAN_ESC]);
-                scr.pop; r:=SCRU_FULL;
+                scr.pop;
+                end; r:=SCRU_FULL;
         end;
         end;
         if command in [CMD_FIND,CMD_FIND_CASE,CMD_FIND_NEXT,CMD_GOTO] then

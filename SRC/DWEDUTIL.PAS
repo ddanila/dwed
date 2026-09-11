@@ -857,7 +857,7 @@ procedure handle_error(var ctx : TEditorContext; errCode:integer);
 var errMsg : string;
 begin
         errMsg := get_err_msg(errCode);
-        scr.push;
+        if not scr.try_push then begin scr.notice(errMsg); exit end;
         scrui.msg_box(ctx.config.color.top_hl, 'Error', errMsg, '[ OK ]');
         scr.show;
         kbd_reset;

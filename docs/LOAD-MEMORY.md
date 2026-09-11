@@ -27,9 +27,10 @@ source. Generated evidence and the previous-build negative control are in
 
 This is exhaustion caused by document data in the DOS backing store. It does
 not establish safe behavior for every allocation in the program. Initial
-screen/clipboard setup, heavily fragmented heaps, menu and help allocations,
-alternate backing stores, and minimum-machine-memory startup still require
-qualification. Reserving total free heap alone does not guarantee a large
-contiguous block for every later UI operation. There is no fixed maximum file
+clipboard setup, help data allocations, alternate backing stores, and
+minimum-machine-memory startup still require qualification. Screen snapshot
+refusal under fragmentation is covered separately in
+[SCREEN-MEMORY.md](SCREEN-MEMORY.md). Reserving total free heap alone does not
+guarantee a large contiguous block for every later UI operation. There is no fixed maximum file
 size: line overhead, open documents, undo history and available DOS memory all
 affect capacity.

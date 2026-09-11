@@ -1,0 +1,261 @@
+{
+  "scope": "Recoverable screen snapshot allocation refusal under fragmented conventional memory; selected UI and console regressions",
+  "parent_base_revision": "c655bada31b81956f6a3da9b251b5a2155f00b79",
+  "dwed_base_revision": "4755a40cf67d13f522c339a89f296deb9e06bdaf",
+  "source_sha256": {
+    "SRC/DWEDADDO.PAS": "92e8722da4ab1c1c6d0c4f5073708dcc99bce2c03cb8697d2a5397acea79ffd4",
+    "SRC/DWEDHNDL.PAS": "29c558745f7baf4abfee3d932a1c6ad8b59dd9101d6076f2879a1d962c21f6c4",
+    "SRC/DWEDMENU.PAS": "25a06e39cd03693c24fa1b58c59f9ba2cc7259927cddc52ab471b5c731a88e68",
+    "SRC/DWEDOVL.PAS": "9ecc1eb566655c687eb6e1565503ea3bc077ce4f68d32930b9e7f5ac16f8b690",
+    "SRC/DWEDUTIL.PAS": "ff615f28847e792e30c9baf2e2bdd44f1f8016a45cf0ae193ad2d817575a5293",
+    "SRC/SCR.PAS": "d9f5e13b9412f4a3acdcaf21f5e4766d07e4d7508c3af18561aa2004d3ca5829",
+    "SRC/SCRUI.PAS": "3be9d6cfb0e98f89e716b688d8ca6d19fc0dfecc292545ce5132bdf55b1b5525",
+    "tests/MEMTEST.PAS": "7df1cd40efdc51058fe4fa779714b5993b4cc9873a384e5507ec6f1296f8039a"
+  },
+  "harness_sha256": "22daae7e9a51663329ec24410397c077c79726b56307b2fd0aa2ed6ff52668e3",
+  "environment": {
+    "package": null,
+    "launcher_name": "DWED.COM",
+    "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+    "boot_file_sha256": {
+      "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+      "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+    },
+    "build": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 222114,
+          "sha256": "d6b8913107033bf4a243f1329a4f98e24e5e287c38d5a273a36953d58988fd1d"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 8448,
+          "sha256": "06360aff586bd0b7e5af09ae0dc85e9d203ccf65a911830f2a4314575346995e"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37604,
+          "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+        },
+        "STORTEST.exe": {
+          "bytes": 156352,
+          "sha256": "882caa986c827d3d382e4bd653d0ec9c1bb227d4c0ed37f022c0ede5a0e33839"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 156892,
+          "sha256": "8ca45d177a544a506e8bedb86691f1614aa3177d4494cd2b47af590d6924d302"
+        },
+        "TABTEST.exe": {
+          "bytes": 214352,
+          "sha256": "f8f33b7227759c32353d29e5897819cfb0aa75aaa2c42cdee069f7c6e924a061"
+        },
+        "SAVETEST.exe": {
+          "bytes": 163400,
+          "sha256": "4dbb4a91c293fecfb918c700599283eda6854f449ee37cb5f78ec7f10c08eb5c"
+        },
+        "RECVTEST.exe": {
+          "bytes": 36648,
+          "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+        },
+        "MEMTEST.exe": {
+          "bytes": 219162,
+          "sha256": "2251870180148363d8cb7b29bece47d721a2f9bd5d16553f04f88fb52bd66358"
+        }
+      }
+    }
+  },
+  "reproducibility": {
+    "builds": [
+      "dwed/out/screen-l",
+      "dwed/out/screen-m"
+    ],
+    "all_declared_artifacts_identical": true
+  },
+  "run_directory": "out/dwed-qemu-sywmcmmp",
+  "results": [
+    {
+      "case": "memory-probe-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "memory_probe": "PASS 62 assertions",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "memory-probe-high",
+      "mode": "high",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "memory_probe": "PASS 62 assertions",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "screen-memory-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "screen_memory_notice": true,
+      "memory_probe": "PASS 94 assertions",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "screen-memory-high",
+      "mode": "high",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "screen_memory_notice": true,
+      "memory_probe": "PASS 94 assertions",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dos-screen-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "console_roundtrips": 3,
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dos-screen-high",
+      "mode": "high",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "console_roundtrips": 3,
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-low",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-high",
+      "mode": "high",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-high",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "menu-save-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "menu-save-high",
+      "mode": "high",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "menu-cancel-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "actual_hex": "5745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "menu-open-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dialog-exit-cancel-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "actual_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "exit-cancel",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dialog-saveas-cancel-low",
+      "mode": "low",
+      "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "completed": true,
+      "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "saveas-cancel",
+      "dos_version": "MS-DOS Version 6.22"
+    }
+  ],
+  "probe_logs": {
+    "memory-probe-low": "PASS 62 assertions\n",
+    "memory-probe-high": "PASS 62 assertions\n",
+    "screen-memory-low": "PASS 94 assertions\n",
+    "screen-memory-high": "PASS 94 assertions\n"
+  },
+  "limitations": [
+    "Selected scenarios on our DOS fork in QEMU; no new Microsoft reference or legacy hardware qualification",
+    "Other UI and startup allocations remain outside this screen-snapshot gate",
+    "No measured minimum machine memory established",
+    "Existing development package not replaced by this milestone"
+  ]
+}

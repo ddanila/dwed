@@ -72,8 +72,10 @@ var     i, total : integer;
         c        : byte;
         hi_key   : byte;
 begin
+        if not scr.push then begin
+                FillChar(e,sizeof(e),0); e.etype:=KEYBOARD; e.scancode:=SCAN_ESC; exit;
+        end;
         scr.cursor_off;
-        scr.push;
         scrui.box(x, y, w, h, mclr);
         if length(title) <> 0 then scr.print(x + 1, y, mclr, '['+#$FE+'] ' + title + ' ');
         inc(x);

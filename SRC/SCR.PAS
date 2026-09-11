@@ -37,7 +37,9 @@ procedure hprint(x, y:integer; clr : byte; c : char; len : integer);
 procedure vprint(x, y:integer; clr : byte; c : char; len : integer);
 procedure chcolor(x, y:integer; clr : byte; len: integer);
 
-procedure push;
+function try_push:boolean;
+function push:boolean;
+procedure notice(message:string);
 procedure pop;
 procedure pick;
 procedure show;
@@ -363,16 +365,44 @@ asm
         xor        ah,ah
 end;
 
-procedure push;
-var p : PScr;
+function try_push:boolean;
+var p : PScr; size:word;
 begin
-        getmem(p, screen_size + sizeof(TScr) - 1);
+        try_push:=false;
+        size:=screen_size + sizeof(TScr) - 1;
+        if MaxAvail<size then exit;
+        getmem(p, size);
+        if p=nil then exit;
         p^.size := screen_size;
         p^.prev := last_scr_buf;
         p^.x := getx;
         p^.y := gety;
         move(screen^, p^.buf, p^.size);
         last_scr_buf := p;
+        try_push:=true;
+end;
+
+procedure notice(message:string);
+var saved:array[0..511] of byte; count,i:word; cursor_shape:word; key:byte;
+begin
+        { This fallback uses stack space, never a heap-backed screen save. }
+        count:=line_size; if count>sizeof(saved) then count:=sizeof(saved);
+        move(screen^,saved,count);
+        cursor_shape:=get_cursor; cursor_off;
+        for i:=0 to count div 2-1 do begin
+                screen[i*2]:=' '; screen[i*2+1]:=#$70;
+        end;
+        scr.print(0,0,$70,copy(message,1,count div 2)); scr.show;
+        kbd_reset;
+        repeat key:=hi(kbd_getkey) until key in [SCAN_ESC,SCAN_ENTER];
+        move(saved,screen^,count); scr.show; set_cursor(cursor_shape);
+end;
+
+function push:boolean;
+var saved:boolean;
+begin
+        saved:=try_push; push:=saved;
+        if not saved then notice('Not enough memory for this window. Press Enter or Esc.');
 end;
 
 procedure pop;
@@ -631,6 +661,9 @@ begin
         if not monochrome then scr.set_blink(false);
         screen_size := (scr.getwidth * scr.getheight) shl 1;
         line_size := scr.getwidth shl 1;
+        if MaxAvail<screen_size then begin
+                System.Writeln('EDIT: Not enough memory for the screen buffer.'); halt(1);
+        end;
         getmem(screen, screen_size);
         move(mem[vseg:0], screen^, screen_size);
         mouse_show;

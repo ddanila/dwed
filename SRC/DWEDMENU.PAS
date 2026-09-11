@@ -88,9 +88,9 @@ var e:TEvent; selected,i,j,x,other:integer; color:byte;
     caption:string; command:TEditorCommand; finished:boolean;
 begin
         command:=CMD_NONE; selected:=0; finished:=false;
-        scr.push;
+        if not scr.push then begin choose_menu:=CMD_NONE; exit end;
         repeat
-                scr.pop; scr.push;
+                scr.pick;
                 draw_menu_bar(ctx,group);
                 x:=MenuX[group];
                 if x+30>ctx.config.width then x:=ctx.config.width-30;

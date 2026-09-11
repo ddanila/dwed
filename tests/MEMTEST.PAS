@@ -1,9 +1,9 @@
 { SPDX-License-Identifier: MIT }
 program memtest;
-uses dwedtype,dwedutil,dwedrcv,strs,unredo,saveinfo;
+uses dwedtype,dwedutil,dwedrcv,strs,unredo,saveinfo,scr,dwedmenu,dwedcmd;
 var output:text; checks:longint; ctx:TEditorContext;
     original,previous,p:PFileContext; info:TSaveRecord;
-    before_heap:longint; error,i,count:integer; s:string;
+    before_heap:longint; error,i,count:integer; s:string; screen_probe:boolean;
 procedure check(ok:boolean; message:string);
 begin
         inc(checks);
@@ -18,7 +18,41 @@ begin
         check(not ctx.file_reader.opened,'input handle closed');
         check(MemAvail=before_heap,'failed load releases all allocations');
 end;
+procedure screen_memory;
+var blocks:array[0..511] of pointer; n,j,k:integer; free_fragmented:longint;
 begin
+        FillChar(blocks,sizeof(blocks),0);
+        scr.print(0,0,$07,'root'); check(scr.try_push,'save root screen');
+        scr.print(0,0,$07,'outer'); check(scr.try_push,'save nested screen');
+        scr.print(0,0,$07,'inner');
+        n:=0;
+        while (MaxAvail>=1024) and (n<512) do begin
+                GetMem(blocks[n],1024); inc(n);
+        end;
+        check(n<512,'exhausted available heap within allocation bound');
+        j:=0;
+        while j<n do begin FreeMem(blocks[j],1024); blocks[j]:=nil; inc(j,2) end;
+        check(MemAvail>scr.getwidth*scr.getheight*2,'fragmented heap has enough total bytes');
+        check(MaxAvail<scr.getwidth*scr.getheight*2,'no contiguous screen buffer fits');
+        free_fragmented:=MemAvail;
+        for k:=1 to 3 do begin
+                check(not scr.try_push,'fragmented screen save refuses allocation');
+                check(scr.screen[0]='i','failed save preserves current screen');
+                check(MemAvail=free_fragmented,'failed screen save leaks no heap');
+        end;
+        check(choose_menu(ctx,0)=CMD_NONE,'menu cancels when its snapshot cannot fit');
+        check(scr.screen[0]='i','allocation-free notice restores previous row');
+        check(MemAvail=free_fragmented,'cancelled menu leaks no heap');
+        scr.pop; check(scr.screen[0]='o','failed saves leave nested snapshot intact');
+        scr.pop; check(scr.screen[0]='r','failed saves leave root snapshot intact');
+        for j:=0 to n-1 do if blocks[j]<>nil then FreeMem(blocks[j],1024);
+        preserved;
+        check(scr.try_push,'screen save retries after memory release'); scr.pop;
+        preserved;
+end;
+begin
+        { FPC parses and retains argv on the first ParamCount/ParamStr call. }
+        screen_probe:=System.ParamCount>0;
         System.Assign(output,'A:\MEM.LOG'); System.Rewrite(output); checks:=0;
         FillChar(ctx,sizeof(ctx),0); ctx.config.width:=80; ctx.config.height:=24;
         ctx.config.tab_size:=8; strs.init(MT_DOS);
@@ -28,6 +62,7 @@ begin
         ctx.current^.cline:=ctx.current^.rline; ctx.current^.scrline:=ctx.current^.rline;
         load_ed(ctx); ctx.current^.chg:=true;
         before_heap:=MemAvail;
+        if screen_probe then screen_memory;
         for i:=1 to 3 do begin
                 load_file(ctx,'C:\HUGE.TXT',error,nil);
                 check(error=8,'oversized ordinary load reports memory exhaustion'); preserved;

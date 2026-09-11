@@ -44,7 +44,7 @@ procedure addons_window(var ctx : TEditorContext);
 var     sitem : integer;
         e     : TEvent;
 begin
-        scr.push;
+        if not scr.push then exit;
         sitem := 0;
         while true do begin
                 scrui.vmenu(e, 1, 2, 33, scr.getheight - 3,

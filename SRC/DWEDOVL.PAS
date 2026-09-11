@@ -315,7 +315,7 @@ begin
         if ctx.config.memory = MEM_SXMS then strs.init(strs.MT_SXMS)
         else if ctx.config.memory = MEM_SWAP then strs.init(strs.MT_SWAP)
         else strs.init(strs.MT_DOS);
-        scr.push;
+        if not scr.push then halt(1);
         scr.cls(7);
         if is_resuming and FileExists(ctx.temp) then begin
                 show_welcome_msg := false;
