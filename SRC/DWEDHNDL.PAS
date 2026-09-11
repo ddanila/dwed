@@ -33,7 +33,7 @@ implementation
 
 uses dwedhelp, scr, kminput, cstring, scrui, strs, str, dwedscru, dwedutil,
 dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu,
-unredo, strsdos, dwedundo, textcell, dwedsave;
+unredo, strsdos, dwedundo, textcell, dwedsave, startmem;
 
 {$F+}
 const
@@ -50,7 +50,7 @@ function hk_cb_cut(var ctx:TEditorContext; event:PEvent):integer;forward;
 procedure reg_handler(scancode : byte; is_ctrl, is_shift, is_alt, reset_selection : boolean; proc : pointer);
 var     h : PEventHandler;
 begin
-        getmem(h, sizeof(TEventHandler));
+        h:=startup_alloc(sizeof(TEventHandler),'keyboard handlers');
         h^.next := handlers;
         h^.proc := proc;
         h^.reset_selection := reset_selection;

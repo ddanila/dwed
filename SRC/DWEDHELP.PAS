@@ -31,7 +31,7 @@ procedure dwed_help(var topic_id:integer;
 
 implementation
 
-uses kminput, event, scr, scrui, str, help;
+uses kminput, event, scr, scrui, str, help, startmem;
 
 {$IFDEF FPC}
 {$I helpdata.inc}
@@ -152,7 +152,7 @@ begin
                 inc(totallen, len + 1);
                 t := t^.next;
         end;
-        getmem(topic_menu, totallen);
+        topic_menu:=startup_alloc(totallen,'help menu');
         pos := 0;
         t := topic_list;
         while t <> nil do begin

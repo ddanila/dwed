@@ -62,7 +62,8 @@ FUNCTION excache_Create(size : INTEGER) : PEXCACHE;
 VAR     r    : PEXCACHE;
         h    : WORD;
 BEGIN
-        r := NIL;
+        r := NIL; excache_Create := NIL;
+        IF MaxAvail < SizeOf(TEXCACHE) THEN EXIT;
         IF exms_check_driver THEN BEGIN
                 IF size < 1 THEN size := EXCACHE_ITEM_COUNT;
                 IF size > EXCACHE_ITEM_COUNT THEN size := EXCACHE_ITEM_COUNT;

@@ -629,6 +629,8 @@ END;
 PROCEDURE ReWrite(VAR f : BFILE);
 BEGIN
         IF f.is_open THEN EXIT;
+        f.buf := NIL; f.ioresult := 8;
+        IF MaxAvail < SizeOf(BFILE_BUF) THEN EXIT;
         GetMem(f.buf, SizeOf(BFILE_BUF));
         IF f.buf = NIL THEN EXIT;
         fname := f.filename + #0;
@@ -655,6 +657,8 @@ END;
 PROCEDURE ResetMode(VAR f : BFILE; access : WORD);
 BEGIN
         IF f.is_open THEN EXIT;
+        f.buf := NIL; f.ioresult := 8;
+        IF MaxAvail < SizeOf(BFILE_BUF) THEN EXIT;
         GetMem(f.buf, SizeOf(BFILE_BUF));
         IF f.buf = NIL THEN EXIT;
         f.ioresult := 0;

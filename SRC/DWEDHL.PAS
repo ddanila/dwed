@@ -35,7 +35,7 @@ procedure change_hl(var st : SourceType; color, color_sel : byte);
 
 implementation
 
-uses kminput, event, scr, scrui, str;
+uses kminput, event, scr, scrui, str, startmem;
 
 type
 PVocabEntry = ^TVocabEntry;
@@ -101,7 +101,7 @@ procedure add_lang(st : SourceType; ext : string; caseSens : boolean; hlchars : 
 var lng : PLangDesc;
 begin
         upstr(ext);
-        getmem(lng, sizeof(TLangDesc));
+        lng:=startup_alloc(sizeof(TLangDesc),'syntax languages');
         lng^.st := st;
         lng^.title := title;
         lng^.caseSens := caseSens;
@@ -140,7 +140,7 @@ begin
         lng := langs;
         while lng <> nil do begin
                 if lng^.st = st then begin
-                        getmem(entry, sizeof(TVocabEntry));
+                        entry:=startup_alloc(sizeof(TVocabEntry),'syntax keywords');
                         if not lng^.caseSens then upstr(keyword);
                         entry^.next := lng^.vocab;
                         entry^.keyword := keyword;
@@ -264,7 +264,7 @@ begin
                 r := r^.next;
         end;
         pos := 0;
-        getmem(hl_menu, menu_len);
+        hl_menu:=startup_alloc(menu_len,'syntax menu');
         r := langs;
         while r <> nil do begin
                 if pos <> 0 then begin hl_menu[pos] := #$0A; inc(pos); end;

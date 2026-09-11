@@ -1,0 +1,552 @@
+{
+  "scope": "Checked startup resource allocation, legacy configuration-buffer refusal, and measured contiguous-memory startup boundary",
+  "parent_base_revision": "8677ff6464a78dfc20fb4bb51559e7cce36ee544",
+  "dwed_base_revision": "e842dd21a75d96fc768b2fe794f3c07a53e73edc",
+  "source_sha256": {
+    "SRC/STARTMEM.PAS": "579a6c373fb549d1dff0e29e5a2559a848d4b3f4089f589e22a639fa868a24e8",
+    "SRC/SCR.PAS": "66d353eaae1c56975fe6a8ee196703f66c4cf5f3a837bc27f9b48a9d53575f84",
+    "SRC/HELP.PAS": "168151a184ea7c69b6974d07b719aaf8c648b37f5e5f13f6d4e758b17abf536d",
+    "SRC/DWEDHELP.PAS": "8f452dbba947bf1acfd26498382b7ca80c3b07e3d7e7d2996d962ee8ac88e5b8",
+    "SRC/DWEDHL.PAS": "ce580cb0b9064221b3a65f0381c65b7d918fa4aaa3e69d43e8e3a22da7d4c219",
+    "SRC/DWEDHNDL.PAS": "d26840223ec24e8f4a56e826a496831de79ebadea0a6c20b2dbc70336be1554d",
+    "SRC/DWEDOVL.PAS": "704049609011a350f7fe3841b524e75b155dda5ca1f80ea6fcf69c27bfbf69ba",
+    "vendor/system2/SYSTEM2.PAS": "bcfd96c11682a8e6b9b793bfde8123c79b071b56da8e064badc92f3bdcfce778",
+    "vendor/system2/EXCACHE.PAS": "18fa49480307be30d949e7a97ea1cfafc46d7a2a3998f462bc3dcaa5aace46b8"
+  },
+  "test_source_sha256": {
+    "tests/test_dwed_startup_memory.py": "ffe14d140581fab45328da02e5e428ee4830ebd1fa55e8b1861a42c167b06b84",
+    "tests/dwed_memory_cap.asm": "f10fa3927441e96321181a74c1befb69580e1e38c04bd186f974a0536b3c7b3a"
+  },
+  "startup_matrices": [
+    {
+      "mode": "low",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 223346,
+            "sha256": "620207aa71ccaba70e873d663a85f1ed050f5f1e4ed32414452796a01750576e"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 8448,
+            "sha256": "06360aff586bd0b7e5af09ae0dc85e9d203ccf65a911830f2a4314575346995e"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 157272,
+            "sha256": "395180b30e7853203bb5d2b0d228fc547a9c2edc71dcf09ffb1f609cbdd0efda"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 157812,
+            "sha256": "1a14eebd2e63f21548060ad6933e50395a0c7e7f9aa1b4e202cf1d85590f79e9"
+          },
+          "TABTEST.exe": {
+            "bytes": 215378,
+            "sha256": "d48ab2b865f5b4ca50d842ac232d9f25f1e0fc6092e81d47646bb25f0e53dfea"
+          },
+          "SAVETEST.exe": {
+            "bytes": 164336,
+            "sha256": "f9228159f09e0adce620bc0c18486388ba9b76de37d5f9ec3519b5430ed304ca"
+          },
+          "RECVTEST.exe": {
+            "bytes": 36648,
+            "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+          },
+          "MEMTEST.exe": {
+            "bytes": 222648,
+            "sha256": "4b9c6fd9221d01eede0f1389eb2574658670cb438d1f4fd573d3f4a9497d7e11"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 248,
+          "outcome": "DWED: cannot execute DWEDOVL.EXE.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 252,
+          "outcome": "EDIT: Not enough memory for syntax keywords.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 260,
+          "outcome": "EDIT: Not enough memory for help text.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 268,
+          "outcome": "EDIT: Not enough memory for keyboard handlers.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 280,
+          "outcome": "EDIT: Not enough memory for clipboard.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 304,
+          "outcome": "EDIT: Not enough memory for configuration buffer.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 308,
+          "outcome": "EDIT: Not enough memory for configuration buffer.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 336,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 340,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 344,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 348,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 352,
+          "outcome": "edited",
+          "completed": true
+        }
+      ],
+      "run_directory": "out/dwed-startup-hw3s041o"
+    },
+    {
+      "mode": "high",
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 223346,
+            "sha256": "620207aa71ccaba70e873d663a85f1ed050f5f1e4ed32414452796a01750576e"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 8448,
+            "sha256": "06360aff586bd0b7e5af09ae0dc85e9d203ccf65a911830f2a4314575346995e"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 157272,
+            "sha256": "395180b30e7853203bb5d2b0d228fc547a9c2edc71dcf09ffb1f609cbdd0efda"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 157812,
+            "sha256": "1a14eebd2e63f21548060ad6933e50395a0c7e7f9aa1b4e202cf1d85590f79e9"
+          },
+          "TABTEST.exe": {
+            "bytes": 215378,
+            "sha256": "d48ab2b865f5b4ca50d842ac232d9f25f1e0fc6092e81d47646bb25f0e53dfea"
+          },
+          "SAVETEST.exe": {
+            "bytes": 164336,
+            "sha256": "f9228159f09e0adce620bc0c18486388ba9b76de37d5f9ec3519b5430ed304ca"
+          },
+          "RECVTEST.exe": {
+            "bytes": 36648,
+            "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+          },
+          "MEMTEST.exe": {
+            "bytes": 222648,
+            "sha256": "4b9c6fd9221d01eede0f1389eb2574658670cb438d1f4fd573d3f4a9497d7e11"
+          }
+        }
+      },
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "core_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "cases": [
+        {
+          "free_block_kib": 248,
+          "outcome": "DWED: cannot execute DWEDOVL.EXE.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 252,
+          "outcome": "EDIT: Not enough memory for syntax keywords.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 260,
+          "outcome": "EDIT: Not enough memory for help text.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 268,
+          "outcome": "EDIT: Not enough memory for keyboard handlers.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 280,
+          "outcome": "EDIT: Not enough memory for clipboard.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 304,
+          "outcome": "EDIT: Not enough memory for configuration buffer.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 308,
+          "outcome": "EDIT: Not enough memory for configuration buffer.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 336,
+          "outcome": "EDIT: Not enough memory for document working memory.",
+          "completed": true
+        },
+        {
+          "free_block_kib": 340,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 344,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 348,
+          "outcome": "edited",
+          "completed": true
+        },
+        {
+          "free_block_kib": 352,
+          "outcome": "edited",
+          "completed": true
+        }
+      ],
+      "run_directory": "out/dwed-startup-h0u6si_6"
+    }
+  ],
+  "ui_regression": {
+    "environment": {
+      "package": null,
+      "launcher_name": "DWED.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 223346,
+            "sha256": "620207aa71ccaba70e873d663a85f1ed050f5f1e4ed32414452796a01750576e"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 8448,
+            "sha256": "06360aff586bd0b7e5af09ae0dc85e9d203ccf65a911830f2a4314575346995e"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 157272,
+            "sha256": "395180b30e7853203bb5d2b0d228fc547a9c2edc71dcf09ffb1f609cbdd0efda"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 157812,
+            "sha256": "1a14eebd2e63f21548060ad6933e50395a0c7e7f9aa1b4e202cf1d85590f79e9"
+          },
+          "TABTEST.exe": {
+            "bytes": 215378,
+            "sha256": "d48ab2b865f5b4ca50d842ac232d9f25f1e0fc6092e81d47646bb25f0e53dfea"
+          },
+          "SAVETEST.exe": {
+            "bytes": 164336,
+            "sha256": "f9228159f09e0adce620bc0c18486388ba9b76de37d5f9ec3519b5430ed304ca"
+          },
+          "RECVTEST.exe": {
+            "bytes": 36648,
+            "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+          },
+          "MEMTEST.exe": {
+            "bytes": 222648,
+            "sha256": "4b9c6fd9221d01eede0f1389eb2574658670cb438d1f4fd573d3f4a9497d7e11"
+          }
+        }
+      }
+    },
+    "run_directory": "out/dwed-qemu-6clgsil3",
+    "results": [
+      {
+        "case": "edit-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "edit-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "screen-memory-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "screen_memory_notice": true,
+        "memory_probe": "PASS 94 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "screen-memory-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "screen_memory_notice": true,
+        "memory_probe": "PASS 94 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "list-memory-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "list_memory_notices": 4,
+        "memory_probe": "PASS 917 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "list-memory-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "list_memory_notices": 4,
+        "memory_probe": "PASS 917 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "help-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "help_pages": 2,
+        "help_flow": "help-low",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "help-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "help_pages": 2,
+        "help_flow": "help-high",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "reject-long-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b455278787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878780d0a",
+        "completed": true,
+        "actual_hex": "445745445f4d41524b455278787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878780d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "reproducibility": {
+    "builds": [
+      "dwed/out/startmem-d",
+      "dwed/out/startmem-e"
+    ],
+    "all_declared_artifacts_identical": true
+  },
+  "pre_buffer_fix_failure": {
+    "run_directory": "out/dwed-startup-dbtdjxgq",
+    "build": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 223132,
+          "sha256": "44c0d2a55ecb0e90dad958581f2f7f60943384f147ddfc11be1b14d671a09c40"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 8448,
+          "sha256": "06360aff586bd0b7e5af09ae0dc85e9d203ccf65a911830f2a4314575346995e"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37604,
+          "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+        },
+        "STORTEST.exe": {
+          "bytes": 157112,
+          "sha256": "602343c488a76081697cbdf6148a1d48be8bd900cd889a3d5a57d091755215af"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 157652,
+          "sha256": "5ebd4fac93655e1dedfa83e1292599b9bd6696b950cebf81934570b2f9ee0667"
+        },
+        "TABTEST.exe": {
+          "bytes": 215202,
+          "sha256": "12d2893a7533b6775a535aeb0627f99754a2ecacc5331a2c2397d1eb40dc4346"
+        },
+        "SAVETEST.exe": {
+          "bytes": 164176,
+          "sha256": "872f3d5132ec9a3ed9c373256a0d7c3ff413ce28db935065acbd712e8a4def8f"
+        },
+        "RECVTEST.exe": {
+          "bytes": 36648,
+          "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+        },
+        "MEMTEST.exe": {
+          "bytes": 222472,
+          "sha256": "18b8b3c4d92381a7888b059173a94ce96954c46700c21de89bb7764facdc7d6e"
+        }
+      }
+    },
+    "case": {
+      "free_block_kib": 304,
+      "completed": false,
+      "error": "#203: Heap overflow error at 73D0:A8CB \r\nLargest free block: 4028\r\nTotal free memory:  4028"
+    }
+  },
+  "measured_boundary": {
+    "largest_tested_refusal_kib": 336,
+    "smallest_tested_edit_save_success_kib": 340,
+    "scope": "Contiguous free DOS block with this executable, image, configuration and redirected startup log; not minimum physical RAM"
+  },
+  "limitations": [
+    "Selected runtime commands only at normal memory",
+    "Not all startup allocation sites forced to fail individually",
+    "Alternate stores, legacy CPUs and minimum physical RAM remain separate qualification",
+    "Distribution package not updated"
+  ]
+}

@@ -78,7 +78,7 @@ procedure WaitRetrace;
 
 implementation
 
-uses kminput, dos, detect;
+uses kminput, dos, detect, startmem;
 
 const vseg : word = 0;
 SPINNER : string[8] = '|/-\|/-\';
@@ -661,10 +661,7 @@ begin
         if not monochrome then scr.set_blink(false);
         screen_size := (scr.getwidth * scr.getheight) shl 1;
         line_size := scr.getwidth shl 1;
-        if MaxAvail<screen_size then begin
-                System.Writeln('EDIT: Not enough memory for the screen buffer.'); halt(1);
-        end;
-        getmem(screen, screen_size);
+        screen:=startup_alloc(screen_size,'screen buffer');
         move(mem[vseg:0], screen^, screen_size);
         mouse_show;
 end.

@@ -26,9 +26,10 @@ source. Generated evidence and the previous-build negative control are in
 ## Remaining qualification
 
 This is exhaustion caused by document data in the DOS backing store. It does
-not establish safe behavior for every allocation in the program. Initial
-clipboard setup, help data allocations, alternate backing stores, and
-minimum-machine-memory startup still require qualification. Screen snapshot
+not establish safe behavior for every allocation in the program. Startup
+allocation refusal is covered in [STARTUP-MEMORY.md](STARTUP-MEMORY.md).
+Alternate backing stores and minimum-machine-memory operation still require
+qualification. Screen snapshot
 refusal under fragmentation is covered separately in
 [SCREEN-MEMORY.md](SCREEN-MEMORY.md). Reserving total free heap alone does not
 guarantee a large contiguous block for every later UI operation. There is no fixed maximum file

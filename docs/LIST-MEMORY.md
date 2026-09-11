@@ -23,6 +23,5 @@ list and use the source tree to navigate to and edit another procedure.
 
 Build fingerprints and runtime results are in
 [list-memory-milestone.json](list-memory-milestone.json). These checks extend
-[screen snapshot qualification](SCREEN-MEMORY.md); startup clipboard,
-highlighting and handler allocations, other backing stores, and minimum-machine
-memory remain separate qualification work.
+[screen snapshot qualification](SCREEN-MEMORY.md); [startup allocation refusal](STARTUP-MEMORY.md) is covered separately. Other
+backing stores and minimum-machine-memory operation remain qualification work.

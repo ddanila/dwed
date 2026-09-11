@@ -52,7 +52,7 @@ procedure compile(ifname, ofname : string);
 
 implementation
 
-uses system2;
+uses system2, startmem;
 
 type
 
@@ -221,7 +221,7 @@ begin
         r := nil; c := nil; l := nil;
         rp := p;
         while true do begin
-                getmem(c, sizeof(THelpTopicList));
+                c:=startup_alloc(sizeof(THelpTopicList),'help topics');
                 move(rp^, c^.topic, sizeof(THelpTopic));
                 inc(rp, sizeof(THelpTopic));
                 c^.next := nil;
@@ -242,7 +242,7 @@ begin
                 if (c^.next^.topic.recno = 0) and (c^.next^.topic.ofs = 0) and (c^.next^.topic.ofs = 0) then nt := fs
                 else nt := (c^.next^.topic.recno shl 7) + c^.next^.topic.ofs;
                 c^.hlen := nt - ((c^.topic.recno shl 7) + c^.topic.ofs) + 1;
-                getmem(c^.htext, c^.hlen);
+                c^.htext:=startup_alloc(c^.hlen,'help text');
                 move(rp[(c^.topic.recno shl 7) + c^.topic.ofs], c^.htext[0], c^.hlen - 1);
                 c^.htext[c^.hlen - 1] := #0;
                 c := c^.next;

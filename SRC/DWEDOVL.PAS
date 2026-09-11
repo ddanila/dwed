@@ -33,7 +33,7 @@ SOFTWARE. }
 
 uses system2, dos, str, strutil, wincb, kminput, event,
 strs, dwedtype, dwedhndl, dwedutil, dwedhl, dwedscru, dwedlnch,
-scr, ansi, dwedrcv;
+scr, ansi, dwedrcv, startmem;
         
 procedure edit(var ctx : TEditorContext; show_welcome_msg : boolean);
 var     scru, prev_scru, i : integer;
@@ -101,7 +101,7 @@ begin
                 config.udef_f8 := '';
                 config.udef_f9 := '';
                 config.memory := MEM_DOS;
-                getmem(clipboard, CB_SIZE);
+                clipboard:=startup_alloc(CB_SIZE,'clipboard');
                 clipboard[0] := #0;
                 has_wincb := WCB_Detect;
                 search := '';
@@ -191,6 +191,7 @@ begin
         if not FileExists(fname) then exit;
         assign(f, fname);
         system2.reset(f);
+        if f.ioresult=8 then startup_fail('configuration buffer');
         if not isopen(f) then exit;
         while not eof(f) do begin
                 readln(f, str);
@@ -315,7 +316,7 @@ begin
         if ctx.config.memory = MEM_SXMS then strs.init(strs.MT_SXMS)
         else if ctx.config.memory = MEM_SWAP then strs.init(strs.MT_SWAP)
         else strs.init(strs.MT_DOS);
-        if not scr.push then halt(1);
+        if not scr.try_push then startup_fail('console snapshot');
         scr.cls(7);
         if is_resuming and FileExists(ctx.temp) then begin
                 show_welcome_msg := false;
@@ -327,12 +328,14 @@ begin
                         param := paramstr(i);
                         if not has_switch(param) then begin
                                 load_file(ctx, param, errCode, @load_file_progress);
+                                if (errCode=8) and (ctx.all=nil) then startup_fail('document working memory');
                                 if errCode <> 0 then handle_error(ctx, errCode);
                         end;
                 end;
         end;
         if ctx.all = nil then begin
                 errCode:=new_file(ctx, DEFAULT_FILE_NAME);
+                if errCode=8 then startup_fail('document working memory');
                 if errCode<>0 then begin handle_error(ctx,errCode); ctx.exit_code:=1 end;
         end;
         if ctx.all<>nil then begin

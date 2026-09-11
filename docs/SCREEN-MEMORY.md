@@ -25,5 +25,7 @@ build fingerprints and selected UI regressions are in
 
 This qualifies screen snapshot refusal on the tested DOS configurations. It
 does not establish a minimum startup memory requirement or safe failure of every
-clipboard, help, handler or alternate-store allocation. The development package
+clipboard, help, handler or alternate-store allocation.
+[Startup allocation refusal](STARTUP-MEMORY.md) has separate qualification.
+The development package
 must be rebuilt and requalified before these changes ship as EDIT.
