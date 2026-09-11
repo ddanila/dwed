@@ -7,10 +7,14 @@ A record failure leaves the destination and previous backup untouched.
 
 `SAVEINFO.PAS` defines the packed, versioned record. It identifies the
 destination, payload temporary, ordinary backup and planned location for a
-previous backup. It contains the payload's size and IEEE CRC-32, plus a CRC-32
-covering the record. Records are immutable during replacement: recovery must
+previous backup. Current records contain size and IEEE CRC-32 fingerprints for
+the payload and any previous backup that will be parked, plus a CRC-32 covering
+the record. Records are immutable during replacement: recovery must
 inspect which files survived instead of assuming that a recorded plan finished.
 CRC detects accidental corruption; it is not authentication of a record's author.
+
+New builds read both journal layouts. Earlier builds cannot validate the new
+layout and must leave it for a current editor to recover.
 
 Record creation uses an unused `$ER*.REC` name and DOS create-new semantics.
 Payload and record candidates exclude the destination, including when the user
@@ -19,8 +23,8 @@ planned backup location is selected before the record is written. If another
 file claims that location, rename fails without overwriting it.
 
 The transaction retains the record's handle if close fails. The session recovery
-screen shows the record path and prevents leaving while either owned handle
-remains open. Successful replacement or rollback removes the record only after
+screen shows the record path and prevents leaving while an owned payload,
+record or backup-verification handle remains open. Successful replacement or rollback removes the record only after
 the other owned cleanup is complete. Failed rollback, failed cleanup and an
 explicit choice to keep recovery files leave the record available.
 
@@ -30,8 +34,10 @@ A reader must read exactly the packed record and reject short or trailing data.
 `valid_record` checks the signature, version, declared size and checksum, then
 checks the path relationships and owned filename patterns. Payload identity
 requires checking the candidate file's actual size and CRC against the record.
-The record does not fingerprint the old destination or previous backup and
-must not by itself authorize deleting or replacing those files.
+The reader also accepts the original record layout, whose previous-backup
+identity remains unknown. The old destination is not fingerprinted and is never
+a cleanup deletion target. A previous-backup fingerprint must be checked against
+the actual retained file before confirmed cleanup can remove it.
 
 The SAVETEST probe injects record create, write, short-write, commit, close and
 cleanup failures into the actual writer. It verifies that failing to complete
@@ -57,3 +63,9 @@ write caches. [Startup discovery](STARTUP-RECOVERY.md) offers verified payloads
 as unsaved documents, with a subsequent editor boot in the interruption tests.
 Safe resolution of retained generations and broader platform qualification
 remain release gates.
+
+Current backup-fingerprint qualification is recorded in
+[backup-fingerprint-milestone.json](backup-fingerprint-milestone.json). Reading
+and closing the previous backup must succeed before creating the journal or
+renaming any generation. The transaction owns a failed-close read handle until
+cleanup succeeds; failed verification preserves the original and backup.

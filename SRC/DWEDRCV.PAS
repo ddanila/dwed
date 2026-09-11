@@ -15,14 +15,18 @@ implementation
 uses dos,dosread,safesave,strs,dwedutil,dwedscru,dwedsave,kminput,scr,unredo;
 
 function read_record(var ctx:TEditorContext; name:string; var info:TSaveRecord):integer;
-var error:integer; count:word; extra:byte;
+var error:integer; count:word; extra:byte; legacy:TSaveRecordV1;
 begin
         fillchar(info,sizeof(info),0);
         open_read(ctx.file_reader,name,error);
         if error=0 then begin
-                if ctx.file_reader.size<>sizeof(info) then error:=RECORD_INVALID;
+                if (ctx.file_reader.size<>sizeof(info)) and (ctx.file_reader.size<>sizeof(legacy)) then error:=RECORD_INVALID;
                 read_bytes(ctx.file_reader,info,sizeof(info),count,error);
-                if (error=0) and (count<>sizeof(info)) then error:=RECORD_INVALID;
+                if (error=0) and (count<>ctx.file_reader.size) then error:=RECORD_INVALID;
+                if (error=0) and (info.version=1) and (count=sizeof(legacy)) then begin
+                        move(info,legacy,sizeof(legacy)); fillchar(info,sizeof(info),0);
+                        move(legacy,info,sizeof(legacy)-4); info.record_crc:=legacy.record_crc;
+                end else if (error=0) and ((info.version<>2) or (count<>sizeof(info))) then error:=RECORD_INVALID;
                 read_bytes(ctx.file_reader,extra,1,count,error);
                 if (error=0) and ((count<>0) or not valid_record(info,name)) then error:=RECORD_INVALID;
                 close_read(ctx.file_reader);
@@ -31,20 +35,20 @@ begin
         read_record:=error;
 end;
 
-function payload_matches(var ctx:TEditorContext; name:string; var info:TSaveRecord):integer;
+function payload_matches(var ctx:TEditorContext; name:string; expected_size,expected_crc:longword):integer;
 var buffer:array[0..1023] of byte; error:integer; count:word; total,crc:longword;
 begin
         open_read(ctx.file_reader,name,error); total:=0; crc:=$FFFFFFFF;
         if error=0 then begin
-                if ctx.file_reader.size<>info.payload_size then error:=RECOVERY_MISMATCH;
+                if ctx.file_reader.size<>expected_size then error:=RECOVERY_MISMATCH;
                 while error=0 do begin
                         read_bytes(ctx.file_reader,buffer,sizeof(buffer),count,error);
                         if (error<>0) or (count=0) then break;
                         inc(total,count); crc:=crc_update(crc,buffer,count);
-                        if total>info.payload_size then error:=RECOVERY_MISMATCH;
+                        if total>expected_size then error:=RECOVERY_MISMATCH;
                 end;
-                if (error=0) and ((total<>info.payload_size) or
-                   ((crc xor $FFFFFFFF)<>info.payload_crc)) then error:=RECOVERY_MISMATCH;
+                if (error=0) and ((total<>expected_size) or
+                   ((crc xor $FFFFFFFF)<>expected_crc)) then error:=RECOVERY_MISMATCH;
                 close_read(ctx.file_reader);
                 if error=0 then error:=ctx.file_reader.close_error;
         end;
@@ -53,7 +57,7 @@ end;
 
 function resolve_record(var ctx:TEditorContext; name:string; var expected:TSaveRecord; remove:boolean):integer;
 type TRecordBytes=array[0..sizeof(TSaveRecord)-1] of byte;
-var info:TSaveRecord; error,i:integer; f:file; attr:word; has_temporary:boolean;
+var info:TSaveRecord; error,i:integer; f:file; attr:word; has_temporary,has_previous:boolean;
         function erase_name(path:string):integer;
         begin
                 System.Assign(f,path);
@@ -66,22 +70,28 @@ begin
         error:=read_record(ctx,name,info);
         if error=0 then for i:=0 to sizeof(info)-1 do
                 if TRecordBytes(info)[i]<>TRecordBytes(expected)[i] then error:=RECORD_INVALID;
+        has_previous:=false;
         if (error=0) and (info.previous_backup<>'') then begin
                 System.Assign(f,info.previous_backup); GetFAttr(f,attr);
-                if DosError=0 then error:=CLEANUP_RETAINED_BACKUP
+                if DosError=0 then begin
+                        has_previous:=true;
+                        if info.previous_known=0 then error:=CLEANUP_RETAINED_BACKUP
+                        else error:=payload_matches(ctx,info.previous_backup,info.previous_size,info.previous_crc);
+                end
                 else if DosError<>2 then error:=DosError;
         end;
-        if error=0 then error:=payload_matches(ctx,info.destination,info);
+        if error=0 then error:=payload_matches(ctx,info.destination,info.payload_size,info.payload_crc);
         has_temporary:=false;
         if error=0 then begin
                 System.Assign(f,info.temporary); GetFAttr(f,attr);
                 if DosError=0 then begin
                         has_temporary:=true;
-                        error:=payload_matches(ctx,info.temporary,info);
+                        error:=payload_matches(ctx,info.temporary,info.payload_size,info.payload_crc);
                 end else if DosError<>2 then error:=DosError;
         end;
         if (error=0) and remove then begin
                 if has_temporary then error:=erase_name(info.temporary);
+                if (error=0) and has_previous then error:=erase_name(info.previous_backup);
                 if error=0 then error:=erase_name(name);
         end;
         resolve_record:=error;
@@ -142,10 +152,13 @@ begin
                         line('Saved copy:'); line(source);
                         if confirm_cleanup then begin
                                 line('The destination matches the recorded saved contents.');
-                                line('Remove this record and any verified temporary copy?');
+                                line('Remove the listed recovery files?');
                                 line('Temporary:'); line(info.temporary);
+                                if info.previous_known=1 then begin
+                                        line('Verified older backup, if still present:'); line(info.previous_backup);
+                                end;
                                 line('The destination and normal backup will be kept.');
-                                scr.print(1,scr.getheight-2,ctx.config.color.top,'D Remove duplicates   Enter/Esc Keep');
+                                scr.print(1,scr.getheight-2,ctx.config.color.top,'D Remove listed files   Enter/Esc Keep');
                         end else begin
                                 line('R opens a verified copy as an unsaved document.');
                                 line('C checks whether the saved copy is already installed.');

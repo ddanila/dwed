@@ -43,6 +43,9 @@ begin
         check(info.temporary='C:\$ED0001.TMP','payload association');
         check(info.backup='C:\SAMPLE.BAK','original association');
         check(info.previous_backup='C:\$EB0000.TMP','older backup association');
+        check(info.previous_known=1,'older backup fingerprint present');
+        check(info.previous_size=length(older),'older backup size');
+        check(info.previous_crc=(crc_update($FFFFFFFF,older[1],length(older)) xor $FFFFFFFF),'older backup checksum');
         check(info.payload_size=length(body),'payload size');
         check(info.payload_crc=(crc_update($FFFFFFFF,body[1],length(body)) xor $FFFFFFFF),'payload checksum');
         if stage<3 then expect_file(info.temporary,body) else expect_absent(info.temporary);
@@ -61,7 +64,9 @@ begin
         check(not valid_record(changed,'C:\$ER0000.REC'),'damaged signature rejected');
         changed:=info; changed.payload_crc:=changed.payload_crc xor 1;
         check(not valid_record(changed,'C:\$ER0000.REC'),'damaged record rejected');
-        changed:=info; changed.version:=2;
+        changed:=info; changed.previous_crc:=changed.previous_crc xor 1;
+        check(not valid_record(changed,'C:\$ER0000.REC'),'damaged backup fingerprint rejected');
+        changed:=info; changed.version:=3;
         changed.record_crc:=crc_update($FFFFFFFF,changed,sizeof(changed)-4) xor $FFFFFFFF;
         check(not valid_record(changed,'C:\$ER0000.REC'),'unknown version rejected');
         changed:=info; dec(changed.record_size);

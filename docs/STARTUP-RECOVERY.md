@@ -47,7 +47,7 @@ DOS-call boundaries, not during physical sector writes.
 
 C checks whether the recorded payload is already installed and offers confirmed
 cleanup of a verified duplicate temporary and its record. See
-[RECOVERY-CLEANUP.md](RECOVERY-CLEANUP.md). Retained older backup generations and
-later-edited recovered contents still need a guided resolution workflow. The
-record does not fingerprint the old destination or previous backup, so metadata
-alone cannot authorize deleting or replacing them.
+[RECOVERY-CLEANUP.md](RECOVERY-CLEANUP.md). New journals also identify the retained previous backup for verified cleanup.
+Legacy journals without that fingerprint remain conservative. Later-edited
+recovered contents still need a guided resolution workflow. The old destination
+and normal backup are never cleanup deletion targets.

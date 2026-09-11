@@ -1,17 +1,29 @@
 { SPDX-License-Identifier: MIT }
 program savetest;
-uses dos,safesave,saveinfo,strs,dwedtype,dwedutil,unredo;
+uses dos,dosread,safesave,saveinfo,strs,dwedtype,dwedutil,unredo;
 var output:text; tests:longint; sf:TSaveFile; error,kind:integer;
     old21,old60:pointer; armed,hooked:boolean; fault,hits,renames,temp_handle:word;
-    payload:string; regs:registers; journal_handle:word; journal_active:boolean;
+    payload:string; regs:registers; journal_handle:word; journal_active:boolean; backup_active:boolean; backup_handle:word;
 const original='OLD_SOURCE'; older='OLDER_BACKUP';
 
 { FPC's interrupt stack parameters are declared in reverse stack order. }
 procedure intercept(flags,cs,ip,ax,bx,cx,dx,si,di,ds,es,bp:word); interrupt;
-var r:registers; service:byte; reject:boolean;
+var r:registers; service:byte; reject,opening_backup:boolean;
 begin
         service:=hi(ax); reject:=false;
+        opening_backup:=(service=$3D) and (mem[ds:dx+7]=ord('.')) and
+                        (mem[ds:dx+8]=ord('B')) and (mem[ds:dx+9]=ord('A')) and
+                        (mem[ds:dx+10]=ord('K')) and (mem[ds:dx+11]=0);
         if armed then begin
+                if opening_backup and (fault=26) then reject:=true;
+                if backup_active and (bx=backup_handle) then begin
+                        if (service=$3F) and (fault=27) then reject:=true;
+                        if (service=$42) and (fault=28) then reject:=true;
+                        if (service=$3E) and (fault=29) then reject:=true;
+                        if (service=$3F) and (fault=30) then begin
+                                ax:=0; flags:=flags and $FFFE; inc(hits); exit;
+                        end;
+                end;
                 if (service=$5B) and (mem[ds:dx+3]=ord('$')) and
                    (mem[ds:dx+4]=ord('E')) and (mem[ds:dx+5]=ord('R')) and (fault=18) then reject:=true;
                 if journal_active and (bx=journal_handle) then begin
@@ -50,6 +62,13 @@ begin
         end;
         { The original DOS vector is invoked through a private interrupt. }
         intr($60,r);
+        if armed and opening_backup and (fault>=26) and (r.flags and 1=0) then begin
+                backup_handle:=r.ax; backup_active:=true;
+        end;
+        if armed and backup_active and (bx=backup_handle) and (service=$3E) and
+           (fault=31) and (hits=0) then begin
+                r.ax:=5; r.flags:=r.flags or 1; inc(hits);
+        end;
         if armed and (fault=15) and (service=$3E) and (bx=temp_handle) and (hits=0) then begin
                 r.ax:=5; r.flags:=r.flags or 1; inc(hits);
         end;
@@ -325,6 +344,34 @@ begin
         writeln(output,'CASE ',kind,' PASS');
 end;
 
+procedure verification_faults;
+begin
+        for kind:=26 to 31 do begin
+                fixture('C:\SAVE.TXT',original); fixture('C:\SAVE.BAK',older);
+                fault:=kind; hits:=0; renames:=0; temp_handle:=$FFFF;
+                journal_handle:=$FFFF; journal_active:=false; backup_active:=false;
+                armed:=true;
+                start_save(sf,'C:\SAVE.TXT',error);
+                write_save(sf,payload[1],length(payload),error); finish_save(sf,error);
+                armed:=false;
+                if kind=30 then check(error=READ_CHANGED,'backup early EOF rejected')
+                else check(error=5,'backup verification failure reported');
+                check(hits>0,'verification fault reached DOS');
+                check(renames=0,'verification failure precedes replacement');
+                expect_file('C:\SAVE.TXT',original); expect_file('C:\SAVE.BAK',older);
+                check(sf.verification.opened=(kind=29),'verification close ownership');
+                if kind=29 then begin
+                        check(save_pending_files(sf),'held verification blocks another save');
+                        check(sf.cleanup_error=5,'held verification reports close failure');
+                        expect_file(sf.temporary,payload);
+                end;
+                retry_save_cleanup(sf);
+                check(not save_pending_files(sf),'verification cleanup can retry');
+                expect_file('C:\SAVE.TXT',original); expect_file('C:\SAVE.BAK',older);
+                writeln(output,'CASE ',kind,' PASS');
+        end;
+end;
+
 begin
         System.Assign(output,'A:\SAVE.LOG'); System.Rewrite(output); tests:=0; armed:=false; hooked:=false;
         payload:='NEW'+#9#128#255;
@@ -333,7 +380,7 @@ begin
         GetIntVec($21,old21); GetIntVec($60,old60);
         SetIntVec($60,old21); SetIntVec($21,@intercept); hooked:=true;
         for kind:=0 to 15 do run_case;
-        writer_lifecycle; path_lifecycle; journal_faults; reserved_destinations;
+        writer_lifecycle; path_lifecycle; journal_faults; reserved_destinations; verification_faults;
         SetIntVec($21,old21); SetIntVec($60,old60); hooked:=false;
         remove('C:\$EB0000.TMP'); remove('C:\$ER0000.REC'); remove('C:\SAVE.TXT'); remove('C:\SAVE.BAK');
         writeln(output,'PASS ',tests,' assertions'); close(output);

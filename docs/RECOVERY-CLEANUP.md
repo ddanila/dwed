@@ -8,7 +8,8 @@ may already have removed them. CRC detects accidental changes; it is not
 cryptographic authentication.
 
 A successful check opens a confirmation showing the record and temporary paths.
-D removes the duplicate temporary, if present, and then the record. Enter or
+D removes the duplicate temporary and a fingerprinted previous-backup temporary,
+when present, and then the record. Enter or
 Escape keeps them. The destination and normal backup are never removed by this
 operation. The record and payloads are reread and revalidated after confirmation.
 A read, close or deletion failure stops cleanup; a failed close retains ownership
@@ -16,9 +17,11 @@ in the editor context. Removing the record last keeps a failed cleanup
 discoverable. A retry can validate the destination when the temporary has already
 been removed.
 
-A retained previous-backup temporary blocks this operation. The current record
-has no fingerprint for that generation, so it cannot establish that the file is
-safe to remove. The screen gives its path and leaves the files intact. Likewise,
+Current journals fingerprint the previous backup before it is parked. Cleanup
+checks that fingerprint and includes its path in the confirmation. Changed or
+unreadable generations are retained. Older journals have no such fingerprint:
+a retained previous-backup temporary blocks cleanup for those records, with its
+path shown for inspection. Likewise,
 a destination changed by later edits does not qualify merely because a recovered
 document was saved at some point.
 
@@ -34,3 +37,6 @@ This is a startup resolution path for an already-installed payload. Guided
 resolution of older generations and later-edited recovered contents remains a
 release gate. The tests use private local FAT images; concurrent writers and
 network-volume deletion races are outside this qualification.
+
+Current-format and legacy-format coverage is in
+[backup-fingerprint-milestone.json](backup-fingerprint-milestone.json).

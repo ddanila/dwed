@@ -52,6 +52,10 @@ var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
                 line('These files belong to the previous save.');
                 if ctx.pending_save.opened then line('Temporary file is still open.');
                 if ctx.pending_save.journal_opened then line('Recovery record is still open.');
+                if ctx.pending_save.verification.opened then begin
+                        line('Backup verification handle is still open.');
+                        path('Backup being verified:',ctx.pending_save.verification.name);
+                end;
                 if ctx.pending_save.cleanup_error<>0 then
                         line('Close/cleanup error: #'+itoa(ctx.pending_save.cleanup_error));
                 if ctx.pending_save.recovery_error<>0 then
@@ -67,7 +71,7 @@ var scroll,row,width,height,visible:integer; key:byte; finished:boolean;
                 end;
                 line('Return to editing to keep cleanup pending.');
                 scr.print(1,height-3,ctx.config.color.top,'R Retry cleanup   Enter/Esc Return');
-                if leaving and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then
+                if leaving and not ctx.pending_save.verification.opened and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then
                         scr.print(1,height-2,ctx.config.color.top,'K Keep files and leave');
                 scr.print(1,height-1,ctx.config.color.top,'Up/Down Scroll');
                 scr.cursor_off; scr.show;
@@ -95,7 +99,7 @@ begin
                         end;
                         scroll:=0;
                 end;
-                SCAN_K:if leaving and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then begin
+                SCAN_K:if leaving and not ctx.pending_save.verification.opened and not ctx.pending_save.opened and not ctx.pending_save.journal_opened and not ctx.file_reader.opened then begin
                         pending_save_dialog:=true; finished:=true;
                 end;
                 end;

@@ -3,11 +3,20 @@
 unit saveinfo;
 interface
 
-type TSaveRecord = packed record
+type TSaveRecordV1 = packed record
         magic:array[0..7] of char;
         version,record_size:word;
         destination,temporary,backup,previous_backup:string;
         payload_size,payload_crc,record_crc:dword;
+end;
+TSaveRecord = packed record
+        magic:array[0..7] of char;
+        version,record_size:word;
+        destination,temporary,backup,previous_backup:string;
+        payload_size,payload_crc:dword;
+        previous_size,previous_crc:dword;
+        previous_known:word;
+        record_crc:dword;
 end;
 
 function crc_update(crc:dword; var data; count:word):dword;
@@ -130,7 +139,7 @@ end;
 
 procedure seal_record(var r:TSaveRecord);
 begin
-        move(signature,r.magic,sizeof(signature)); r.version:=1; r.record_size:=sizeof(r);
+        move(signature,r.magic,sizeof(signature)); r.version:=2; r.record_size:=sizeof(r);
         r.record_crc:=crc_update($FFFFFFFF,r,sizeof(r)-sizeof(r.record_crc)) xor $FFFFFFFF;
 end;
 
@@ -148,12 +157,22 @@ begin
 end;
 
 function valid_record(var r:TSaveRecord; journal:string):boolean;
-var dir:string; i:integer;
+var dir:string; i:integer; legacy:TSaveRecordV1; checksum:dword;
 begin
         valid_record:=false;
         for i:=0 to 7 do if r.magic[i]<>signature[i] then exit;
-        if (r.version<>1) or (r.record_size<>sizeof(r)) then exit;
-        if r.record_crc<>(crc_update($FFFFFFFF,r,sizeof(r)-sizeof(r.record_crc)) xor $FFFFFFFF) then exit;
+        if r.version=1 then begin
+                if (r.record_size<>sizeof(legacy)) or (r.previous_known<>0) or
+                   (r.previous_size<>0) or (r.previous_crc<>0) then exit;
+                move(r,legacy,sizeof(legacy)-4);
+                checksum:=crc_update($FFFFFFFF,legacy,sizeof(legacy)-4) xor $FFFFFFFF;
+        end else if r.version=2 then begin
+                if (r.record_size<>sizeof(r)) or (r.previous_known>1) then exit;
+                if (r.previous_known=0) and ((r.previous_size<>0) or (r.previous_crc<>0)) then exit;
+                if (r.previous_known=1) and (r.previous_backup='') then exit;
+                checksum:=crc_update($FFFFFFFF,r,sizeof(r)-4) xor $FFFFFFFF;
+        end else exit;
+        if r.record_crc<>checksum then exit;
         if canonical_path(r.destination)='' then exit;
         dir:=path_directory(r.destination);
         if length(dir)<3 then exit;

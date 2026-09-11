@@ -2,11 +2,12 @@
 unit safesave;
 interface
 
-uses saveinfo;
+uses saveinfo,dosread;
 
 const SAVE_PENDING=1010;
 
 type TSaveFile = record
+        verification:TReadFile;
         handle : word;
         opened, journal_opened : boolean;
         journal_handle : word;
@@ -78,7 +79,7 @@ end;
 procedure cleanup_journal(var f:TSaveFile);
 var code:integer;
 begin
-        if f.opened or f.journal_opened or f.original_moved or
+        if f.verification.opened or f.opened or f.journal_opened or f.original_moved or
            (f.temporary<>'') or (f.previous_backup<>'') then exit;
         if f.journal<>'' then begin
                 code:=remove_file(f.journal);
@@ -99,9 +100,17 @@ begin
         close_journal:=true;
 end;
 
+function close_verification(var f:TSaveFile):boolean;
+begin
+        close_read(f.verification);
+        close_verification:=not f.verification.opened;
+        if f.verification.opened then f.cleanup_error:=f.verification.close_error;
+end;
+
 procedure cancel_save(var f:TSaveFile);
 var code:integer;
 begin
+        if not close_verification(f) then exit;
         if not close_journal(f) then exit;
         if f.opened then begin
                 code:=close_handle(f.handle);
@@ -156,7 +165,7 @@ end;
 
 function save_pending_files(var f:TSaveFile):boolean;
 begin
-        save_pending_files:=f.opened or f.journal_opened or f.original_moved or
+        save_pending_files:=f.verification.opened or f.opened or f.journal_opened or f.original_moved or
                             (f.temporary<>'') or (f.previous_backup<>'') or (f.journal<>'');
 end;
 
@@ -164,6 +173,7 @@ procedure retry_save_cleanup(var f:TSaveFile);
 var code:integer;
 begin
         f.cleanup_error:=0; f.recovery_error:=0;
+        if not close_verification(f) then exit;
         if not close_journal(f) then exit;
         if f.opened then begin
                 code:=close_handle(f.handle);
@@ -272,6 +282,27 @@ begin
         end;
 end;
 
+procedure fingerprint_backup(var f:TSaveFile; var r:TSaveRecord; var error:integer);
+var buffer:array[0..1023] of byte; count:word; total,crc:longword;
+begin
+        open_read(f.verification,f.backup,error); total:=0; crc:=$FFFFFFFF;
+        if error=0 then begin
+                while error=0 do begin
+                        read_bytes(f.verification,buffer,sizeof(buffer),count,error);
+                        if (error<>0) or (count=0) then break;
+                        inc(total,count); crc:=crc_update(crc,buffer,count);
+                        if total>f.verification.size then error:=READ_CHANGED;
+                end;
+                if (error=0) and (total<>f.verification.size) then error:=READ_CHANGED;
+                close_read(f.verification);
+                if error=0 then error:=f.verification.close_error;
+        end;
+        if error=0 then begin
+                r.previous_known:=1; r.previous_size:=total;
+                r.previous_crc:=crc xor $FFFFFFFF;
+        end;
+end;
+
 procedure write_journal(var f:TSaveFile; previous:string; var error:integer);
 var r:TSaveRecord; regs:registers; z:TName; i,close_error:integer;
     dir,number,candidate:string;
@@ -280,6 +311,8 @@ begin
         r.destination:=f.destination; r.temporary:=f.temporary;
         r.backup:=f.backup; r.previous_backup:=previous;
         r.payload_size:=f.payload_size; r.payload_crc:=f.payload_crc xor $FFFFFFFF;
+        if previous<>'' then fingerprint_backup(f,r,error);
+        if error<>0 then exit;
         seal_record(r); dir:=path_directory(f.destination);
         for i:=0 to 9999 do begin
                 str(i,number); while length(number)<4 do number:='0'+number;

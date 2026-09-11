@@ -12,7 +12,7 @@ file is created rather than silently naming a truncated destination.
 The recovery screen appears after the primary save error, or directly after a
 successful publication whose backup cleanup failed. It shows the destination,
 retained temporary and backup paths, secondary DOS errors and whether the
-payload or recovery-record handle remains open. Paths wrap and the screen
+payload, recovery-record or backup-verification handle remains open. Paths wrap and the screen
 scrolls with Up/Down. The screen repaints the live editor on return, including its cursor; it does not
 allocate a saved-screen copy.
 
@@ -61,3 +61,7 @@ The context also owns the shared loader's read handle. A failed close keeps
 that ownership after a rejected load. The same guarded operations show a
 Read cleanup screen and allow retry; leaving with an open reader is blocked.
 Returning to editing preserves the handle and does not adopt partial input.
+
+Backup verification also has a transaction-owned read handle. The recovery UI
+blocks another save and leaving the editor while that handle remains open, and
+Retry settles it before removing the unpublished payload.
