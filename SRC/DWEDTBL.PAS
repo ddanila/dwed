@@ -39,115 +39,90 @@ tbl_column_chars  : string[2]  = '³º';
 tbl_transl_chars1 : string[26] = 'ÃÅÂ´ÆÑµÚ¿ÕØ¸³ÌÎË¹ÇÒ×¶Ö·É»º';
 tbl_transl_chars2 : string[26] = '³³³³³³³³³³³³³ººººººººººººº';
 
-function is_in_table_str(var line : string) : boolean;
-var     r         : boolean;
-        fc, lc    : char;
-        fcpos     : integer;
-        lcpos     : integer;
-        i         : integer;
+{ Scan only live shortstring bytes. A field needs room between two borders. }
+function table_bounds(const line:string; var first,last:integer):boolean;
 begin
-        r := false;
-        fc := #0; lc := #0;
-        i := 1;
-        while (i <= ord(line[0])) and (line[i] = ' ') do inc(i);
-        fcpos := i;
-        i := ord(line[0]);
-        while (i > 1) and (line[i] = ' ') do dec(i);
-        lcpos := i;
-        if (fcpos < lcpos) and ((fcpos + lcpos) > 2) then begin
-                fc := line[fcpos];
-                lc := line[lcpos];
+        first:=1; last:=length(line);
+        while first<=last do begin
+                if line[first]<>' ' then break;
+                inc(first);
         end;
-        r := (pos(fc, tbl_column_chars) > 0) and (pos(lc, tbl_column_chars) > 0);
-        is_in_table_str := r;
+        while last>first do begin
+                if line[last]<>' ' then break;
+                dec(last);
+        end;
+        table_bounds:=false;
+        if first>=last then exit;
+        table_bounds:=(pos(line[first],tbl_column_chars)>0) and
+                      (pos(line[last],tbl_column_chars)>0);
 end;
 
-function is_in_table(var ctx:TEditorContext; event:PEvent) : boolean;
+function is_in_table_str(var line:string):boolean;
+var first,last:integer;
 begin
-        is_in_table := is_in_table_str(ctx.current^.editor.line);
+        is_in_table_str:=table_bounds(line,first,last);
 end;
 
-function tbl_next_column(var ctx:TEditorContext; event:PEvent) : integer;
-var     r, x    : integer;
-        line    : string;
-        i       : integer;
-        nl      : EditorStr;
-        nl_body : string;
+function is_in_table(var ctx:TEditorContext; event:PEvent):boolean;
 begin
-        r := SCRU_NONE;
-        ctx.current^.editor.selection := false;
-        line := ctx.current^.editor.line;
-        x := ctx.current^.editor.x;
-        i := ord(line[0]);
-        while (i > 1) and (line[i] = ' ') do dec(i);
-        while (x <= i) and (pos(line[x], tbl_column_chars) = 0) do inc(x);
-        if x < i then begin
-                ctx.current^.editor.x := x + 1;
-                r := SCRU_CLINE;
-        end else begin
-                nl := strs.go_next(ctx.current^.cline);
-                if nl <> nil then begin
-                        get(nl, nl_body);
-                        if is_in_table_str(nl_body) then begin
-                                commit(ctx);
-                                ctx.current^.cline := strs.go_next(ctx.current^.cline);
-                                load_ed(ctx);
-{                               if ctx.current^.scry <> ctx.current^.config^.height - 2
-                                        then inc(ctx.current^.scry); }
-                                x := 1;
-                                while (x < ord(nl_body[0])) and (nl_body[x] = ' ') do inc(x);
-                                if x < ord(nl_body[0]) then inc(x);
-                                ctx.current^.editor.x := x;
-                                r := SCRU_FULL;
+        is_in_table:=is_in_table_str(ctx.current^.editor.line);
+end;
+
+{ Return a field start, or zero. Adjacent borders are not editable fields. }
+function table_field(const line:string; caret:integer; backwards:boolean):integer;
+var first,last,left,right,target:integer;
+begin
+        table_field:=0;
+        if not table_bounds(line,first,last) then exit;
+        left:=first; target:=0;
+        for right:=first+1 to last do begin
+                if pos(line[right],tbl_column_chars)>0 then begin
+                        if right>left+1 then begin
+                                if backwards then begin
+                                        if right<=caret then target:=left+1;
+                                end else if (left>=caret) and (target=0) then
+                                        target:=left+1;
                         end;
+                        left:=right;
                 end;
         end;
-        tbl_next_column := r;
+        table_field:=target;
 end;
 
-function tbl_prev_column(var ctx:TEditorContext; event:PEvent) : integer;
-var     r, x : integer;
-        line : string;
-        i    : integer;
-        pl      : EditorStr;
-        pl_body : string;
+function table_move(var ctx:TEditorContext; backwards:boolean):integer;
+var target:integer; adjacent:EditorStr; line:string;
 begin
-        r := SCRU_NONE;
-        ctx.current^.editor.selection := false;
-        line := ctx.current^.editor.line;
-        x := ctx.current^.editor.x;
-        i := 1;
-        while (i < ord(line[0])) and (line[i] = ' ') do inc(i);
-        while (x >= i) and (pos(line[x], tbl_column_chars) = 0) do dec(x);
-        dec(x);
-        while (x >= i) and (pos(line[x], tbl_column_chars) = 0) do dec(x);
-        if x >= i then begin
-                ctx.current^.editor.x := x + 1;
-                r := SCRU_CLINE;
-        end else begin
-                pl := strs.go_prev(ctx.current^.cline);
-                if pl <> nil then begin
-                        get(pl, pl_body);
-                        if is_in_table_str(pl_body) then begin
-                                commit(ctx);
-                                ctx.current^.cline := strs.go_prev(ctx.current^.cline);
-                                load_ed(ctx);
-{                                if ctx.current^.scry <> 0 then dec(ctx.current^.scry); }
-                                x := ord(pl_body[0]);
-                                while (x > 1) and (pl_body[x] = ' ') do dec(x);
-                                if x > 0 then dec(x);
-                                while (x >= 1) and (pos(pl_body[x], tbl_column_chars) = 0) do begin
-                                        dec(x);
-                                end;
-                                if x > 0 then begin
-                                        inc(x);
-                                        ctx.current^.editor.x := x + 1;
-                                end;
-                                r := SCRU_FULL;
-                        end;
-                end;
+        table_move:=SCRU_NONE;
+        ctx.current^.editor.selection:=false;
+        target:=table_field(ctx.current^.editor.line,
+                            ctx.current^.editor.x,backwards);
+        if target<>0 then begin
+                ctx.current^.editor.x:=target;
+                table_move:=SCRU_CLINE;
+                exit;
         end;
-        tbl_prev_column := r;
+        if backwards then adjacent:=strs.go_prev(ctx.current^.cline)
+        else adjacent:=strs.go_next(ctx.current^.cline);
+        if adjacent=nil then exit;
+        strs.get(adjacent,line);
+        if backwards then target:=table_field(line,length(line)+1,true)
+        else target:=table_field(line,1,false);
+        if target=0 then exit;
+        commit(ctx);
+        ctx.current^.cline:=adjacent;
+        load_ed(ctx);
+        ctx.current^.editor.x:=target;
+        table_move:=SCRU_FULL;
+end;
+
+function tbl_next_column(var ctx:TEditorContext; event:PEvent):integer;
+begin
+        tbl_next_column:=table_move(ctx,false);
+end;
+
+function tbl_prev_column(var ctx:TEditorContext; event:PEvent):integer;
+begin
+        tbl_prev_column:=table_move(ctx,true);
 end;
 
 function tbl_append_row(var ctx:TEditorContext; event:PEvent) : integer;
