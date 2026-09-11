@@ -1,241 +1,222 @@
 ///1ABOUT
-        About ~DWED~.
+DWED is a real-mode DOS text editor with multiple
+files, syntax highlighting, and classic menus.
 
-~DWED~ is a fullfeatured multifile text-editor with
-cliboard and syntax highlight support.
+This maintained fork is being developed into an
+EDIT replacement. It is not a BASIC interpreter.
 
-You can use ~DWED~ as ~IDE~ for programming.
+Editor sources are MIT licensed. The linked Free
+Pascal runtime has separate license notices and
+an independent-module linking exception.
+See the distributed licenses directory.
 
-Designed for ~IBM-XT~-grade PC with Intel ~8086~/~88~ CPU
-and works in Real Mode ~without~ DPMI, but support editing
-up to ~2G~ files.
+Upstream: https://github.com/DosWorld/dwed/
+Maintained fork: https://github.com/ddanila/dwed/
 
-        (c) ~DosWorld~ 2020  MIT License
+Use Up/Down to choose a topic and Enter to open it.
+Use Left/Right to page through the topic text.
+Esc returns to the editor.
+///1MENUS
+~F10~ opens the File menu.
+~Alt-F/E/S/O/H~ opens File/Edit/Search/Options/Help.
 
-        ~https://github.com/DosWorld/dwed/~
-///1INTERNALS
-        Few tricks.
+Use arrows to select a group or command.
+~Enter~ runs it. ~Esc~ or ~F10~ cancels the menu.
+Highlighted letters select menu commands.
 
-1. Some time, editor ask you something like
+Opening and cancelling a menu preserves selection.
+Unavailable Undo, Redo and clipboard commands are
+shown disabled.
 
-        ~Can i do %something%? (Y/N)~
+Use File / New for a new unnamed document.
+Use Help / Contents or ~F1~ for this help.
+///1SAVING
+~F2~ or ~Ctrl-S~ saves the current document.
+~Shift-F2~ chooses another name with Save As.
+~Ctrl-Shift-S~ saves all open documents.
+An unnamed document asks for a name when saved.
 
-In this case, you can press ~Y~ or ~ENTER~ - to answer ~YES~
-and ~N~ or ~ESC~ - to answer ~NO~.
+The status line's ~*~ marks unsaved changes.
+Save, Close and Exit share Save/Discard/Cancel
+choices. Read the displayed choices: cancelling
+keeps the document open and unsaved.
 
-2. For micro-instalation need only two files: ~DWED.EXE~ and
-   ~DWEDOVL.EXE~.
+A failed save retains the unsaved buffer.
+On protected media, use Save As to a writable drive.
+An existing destination requires replacement
+confirmation when choosing a different filename.
+///1RECOVERY
+After a save error, a recovery screen may list
+files or handles whose cleanup remains pending.
+~R~ retries cleanup. ~Enter/Esc~ returns to editing.
+Leaving with an open handle is blocked.
+~K~ can leave retained files when offered on exit.
+Up/Down scrolls long paths and messages.
 
-3. You can store ~DWED.CFG~ in local dir, also.
+On startup, ~Interrupted save~ offers records in
+the current and command-line file directories.
+~R~ opens verified contents as an unsaved document.
+~S~ skips one record; ~Esc~ skips the remaining ones.
+A damaged record or read error offers Retry/Skip.
 
-4. You can disable highlight, if too slow (see ~SYNTAX-HL~).
+Recovering does not delete retained files.
+Use ~F2~ to save the recovered document explicitly.
+An already open original remains a separate window.
+Retained generations still need manual inspection
+and cleanup after recovery.
+///1TEXT
+Tabs and high-bit codepage bytes are preserved.
+Existing CRLF, LF or CR line endings and the final
+newline state are preserved when saving.
 
-5. You can use ~dos~ memory or ~swap~ memory (but it more slow).
-   See ~EXT-MEMORY~.
+A physical line can contain at most 255 bytes.
+Longer lines, mixed newline styles and unsupported
+control bytes are rejected; they are not silently
+split, normalized or removed.
 
-///2NAVIGATION
-        Navigation.
+File capacity depends on available memory, open
+windows and undo history. If a load runs out of
+memory, its partial contents are discarded and
+existing documents remain available.
+///1EDITING
+~Enter~ splits the line and copies leading spaces
+and tabs from before the cursor. The suffix keeps
+all of its bytes; indentation does not trim it.
 
-~UP~/~DOWN~/~LEFT~/~RIGHT~ - Move cursor to selected
-                     direction on one char.
-~HOME~/~END~  - Move cursor to begin/end of line.
-~PGUP~/~PGDN~ - Move cursor up/down page.
-~Ctrl~+~HOME~ - Move to file start.
-~Ctrl~+~END~  - Move to file end.
+~Tab~ inserts a literal tab without a selection.
+On selected lines, Tab/Shift-Tab indent/unindent.
+~Insert~ switches insert and overwrite modes.
 
-~Ctrl~+~LEFT~/~RIGHT~   - Move cursor left/right to
-                    next word.
+~Ctrl-Z~ undoes an edit in DOS memory mode.
+~Ctrl-Shift-Z~ redoes it. Each document has its own
+history. Saving establishes its clean checkpoint.
+Undo history is bounded; older edits can expire.
 
-~Ctrl~+~L~ - Go to line number.
-~Ctrl~+~O~ - Fast jump to procedure/function (Pascal).
-///2CLIPBOARD
-        Clipboard operations.
+~Ctrl-Shift-PgUp/PgDn~ moves a line up/down.
+///1NAVIGATION
+~Arrows~ move the cursor.
+~Home/End~ moves to the line's start/end.
+~PgUp/PgDn~ moves by a screen page.
+~Ctrl-Home/End~ moves to the file's start/end.
+~Ctrl-Left/Right~ moves by words.
+~Ctrl-L~ goes to a line number.
+~Ctrl-O~ opens the Pascal procedure/function list.
 
-Windows-clipboard is supported (also present in ~DosBox-X~).
-If you have no support for clipboard from environment, ~DWED~
-will use own internal clipboard.
+Hold Shift with navigation keys to select text.
+Tabs occupy their displayed cells while the
+selection keeps the original tab bytes.
+///1CLIPBOARD
+~Ctrl-X/C/V~ cuts, copies or pastes.
+~Shift-Delete~ cuts the selection.
+~Ctrl-Y~ cuts the current line.
+~Ctrl-U~ pastes the clipboard.
 
+~Alt-F2~ saves the clipboard to a file.
+~Alt-F3~ loads the clipboard from a file.
+The clipboard is shared by open documents.
 
-~Shift~ with
-    ~UP~
-~LEFT~/~RIGHT~    Use for selection.
-   ~DOWN~
-~HOME~/~END~
+The internal clipboard has a finite capacity.
+Oversized or unsupported input is rejected.
+A host clipboard may be used when the environment
+provides one; interoperability depends on the host.
+///1SEARCH
+~Ctrl-F~ or ~F7~ opens Find/Replace.
+~Ctrl-Shift-F~ uses case-sensitive matching.
+~Ctrl-K~ searches or replaces again.
 
-~Ctrl~+~Z~ - Undo last edit (DOS memory mode).
-~Ctrl~+~Shift~+~Z~ - Redo last undone edit.
-The Edit menu also provides Undo and Redo.
+Search and replacement use the combined prompt.
+Read its displayed options before confirming.
+///1FILES
+~F3~ opens a file. A missing name starts a new file.
+Other open errors leave existing documents intact.
 
-~Ctrl~+~X~/~C~/~V~ - Cut/Copy/Paste selected text.
-~Ctrl~+~Y~     - Cut current line.
-~Ctrl~+~U~     - Paste clipboard.
-~Shift~+~DEL~  - Cut selected text.
+~Alt-F4~ closes the current document.
+~Esc~ exits the editor.
+Unsaved documents offer Save/Discard/Cancel.
 
-~Alt~+~F2~     - Save clipboard to file.
-~Alt~+~F3~     - Load clipboard from file.
-///2SEARCH
-        Search and Replace.
-
-~Ctrl~+~F~ For start case-~in~sensitive search~/~replace.
-or ~F7~
-~Ctrl~+~Shift~+~F~ For start case-sensitive search~/~replace.
-
-~Ctrl~+~K~ - Search~/~replace again.
-///2FILE
-        File operations.
-
-~F2~ or ~Ctrl~+~S~ - Save current file.
-~Shift~+~F2~     - Save As.
-~Ctrl~+~Shift~+~S~ - Save ~All~ files.
-
-~F3~           - Load file. You can enter non~-~exists name
-               for a new one.
-
-~Alt~+~F4~       - Close file
-
-~Alt~+~F2~       - Save clipboard to file.
-~Alt~+~F3~       - Load clipboard from file.
-///2EXTEDITING
-        Extended editing.
-
-~Ctrl~+~Shift~+~PGUP~ - Move line up.
-~Ctrl~+~Shift~+~PGDN~ - Move line down.
-///2WINDOW
-        Window using.
-
-~DWED~ allow edit multiple file at one time. Also, you
-have clipboard shared between file.
-
-~F6~      - Switch to next file.
-~Alt~+~F6~  - Opened File list window.
-
-~Alt~+~F4~  - Close file
-
-~Alt~+~F5~  - Show DOS screen.
+~F6~ selects the next open document.
+~Alt-F6~ opens the window list.
+~Alt-F5~ shows the DOS screen.
 ///1SYNTAX-HL
-        Syntax ~h~i~g~h~l~i~g~h~t~.
+Syntax highlighting supports assembler, Pascal,
+BASIC, C/C++, Sphinx C--, XML/HTML and DOS batches.
 
-~DWED~ support syntax highlight for next languages:
+Options / Syntax highlighting or ~Ctrl-Alt-H~
+chooses the highlighting scheme.
 
-~Assembler~   .asm
-~Sphinx C--~  .c-- .h-- .cmm .hmm
-~Pascal~      .pas
-~Basic~       .bas
-~C~/~C++~       .c .h .cpp .hpp
-~XML/HTML~    .xml .htm
-
- and ~MS-DOS Shell Scripting~ .bat
-
-~Ctrl~+~Alt~+~H~ - to change highlight scheme.
-
-You can disable highlight, by default, with config option:
-        ~hl.enable~ = 0
+Set ~hl.enable=0~ in DWED.CFG to disable it.
+Highlighting does not provide a compiler or runtime.
 ///1CMD-LINE
-        Command-line parameters magic.
+Run ~DWED filename~ to open a file.
+Several filenames open separate documents.
 
-If you want load few file - you can specify all of them
-into command line.
+Configuration overrides use /key=value or
+-key=value. For example:
 
-You can also pass some configuration parameters. For
-example if you have line into ~DWED.CFG~ like this:
+    DWED /tab_size=4 SAMPLE.TXT
 
-        abc ~=~ 4
-
-You can pass this value via command-line:
-
-        ~DWED.EXE~ ~/~abc~=~4
-or
-        ~DWED.EXE~ ~-~abc~=~4
+The launcher is ~DWED.COM~. Keep ~DWEDOVL.EXE~ and
+~DWED.CFG~ beside it. Help is embedded in the overlay.
 ///1RUN_USR_SHELL
-        Run user's shell scripts.
+~F5~, ~F8~ and ~F9~ run configured external commands.
+Examples in DWED.CFG:
 
-To run user's shell scripts used keys ~F5~, ~F8~, ~F9~.
-To configure actions, put into ~DWED.CFG~ lines like:
+    usr.def.f5 = %COMSPEC%
+    usr.def.f8 = make all
+    usr.def.f9 = make run
 
-~usr.def.f5~ = %COMSPEC%
-~usr.def.f8~ = make all
-~usr.def.f9~ = make run
+The editor checks unsaved documents and pending
+I/O cleanup before handing control to a command.
+Recursive editor launches are refused.
 ///1EXT-MEMORY
-        Ex~t~ended (XMS) ~/~ Ex~p~anded (EMS) memory.
+~memory=dos~ selects conventional-memory storage.
+This is the maintained and tested editing backend.
+It provides the integrated undo/redo history.
 
-~DWED~ use ~XMS~/~EMS~ for cache only (1-2M). But if you want use
-full memory - you can do it in indirect way. Just point
-your ~TMP~ directory to RamDisk and choose ~swap~ memory.
+~memory=swap~ selects the inherited temporary-file
+backend. It still needs runtime qualification and
+does not provide the same undo integration.
 
-Memory model could be configured via config setting:
-
-~memory~ = dos~|~swap~
-
-   Values:
-
-~dos~     - Use ~MS-DOS~ conventional memory. Fast.
-          IRL up to ~350K~.
-~swap~    - Temporary files as string storage (with or
-          without ~EMS~/~XMS~ cache). In theory, up to ~2G~.
-          Require free space into ~TMP~ (or ~TEMP~) dir.
-
-At the same time, you can specify one option only.
-By default, value - ~dos~.
-
-///1ADDONS
-You can active Addons window with ~Alt~+~F10~ or ~F12~.
-///2FASTKBD.COM
-        Fast keyboard.
-
-Keyboard works not so fast, because have a big delay into
-type metrics. ~AT-BIOS~ allow change it.
-
-By my opinion, this is not task for text-editor - this is
-environment settings.
-
-So, if you want decrease this delay - you can use next
-~FASTKBD.COM~ file into your ~AUTOEXEC.BAT~:
-
-0100: ~B8 05 03~  mov  ax~,~ 0305h
-0103: ~31 DB~     xor  bx~,~ bx
-0105: ~CD 16~     int  16h
-0107: ~C3~        ret
-///2TETRIS
-        ~Tetris~ (Video-Game)
-
-Every text-editor ~must have~ a buildin Tetris. ~TBD~
+There is no guaranteed multi-gigabyte file limit.
+Use the DOS backend for the qualified behavior.
 ///1CONFIG
-        Config file
+DWED.CFG is read from the current directory first,
+then from the launcher's directory.
+Use one ~key=value~ setting per line.
 
-~DWED~ have config file ~DWED.CFG~. At first, try to
-load from current dir and then - from dir with ~DWED.EXE~.
-File format is text - ~key~=~value~ in each line.
+~tab_size=8~ selects the tab-stop spacing.
+Colors use hexadecimal DOS text attributes.
+For example, ~color.text=70~ is black text on a
+light-gray background: background digit first.
 
-Colors is coded as hex. For example:
+Common settings:
+    hl.enable = 1
+    memory = dos
+    color.text = 07
+    color.text_sel = 70
+    color.menu = 1b
+    color.menu_sel = 30
 
-        ~color.text~ = ~70~
-
-it is mean ~7~ - foreground color and ~0~ - background.
-///2ALL_OPTIONS
-        All configuration options.
-
-~hl.enable~ = 1
-~memory~ = dos~|~swap~    (see ~EXT-MEMORY~)
-~tab_size~ = 8
-~color.top~ = 70
-~color.top_hl~ = 74
-~color.text~ = 07
-~color.text_hl~ = 03
-~color.text_dl~ = 08
-~color.text_sel~ = 17
-~color.menu~ = 1b
-~color.menu_sel~ = 30
-~color.help_menu~ = 07
-~color.help_menu_sel~ = 70
-~color.help~ = 07
-~color.help_hl~ = 03
-~usr.def.f5~ = make clean
-~usr.def.f8~ = make all
-~usr.def.f9~ = make run
+The supplied DWED.CFG lists the other settings.
 ///1LICENSE
-        The MIT License (MIT)
-        Copyright (c) 2020 DosWorld
+MIT License
 
-Full text of license you can read at
+Copyright (c) 2020 DosWorld
 
-        ~htttps://mit-license.org/~
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -1,0 +1,210 @@
+{
+  "scope": "Updated embedded help, bounded wrapped text rendering and keyboard pagination",
+  "parent_base_revision": "944cca11df3b07c6eb1044ae0ffe694cc34ef6d6",
+  "dwed_base_revision": "824c0b280021fa061b5720c0b9237a36807138d8",
+  "build": {
+    "toolchain": {
+      "version": "3.2.2",
+      "host": "Linux x86_64",
+      "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+      "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+      "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+    },
+    "target": "8086-msdos-large",
+    "assembler": "NASM version 3.01",
+    "scope": "source-built launcher, editor overlay and help",
+    "artifacts": {
+      "DWED.COM": {
+        "bytes": 2416,
+        "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+      },
+      "DWEDOVL.exe": {
+        "bytes": 221306,
+        "sha256": "44c71c47402947abdfa2cc8ee4b10904bc30829b69a6dd2966faf787c5efee96"
+      },
+      "DWED.CFG": {
+        "bytes": 327,
+        "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+      },
+      "dwedhelp.hlp": {
+        "bytes": 8448,
+        "sha256": "06360aff586bd0b7e5af09ae0dc85e9d203ccf65a911830f2a4314575346995e"
+      },
+      "KEYTEST.exe": {
+        "bytes": 26344,
+        "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+      },
+      "UNDOTEST.exe": {
+        "bytes": 37604,
+        "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+      },
+      "STORTEST.exe": {
+        "bytes": 155592,
+        "sha256": "81470267910701db88cf62507f8465a0e4983c776c6f04fc6e8f675b68545701"
+      },
+      "CLIPTEST.exe": {
+        "bytes": 156148,
+        "sha256": "019c1dc518ab69db8b4d5f12daf5a217b1f9dfe740d39b16a9e4c55fe25effa0"
+      },
+      "TABTEST.exe": {
+        "bytes": 213560,
+        "sha256": "d59a5561c8d8c271f3521f09f119f5894c35f1927dedb23e9c0d64cacb2de26f"
+      },
+      "SAVETEST.exe": {
+        "bytes": 162672,
+        "sha256": "1322f752ffb3ee73e2812ba4d5ad3f72d89bb1c131106559b988d075dd3c8d9c"
+      },
+      "RECVTEST.exe": {
+        "bytes": 36648,
+        "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+      },
+      "MEMTEST.exe": {
+        "bytes": 216702,
+        "sha256": "db62211a73902b44c5fad6014816fb060c99ac9b07a30613cf1f49c0f15890f9"
+      }
+    }
+  },
+  "clean_builds_identical": true,
+  "source_sha256": {
+    "dwed/SRC/DWED.TXT": "1b51963706a8810df80d0ebf1eafc2a6d864a481efd8c61c65e32d7b48b03a32",
+    "dwed/SRC/DWEDHELP.PAS": "c2c02fe0fbd5d3ec3166f280080647bd7cf3446f453884e691495bb5e6c6e683",
+    "dwed/tools/build_help.py": "0c33db804e6ed22a55870b53316890063a37ee4a5ee4e6c677f61aac71007c5c",
+    "tests/dwed_help_scenarios.py": "60e175d6f8bd0c3594d3ed9ecc868c09ff36b9988bb06a0f574cf7ca306b24c4",
+    "tests/test_dwed_qemu.py": "4d72f22cece4afbfedb09d5482516f22b3e54eccc3f743a11a96fc0c8ee42c8b"
+  },
+  "help_source_crlf": true,
+  "project_mit_license_included_verbatim": true,
+  "negative_control": {
+    "case": "help-low",
+    "build": {
+      "toolchain": {
+        "version": "3.2.2",
+        "host": "Linux x86_64",
+        "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+        "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+        "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+      },
+      "target": "8086-msdos-large",
+      "assembler": "NASM version 3.01",
+      "scope": "source-built launcher, editor overlay and help",
+      "artifacts": {
+        "DWED.COM": {
+          "bytes": 2416,
+          "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+        },
+        "DWEDOVL.exe": {
+          "bytes": 218944,
+          "sha256": "020c24c516808f5c91ebd80795db2d24261763a6c064172bd3eada976f038267"
+        },
+        "DWED.CFG": {
+          "bytes": 327,
+          "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+        },
+        "dwedhelp.hlp": {
+          "bytes": 6912,
+          "sha256": "7c0dec05f43187fb33f5ce9bb78435dfd1e15e531667d9ede104878a54f6c44a"
+        },
+        "KEYTEST.exe": {
+          "bytes": 26344,
+          "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+        },
+        "UNDOTEST.exe": {
+          "bytes": 37604,
+          "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+        },
+        "STORTEST.exe": {
+          "bytes": 155592,
+          "sha256": "81470267910701db88cf62507f8465a0e4983c776c6f04fc6e8f675b68545701"
+        },
+        "CLIPTEST.exe": {
+          "bytes": 156148,
+          "sha256": "019c1dc518ab69db8b4d5f12daf5a217b1f9dfe740d39b16a9e4c55fe25effa0"
+        },
+        "TABTEST.exe": {
+          "bytes": 211182,
+          "sha256": "8810418fdf2d4f23695ff611089b79d13255ae105ab8dd70c185a119ffca0768"
+        },
+        "SAVETEST.exe": {
+          "bytes": 162672,
+          "sha256": "1322f752ffb3ee73e2812ba4d5ad3f72d89bb1c131106559b988d075dd3c8d9c"
+        },
+        "RECVTEST.exe": {
+          "bytes": 36648,
+          "sha256": "37eba63bd49d34086d4ab0e33793f236f569092ac485f2f2f4e9e42d0fcb055e"
+        },
+        "MEMTEST.exe": {
+          "bytes": 214340,
+          "sha256": "c4b35efb6c696487eb8ff8c7b47d4730883f2aaadcfeb065cc35a89d0ef52518"
+        }
+      }
+    },
+    "expected_failure": true,
+    "observation": "Prior help presents old unsupported large-file claim instead of current About content"
+  },
+  "case_count": 6,
+  "cases": [
+    {
+      "case": "media-readonly-saveas-low",
+      "mode": "low",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22",
+      "critical_vector_restored": true,
+      "saved_to_writable_drive": true,
+      "write_protected_image_unchanged": true
+    },
+    {
+      "case": "memory-probe-low",
+      "mode": "low",
+      "memory_probe": "PASS 62 assertions",
+      "completed": true,
+      "backup_matches_expected": true,
+      "exact_match": true,
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-low",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-high",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "help-mono-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "help_pages": 2,
+      "help_flow": "help-mono-low",
+      "dos_version": "MS-DOS Version 6.22"
+    },
+    {
+      "case": "dialog-unnamed-saveall-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "dialog_flow": "unnamed-saveall",
+      "dos_version": "MS-DOS Version 6.22"
+    }
+  ],
+  "limits": {
+    "exhausted_help_heap_qualified": false,
+    "additional_display_sizes_qualified": false
+  }
+}

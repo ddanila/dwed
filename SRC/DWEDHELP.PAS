@@ -53,6 +53,42 @@ begin
         get_name := trim(s);
 end;
 
+procedure draw_topic(r:PHelpTopicList; scroll:integer; var rows:integer; clr,hlclr:byte);
+var p:pchar; remaining:integer; source:string; columns,visible:integer;
+        procedure source_line(value:string);
+        var part:string; i,cells:integer; highlighted:boolean;
+                procedure flush;
+                begin
+                        if (rows>=scroll) and (rows<scroll+visible) then
+                                scr.printhl(width+5,4+rows-scroll,clr,hlclr,part);
+                        inc(rows); part:=''; cells:=0;
+                        if highlighted then part:='~';
+                end;
+        begin
+                if copy(value,1,3)='///' then exit;
+                part:=''; cells:=0; highlighted:=false;
+                for i:=1 to length(value) do begin
+                        if ((cells=columns) and (value[i]<>'~')) or (length(part)>=253) then flush;
+                        part:=part+value[i];
+                        if value[i]='~' then highlighted:=not highlighted else inc(cells);
+                end;
+                flush;
+        end;
+begin
+        columns:=scr.getwidth-width-5; visible:=scr.getheight-5; rows:=0;
+        if (columns<1) or (visible<1) then exit;
+        p:=r^.htext; remaining:=r^.hlen; source:='';
+        while remaining>0 do begin
+                case p[0] of
+                #10:begin source_line(source); source:='' end;
+                #13:;
+                else source:=source+p[0];
+                end;
+                inc(p); dec(remaining);
+        end;
+        if source<>'' then source_line(source);
+end;
+
 procedure dwed_help(var topic_id:integer;
         help_menu_clr,
         help_menu_sel_clr,
@@ -60,15 +96,13 @@ procedure dwed_help(var topic_id:integer;
         help_hl_clr : byte);
 
 var     r : PHelpTopicList;
-        y, i      : integer;
-        p         : pchar;
-        helpStr   : string;
+        i,scroll,rows : integer;
         selItem   : integer;
         e         : TEvent;
 begin
         scr.cursor_off;
         r := nil;
-        selItem := topic_id;
+        selItem := topic_id; scroll:=0; rows:=0;
         while true do begin
                 r := topic_list;
                 i := topic_id;
@@ -78,33 +112,10 @@ begin
                 end;
                 if r <> nil then begin
                         for i := 1 to scr.getheight - 1 do scr.cln(width + 4, i, help_clr);
-                        scr.printhl(width + 5, 2, help_clr, help_hl_clr, '~' + #$9 + '~ Help topic - ~' + get_name(r) + '~');
-                        p := r^.htext;
-                        i := r^.hlen;
-                        y := 4;
-                        helpStr := '';
-                        while i <> 0 do begin
-                                case p[0] of
-                                #$0A: begin
-                                        if (helpStr[1] <> '/')
-                                        and  (helpStr[2] <> '/')
-                                        and (length(helpStr) > 0) then begin
-                                                scr.printhl(width + 5, y, help_clr, help_hl_clr, helpStr);
-                                        end;
-                                        inc(y);
-                                        helpStr := '';
-                                end;
-                                #$0D:
-                                else helpStr := helpStr + p[0];
-                                end;
-                                inc(p);
-                                dec(i);
-                        end;
-                        if (helpStr[1] <> '/')
-                        and  (helpStr[2] <> '/')
-                        and (length(helpStr) > 0) then begin
-                                scr.printhl(width + 5, y, help_clr, help_hl_clr, helpStr);
-                        end;
+                        scr.printhl(width + 5, 2, help_clr, help_hl_clr, copy('~' + #$9 + '~ Help topic - ~' + get_name(r) + '~',1,scr.getwidth-width-5));
+                        draw_topic(r,scroll,rows,help_clr,help_hl_clr);
+                        scr.print(width+5,scr.getheight-1,help_clr,
+                                copy('Left/Right: text pages   Esc: back',1,scr.getwidth-width-5));
                 end;
                 while true do begin
                         scrui.vmenu(e, 0, 1, width + 4, scr.getheight - 1,
@@ -115,8 +126,9 @@ begin
                 case e.scancode of
                 SCAN_ESC: break;
                 SCAN_BS: break;
-                SCAN_ENTER: topic_id := selItem;
-                SCAN_SPACE: topic_id := selItem;
+                SCAN_ENTER,SCAN_SPACE:begin topic_id:=selItem; scroll:=0 end;
+                SCAN_LEFT:begin dec(scroll,scr.getheight-5); if scroll<0 then scroll:=0 end;
+                SCAN_RIGHT:if scroll+scr.getheight-5<rows then inc(scroll,scr.getheight-5);
                 end;
         end;
         kbd_reset;
