@@ -1,0 +1,1486 @@
+{
+  "scope": "Atomic table continuation with preserved whitespace and tab alignment, bounded row construction, and selection precedence",
+  "parent_base_revision": "1b869d37438269d16d17d2553d9d3fbee2647b1a",
+  "dwed_base_revision": "d228bee2b7eb4da86d8a8e9b9d62d67395ed91d4",
+  "source_sha256": {
+    "SRC/DWEDTBL.PAS": "a8fa30250272d5c20372bff3b9ac0c0a891566dcbb6327ffa65b154112f4e834",
+    "SRC/DWEDHNDL.PAS": "3ec986d88a90cd009ca3e17c457744cc4eda9e1e1ec0941ee084f8616c53f62d",
+    "SRC/DWED.TXT": "a808a90966102629d36c0babbb679a475f2c13d2cfb579b5fd7a7c97f0464651",
+    "tests/TABTEST.PAS": "14636e657ad8864b53ac2e829df0207e30513001fcfdd4c1fd1275e53454f409"
+  },
+  "test_source_sha256": {
+    "tests/dwed_table_row_scenarios.py": "af8090a82d50cf00021ee4e3eab612e4c352acf0151f188f8e02bc87aa268138",
+    "tests/test_dwed_qemu.py": "b4f9085f85a094a1007c6adfc70aec7408f316ee56de20e59859034bcc44c993"
+  },
+  "final_package_regression": {
+    "run_directory": "out/dwed-qemu-86ihidpl",
+    "case_count": 40,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 235222,
+              "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10752,
+              "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 235774,
+              "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 235486,
+              "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 270278,
+          "sha256": "0148d4a8de98f951151e2c14743b1ae17e8857ceadc8c4a6ba78eeeef1fdb2be"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "edit-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "edit-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "help-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "help_pages": 2,
+        "help_flow": "help-low",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "help-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a7365636f6e64206c696e650d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "help_pages": 2,
+        "help_flow": "help-high",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "tab-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "table_refusals": 2,
+        "tab_probe": "PASS 10747 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "tab-probe-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "table_refusals": 2,
+        "tab_probe": "PASS 10747 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-split-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "split",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-split-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "split",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-double-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0aba616263ba646566ba20200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "double",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-double-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0aba616263ba646566ba20200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "double",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-home-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "home",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-home-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "home",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-tabs-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a09b361096263b37a09b30920200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "tabs",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-tabs-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a09b361096263b37a09b30920200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "tabs",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-end-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "end",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-end-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "end",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-full-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "full",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-full-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "full",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-border-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "border",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-border-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "border",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-selection-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "selection",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-selection-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "selection",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-indent-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "indent",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-indent-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "indent",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-unindent-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a09b3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "unindent",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-unindent-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a09b3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "unindent",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-previous-row-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "previous-row",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-previous-row-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "previous-row",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-next-row-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "next-row",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-next-row-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "next-row",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-end-boundary-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "end-boundary",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-end-boundary-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "end-boundary",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-empty-field-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3b3616263b3646566b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "empty-field",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-empty-field-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3b3616263b3646566b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "empty-field",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-last-row-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "last-row",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-last-row-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "last-row",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-previous-border-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "previous-border",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-previous-border-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "previous-border",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-next-field-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "next-field",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-next-field-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_flow": "next-field",
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "overflow_refusal": {
+    "run_directory": "out/dwed-qemu-reec959c",
+    "case_count": 2,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 235222,
+              "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10752,
+              "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 235774,
+              "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 235486,
+              "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 270278,
+          "sha256": "0148d4a8de98f951151e2c14743b1ae17e8857ceadc8c4a6ba78eeeef1fdb2be"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "table-row-overflow-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab30961b372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "overflow",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-overflow-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab30961b372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "overflow",
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "microsoft_622": {
+    "run_directory": "out/dwed-qemu-rylgihma",
+    "case_count": 8,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 235222,
+              "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10752,
+              "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 235774,
+              "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 235486,
+              "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 270278,
+          "sha256": "0148d4a8de98f951151e2c14743b1ae17e8857ceadc8c4a6ba78eeeef1fdb2be"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "ca2c5347a0ab34a8b49774887eee2c74130acc493bccc57d87643e6ac323706f",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "615b656d0d094a31cb10ab56ab31273062c535d819e8208d412ad5d022847c93",
+        "EMM386.EXE": "d4a011769db9415402d7be129fffb762fa7d174096bcc921aa5ce85734072635"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 235222,
+            "sha256": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10752,
+            "sha256": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 235774,
+            "sha256": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 235486,
+            "sha256": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "tab-probe-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "table_refusals": 2,
+        "tab_probe": "PASS 10747 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "tab-probe-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a",
+        "table_refusals": 2,
+        "tab_probe": "PASS 10747 assertions",
+        "completed": true,
+        "actual_hex": "7a445745445f4d41524b45520d0a",
+        "backup_matches_expected": true,
+        "exact_match": true,
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-tabs-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0a09b361096263b37a09b30920200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "tabs",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-tabs-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0a09b361096263b37a09b30920200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "tabs",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-overflow-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab30961b372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "overflow",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-overflow-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab30961b372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "overflow",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-selection-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "selection",
+        "dos_version": "MS-DOS Version 6.22"
+      },
+      {
+        "case": "table-row-selection-high",
+        "mode": "high",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": true,
+        "exact_match": true,
+        "backup_matches_expected": true,
+        "table_row_flow": "selection",
+        "dos_version": "MS-DOS Version 6.22"
+      }
+    ]
+  },
+  "old_binary_negative_controls": {
+    "run_directory": "out/dwed-qemu-8534dwco",
+    "case_count": 2,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 233918,
+              "sha256": "7f6ad9dc83537a9d049a935597c732a493c7e6a567873876814bb4ad394e408b"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10240,
+              "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 233106,
+              "sha256": "3d9cfaea7152a0019a0e179ce858e6225d18e254a8acf0db687e387e23440f91"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 234166,
+              "sha256": "717bd388c0fd36194adef28061d771fb3e1863c566bcf5434f5d2bb0380ca499"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 233918,
+            "sha256": "7f6ad9dc83537a9d049a935597c732a493c7e6a567873876814bb4ad394e408b"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 268974,
+          "sha256": "86c95e649f4166e4d21b522e16741a29b589048d3f50ca2f827aa1d9ba1d9c96"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 233918,
+            "sha256": "7f6ad9dc83537a9d049a935597c732a493c7e6a567873876814bb4ad394e408b"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10240,
+            "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 233106,
+            "sha256": "3d9cfaea7152a0019a0e179ce858e6225d18e254a8acf0db687e387e23440f91"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 234166,
+            "sha256": "717bd388c0fd36194adef28061d771fb3e1863c566bcf5434f5d2bb0380ca499"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "table-row-split-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": false,
+        "error": "(b'DWED_MARKER\\r\\n\\xb3a  \\xb3def\\xb3\\r\\n\\xb3bc \\xb3   \\xb3\\r\\n', b'DWED_MARKER\\r\\n\\xb3a  \\xb3def\\xb3  \\r\\n\\xb3bc \\xb3   \\xb3  \\r\\n')"
+      },
+      {
+        "case": "table-row-selection-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab3616263b3646566b320200d0a",
+        "completed": false,
+        "error": "(b'DWED_MARKER\\r\\n\\xb3abc\\xb3def\\xb3\\r\\n\\xb3   \\xb3   \\xb3\\r\\n', b'DWED_MARKER\\r\\n\\xb3\\r\\n\\xb3def\\xb3  \\r\\n')"
+      }
+    ]
+  },
+  "old_binary_overflow_control": {
+    "run_directory": "out/dwed-qemu-ditdfsbb",
+    "case_count": 1,
+    "environment": {
+      "package": {
+        "status": "development",
+        "build": {
+          "toolchain": {
+            "version": "3.2.2",
+            "host": "Linux x86_64",
+            "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+            "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+            "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+          },
+          "target": "8086-msdos-large",
+          "assembler": "NASM version 3.01",
+          "scope": "source-built launcher, editor overlay and help",
+          "artifacts": {
+            "DWED.COM": {
+              "bytes": 2416,
+              "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+            },
+            "DWEDOVL.exe": {
+              "bytes": 233918,
+              "sha256": "7f6ad9dc83537a9d049a935597c732a493c7e6a567873876814bb4ad394e408b"
+            },
+            "DWED.CFG": {
+              "bytes": 327,
+              "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+            },
+            "dwedhelp.hlp": {
+              "bytes": 10240,
+              "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+            },
+            "KEYTEST.exe": {
+              "bytes": 26344,
+              "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+            },
+            "UNDOTEST.exe": {
+              "bytes": 37604,
+              "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+            },
+            "STORTEST.exe": {
+              "bytes": 160176,
+              "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+            },
+            "CLIPTEST.exe": {
+              "bytes": 160700,
+              "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+            },
+            "TABTEST.exe": {
+              "bytes": 233106,
+              "sha256": "3d9cfaea7152a0019a0e179ce858e6225d18e254a8acf0db687e387e23440f91"
+            },
+            "SAVETEST.exe": {
+              "bytes": 168742,
+              "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+            },
+            "RECVTEST.exe": {
+              "bytes": 37584,
+              "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+            },
+            "MEMTEST.exe": {
+              "bytes": 234166,
+              "sha256": "717bd388c0fd36194adef28061d771fb3e1863c566bcf5434f5d2bb0380ca499"
+            }
+          }
+        },
+        "files": {
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "DWEDOVL.EXE": {
+            "bytes": 233918,
+            "sha256": "7f6ad9dc83537a9d049a935597c732a493c7e6a567873876814bb4ad394e408b"
+          },
+          "EDIT.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "LICENSES/DWED.TXT": {
+            "bytes": 1086,
+            "sha256": "0e1439882247822a2bef0f1959d64a2ffef4992bfcab6e9a333e492a31756e9a"
+          },
+          "LICENSES/FPC/COPYING.FPC": {
+            "bytes": 1238,
+            "sha256": "fdcf5d90f781fdfc3b26c9959b6622e9bfad95edd94150d31edc293583b2de49"
+          },
+          "LICENSES/FPC/COPYING.TXT": {
+            "bytes": 26940,
+            "sha256": "c955e44919f6144eba8ff5c49e0a3e8df662df6e6e77d6d54a1df310f0c6fe58"
+          },
+          "LICENSES/SYSTEM2.TXT": {
+            "bytes": 1086,
+            "sha256": "739ba6acbbd6d43d037750c96e542385b45b7ec07d48bcba0576298b97e7799c"
+          },
+          "README.TXT": {
+            "bytes": 684,
+            "sha256": "eebe1b378bfdab73aa6d6fe42025c4530e9defa2d0292b41a679c83826bdaa52"
+          },
+          "SOURCES.TXT": {
+            "bytes": 307,
+            "sha256": "4f3bf1d1deb2aed96ff385e6509a131808e43fb1a3c5a2edc4efd4d4e5803a2a"
+          }
+        },
+        "archive": {
+          "bytes": 268974,
+          "sha256": "86c95e649f4166e4d21b522e16741a29b589048d3f50ca2f827aa1d9ba1d9c96"
+        }
+      },
+      "launcher_name": "EDIT.COM",
+      "boot_image_sha256": "71a310770eebfd92d99b259994a898c8b191ae8983d96e405fd8d2be2d0ad1d2",
+      "boot_file_sha256": {
+        "HIMEM.SYS": "2e36f626893aab47452eae6e5e97b1bf35b932b0f66502b4b2f47e0c10b1d264",
+        "EMM386.EXE": "30618919795c46fcab2fc2d52aa2526ef406cb540548837dca147f9d7a18a684"
+      },
+      "build": {
+        "toolchain": {
+          "version": "3.2.2",
+          "host": "Linux x86_64",
+          "url": "https://downloads.freepascal.org/fpc/dist/3.2.2/i8086-msdos/fpc-3.2.2.x86_64-linux.cross.i8086-msdos.tar.xz",
+          "sha256": "fda88f39548993df9b7345110a6b90e7bd64018e42c1ab51723fa16705b7f671",
+          "source": "https://github.com/fpc/FPCSource/tree/release_3_2_2"
+        },
+        "target": "8086-msdos-large",
+        "assembler": "NASM version 3.01",
+        "scope": "source-built launcher, editor overlay and help",
+        "artifacts": {
+          "DWED.COM": {
+            "bytes": 2416,
+            "sha256": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9"
+          },
+          "DWEDOVL.exe": {
+            "bytes": 233918,
+            "sha256": "7f6ad9dc83537a9d049a935597c732a493c7e6a567873876814bb4ad394e408b"
+          },
+          "DWED.CFG": {
+            "bytes": 327,
+            "sha256": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f"
+          },
+          "dwedhelp.hlp": {
+            "bytes": 10240,
+            "sha256": "44a00dc2e6a5ed0f08484066e164653c86a2e4fa86fdefa81fb2e236f6025eea"
+          },
+          "KEYTEST.exe": {
+            "bytes": 26344,
+            "sha256": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f"
+          },
+          "UNDOTEST.exe": {
+            "bytes": 37604,
+            "sha256": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02"
+          },
+          "STORTEST.exe": {
+            "bytes": 160176,
+            "sha256": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19"
+          },
+          "CLIPTEST.exe": {
+            "bytes": 160700,
+            "sha256": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4"
+          },
+          "TABTEST.exe": {
+            "bytes": 233106,
+            "sha256": "3d9cfaea7152a0019a0e179ce858e6225d18e254a8acf0db687e387e23440f91"
+          },
+          "SAVETEST.exe": {
+            "bytes": 168742,
+            "sha256": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355"
+          },
+          "RECVTEST.exe": {
+            "bytes": 37584,
+            "sha256": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78"
+          },
+          "MEMTEST.exe": {
+            "bytes": 234166,
+            "sha256": "717bd388c0fd36194adef28061d771fb3e1863c566bcf5434f5d2bb0380ca499"
+          }
+        }
+      }
+    },
+    "results": [
+      {
+        "case": "table-row-overflow-low",
+        "mode": "low",
+        "original_hex": "445745445f4d41524b45520d0ab30961b372727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272727272b30d0a",
+        "completed": false,
+        "error": " File   Edit   Search   Options    Help\n\u2502        \u2502rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\n\u2502a \u2502\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n SAMPLE.TXT                                                      61    2 3/4 *I"
+      }
+    ]
+  },
+  "reproducibility": {
+    "scope": "Manifest, every declared artifact and package ZIP",
+    "identical_build_artifacts": {
+      "build.json": "c23e52af8d7a6ecf2fb19d8209c0479166e5e856aca5a865bc09ec8bfc18221b",
+      "DWED.COM": "a1ed99158c5b1caaa6b98fd7e6aceb4028762fa8127bf4e11fe6106f85c1b1a9",
+      "DWEDOVL.exe": "5f42ac568b8516893f6de2985aab3763f3e8e02a5c2d83a1bedacdee74dd21af",
+      "DWED.CFG": "3ab183693637c3b8e346b706745cb3fa0f5393bb5755af61e16b8d492a90e64f",
+      "dwedhelp.hlp": "3fd0ccb4e41864ce3857f1c07b3c3360b42baf477289b7e4044b79d190f8735f",
+      "KEYTEST.exe": "b3c2b4747182ab54319127fadca1efd0b650992a4dd4188f8172f139b073a41f",
+      "UNDOTEST.exe": "544b93989025fb7010fc99f5111873cbc08338ed4334c4abeeda6586251e3a02",
+      "STORTEST.exe": "9ec322e2de0156db7c5c21e0b2325d5c7f2dd8e8c1788d86029b01b73a605a19",
+      "CLIPTEST.exe": "7289aa6528c22836f6b4a2fdcb5f3b033fdf8059126c626d9eead680766245b4",
+      "TABTEST.exe": "8a316e923e0ffce56349daf6a9cb592ff26b61134ca239059ad4523f88b26b1b",
+      "SAVETEST.exe": "ec47eb2e539a48c0120c83664b649cec27f2d0dd5fab01e2549f1b800ed8e355",
+      "RECVTEST.exe": "8f755fb94f20cafa15ddf75a601092fed51d2e084f025402ecae7a3aaf85ff78",
+      "MEMTEST.exe": "b962c8006d6f7a2f3faca9ec8e2eb86651b2728546960fb1f1300fb656542e68"
+    },
+    "identical_package_sha256": "0148d4a8de98f951151e2c14743b1ae17e8857ceadc8c4a6ba78eeeef1fdb2be"
+  },
+  "package_check": "PASS: deterministic package, notices and rejection checks",
+  "qualification_scope": "Default DOS backend, QEMU LOW/HIGH; final legacy CPU and constrained memory qualification remain release gates",
+  "exploratory_test_corrections": [
+    "Indent expectation corrected from a literal tab to the established space indentation policy",
+    "Fault acknowledgement moved to the host runner because the error dialog intentionally clears the BIOS keyboard queue"
+  ]
+}

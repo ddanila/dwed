@@ -177,6 +177,21 @@ An insertion that would overflow a line is refused
 without clipping its value. The tool remains open
 so you can change the value or press Esc to cancel.
 Successful insertion supports Undo and Redo.
+///1TABLES
+Rows bounded by vertical box borders are tables.
+Without a selection, Tab/Shift-Tab moves between
+fields and adjacent table rows. Empty fields
+between touching borders are skipped.
+
+Enter inserts a continuation row. Inside a field,
+it moves the tail into that field on the new row.
+At line ends, it inserts a blank continuation.
+Existing tabs and trailing whitespace are kept;
+padding keeps the new row's borders aligned.
+Undo restores the entire row insertion.
+
+With a selection, Enter replaces it with a line
+break; Tab/Shift-Tab indents/unindents normally.
 ///1SYNTAX-HL
 Syntax highlighting supports assembler, Pascal,
 BASIC, C/C++, Sphinx C--, XML/HTML and DOS batches.

@@ -405,7 +405,7 @@ var     s    : string;
 begin
         r := SCRU_FULL;
         commit(ctx);
-        if is_in_table(ctx, event) then r := tbl_append_row(ctx, event) else begin
+        if (not ctx.current^.editor.selection) and is_in_table(ctx, event) then r := tbl_append_row(ctx, event) else begin
                 if ctx.current^.editor.selection then begin
                         if not delete_selected(ctx) then begin hk_enter:=SCRU_FULL; exit end;
                         with ctx.current^ do total := strs.renum(rline);
@@ -747,7 +747,7 @@ const tab_text:pchar=#9;
 var r:integer;
 begin
         r:=SCRU_FULL;
-        if is_in_table(ctx,event) then r:=tbl_next_column(ctx,event)
+        if (not ctx.current^.editor.selection) and is_in_table(ctx,event) then r:=tbl_next_column(ctx,event)
         else if ctx.current^.editor.selection then begin
                 if not change_indent(ctx,false) then begin hk_tab:=SCRU_FULL; exit end;
         end else begin
@@ -765,7 +765,7 @@ end;
 
 function hk_shift_tab(var ctx:TEditorContext; event:PEvent):integer;
 begin
-        if is_in_table(ctx,event) then hk_shift_tab:=tbl_prev_column(ctx,event)
+        if (not ctx.current^.editor.selection) and is_in_table(ctx,event) then hk_shift_tab:=tbl_prev_column(ctx,event)
         else begin
                 if not change_indent(ctx,true) then begin hk_shift_tab:=SCRU_FULL; exit end;
                 hk_shift_tab:=SCRU_FULL;

@@ -67,6 +67,38 @@ begin
                 check(ctx.current^.editor.x=length(prefix)+1,'redo Enter restores cursor');
         end;
 end;
+procedure check_table_failure(capacity:boolean);
+var source,observed:string; saved_limit,saved_reserve:longint;
+begin
+        reset_document;
+        source:=#179+'abc'+#179+'def'+#179+'  ';
+        first_line(source); ctx.current^.editor.x:=3;
+        saved_limit:=ctx.current^.history.limit;
+        saved_reserve:=ctx.current^.history.reserve;
+        if capacity then
+                { Permit the old-row replacement, refuse the subsequent insert. }
+                ctx.current^.history.limit:=sizeof(TUndoGroup)+
+                        sizeof(TUndoChange)-1+2*length(source)+2
+        else ctx.current^.history.reserve:=2147483647;
+        key(SCAN_ENTER,0);
+        check(strs.is_last(ctx.current^.rline),'failed table Enter retains line count');
+        strs.get(ctx.current^.rline,observed);
+        check(observed=source,'failed table Enter restores original bytes');
+        check(ctx.current^.editor.line=source,'failed table Enter restores editor bytes');
+        check(ctx.current^.editor.x=3,'failed table Enter restores cursor');
+        check(not ctx.current^.chg,'failed table Enter remains clean');
+        check(ctx.current^.history.pending=nil,'failed table Enter cancels pending undo');
+        check(undo_previous(ctx.current^.history)=nil,'failed table Enter adds no undo group');
+        ctx.current^.history.limit:=saved_limit;
+        ctx.current^.history.reserve:=saved_reserve;
+        key(SCAN_ENTER,0);
+        check(not strs.is_last(ctx.current^.rline),'table Enter retries after refusal');
+        key(SCAN_Z,key_ctrl);
+        strs.get(ctx.current^.rline,observed);
+        check(observed=source,'one undo restores retried table Enter');
+        check(strs.is_last(ctx.current^.rline),'one undo removes continuation row');
+        check(not ctx.current^.chg,'undo retried table Enter restores clean state');
+end;
 begin
         System.Assign(output,'A:\TAB.LOG'); System.Rewrite(output); checks:=0;
         { Compare bounded rendering and mappings with an independently expanded
@@ -165,6 +197,8 @@ begin
         check_enter(body,body);
         body:=' '+#9; for i:=3 to 255 do body:=body+'x';
         check_enter(body,' '+#9);
+        check_table_failure(false);
+        check_table_failure(true);
         strs.free(ctx.current^.rline); undo_done(ctx.current^.history);
         FreeMem(ctx.current,sizeof(TFileContext)); FreeMem(ctx.clipboard,CB_SIZE);
         writeln(output,'PASS ',checks,' assertions'); close(output);

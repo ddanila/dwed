@@ -32,7 +32,7 @@ function tbl_append_row(var ctx:TEditorContext; event:PEvent) : integer;
 
 implementation
 
-uses kminput, scr, scrui, strs, strutil, dwedhl, dwedlnch, dwedutil;
+uses kminput, scr, scrui, strs, strutil, dwedhl, dwedlnch, dwedutil, textcell;
 
 const
 tbl_column_chars  : string[2]  = '³º';
@@ -44,11 +44,11 @@ function table_bounds(const line:string; var first,last:integer):boolean;
 begin
         first:=1; last:=length(line);
         while first<=last do begin
-                if line[first]<>' ' then break;
+                if not (line[first] in [' ',#9]) then break;
                 inc(first);
         end;
         while last>first do begin
-                if line[last]<>' ' then break;
+                if not (line[last] in [' ',#9]) then break;
                 dec(last);
         end;
         table_bounds:=false;
@@ -125,54 +125,87 @@ begin
         tbl_prev_column:=table_move(ctx,true);
 end;
 
-function tbl_append_row(var ctx:TEditorContext; event:PEvent) : integer;
-var     r, x  : integer;
-        oline : string;
-        nline : string;
-        i     : integer;
-        c     : char;
-        nl    : EditorStr;
-        tail  : string;
+{ Preflight the complete row before changing the document. Tabs remain bytes;
+  padding restores the original right border's screen column after moving text. }
+function prepare_row(const original:string; caret,size:integer;
+                     var oldrow,newrow:string; var destination:integer):boolean;
+var first,last,left,right,i,k,column,limit,step:integer;
+    skeleton,tail,prefix:string; has_tab:boolean;
 begin
-        r := SCRU_FULL;
-        ctx.current^.editor.selection := false;
-        oline := ctx.current^.editor.line;
-        nline := oline;
-        while (nline[0] <> #0) and (nline[ord(nline[0])] <= ' ') do Dec(nline[0]);
-        oline := nline;
-        for i:= 1 to ord(nline[0]) do begin
-                x := pos(nline[i], tbl_transl_chars1);
-                if x = 0 then c := ' ' else c:= tbl_transl_chars2[x];
-                nline[i] := c;
+        prepare_row:=false;
+        oldrow:=original; skeleton:=original;
+        if not table_bounds(original,first,last) then exit;
+        for i:=first to last do begin
+                k:=pos(original[i],tbl_transl_chars1);
+                if k>0 then skeleton[i]:=tbl_transl_chars2[k]
+                else if original[i]<>#9 then skeleton[i]:=' ';
         end;
-        i := ctx.current^.editor.x;
-        tail := '';
-        while i < ord(nline[0]) do begin
-                x := pos(nline[i], tbl_column_chars);
-                if x > 0 then break;
-                tail := tail + oline[i];
-                oline[i] := ' ';
-                inc(i);
+        newrow:=skeleton;
+        destination:=table_field(skeleton,1,false);
+        if destination=0 then destination:=first+1;
+        left:=first;
+        for right:=first+1 to last do begin
+                if pos(skeleton[right],tbl_column_chars)>0 then begin
+                        if (caret>left) and (caret<=right) and
+                           (right>left+1) then begin
+                                destination:=left+1;
+                                tail:=copy(original,caret,right-caret);
+                                if tail='' then begin prepare_row:=true; exit end;
+                                has_tab:=false;
+                                for i:=left+1 to right-1 do
+                                        if original[i]=#9 then has_tab:=true;
+                                for i:=caret to right-1 do
+                                        if oldrow[i]<>#9 then oldrow[i]:=' ';
+                                prefix:=copy(skeleton,1,left)+tail;
+                                size:=tab_width(size);
+                                column:=cell_of(prefix,length(prefix)+1,size);
+                                limit:=cell_of(original,right,size);
+                                if column>limit then exit;
+                                while column<limit do begin
+                                        if length(prefix)=255 then exit;
+                                        step:=size-column mod size;
+                                        if has_tab and (step>1) and
+                                           (column+step<=limit) then begin
+                                                prefix:=prefix+#9;
+                                                inc(column,step);
+                                        end else begin
+                                                prefix:=prefix+' '; inc(column);
+                                        end;
+                                end;
+                                if length(prefix)+length(skeleton)-right+1>255 then exit;
+                                newrow:=prefix+copy(skeleton,right,255);
+                                prepare_row:=true;
+                                exit;
+                        end;
+                        left:=right;
+                end;
         end;
-        ctx.current^.editor.line := oline;
-        ctx.current^.editor.chg := true;
-        commit(ctx);
+        prepare_row:=true;
+end;
 
-        x := ctx.current^.editor.x;
-        while (nline[x] = ' ') and (x <> 0) do dec(x);
-        inc(x);
-        system.delete(nline, x, length(tail));
-        insert(tail, nline, x);
-        nl := strs.create(strs.go_next(ctx.current^.cline), ctx.current^.cline, nline);
-        ctx.current^.total := strs.renum(ctx.current^.rline);
-        ctx.current^.cline := strs.go_next(ctx.current^.cline);
+function tbl_append_row(var ctx:TEditorContext; event:PEvent):integer;
+var oldrow,newrow:string; destination:integer; inserted:EditorStr;
+begin
+        tbl_append_row:=SCRU_FULL;
+        if not prepare_row(ctx.current^.editor.line,ctx.current^.editor.x,
+                           ctx.current^.config^.tab_size,
+                           oldrow,newrow,destination) then begin
+                handle_error(ctx,1006);
+                exit;
+        end;
+        ctx.current^.editor.selection:=false;
+        if oldrow<>ctx.current^.editor.line then begin
+                ctx.current^.editor.line:=oldrow;
+                ctx.current^.editor.chg:=true;
+                commit(ctx);
+        end;
+        inserted:=strs.create(strs.go_next(ctx.current^.cline),
+                              ctx.current^.cline,newrow);
+        ctx.current^.total:=strs.renum(ctx.current^.rline);
+        ctx.current^.cline:=inserted;
         load_ed(ctx);
-        ctx.current^.editor.line := nline;
-        ctx.current^.editor.chg := true;
-{        if ctx.current^.scry <> ctx.current^.config^.height - 2 then inc(ctx.current^.scry);}
-        ctx.current^.editor.x := x;
-
-        tbl_append_row := r;
+        ctx.current^.chg:=true;
+        ctx.current^.editor.x:=destination;
 end;
 
 end.
