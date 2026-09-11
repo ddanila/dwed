@@ -67,12 +67,14 @@ carry after resizing the resident block and after allocating the external
 command's private environment. The EMS/XMS allocation wrappers return a zero
 handle on allocation failure, which the optional cache creator checks.
 
-The source review found an unresolved issue in `EXMS.xms_malloc`: the optional
-SXMS branch shifts by CL before initializing CL, while the ordinary XMS branch
-sets the intended shift count. The branch is selected by the inherited SXMS
-version check. It needs a targeted allocation-size regression and fix before
-claiming those optional paths are qualified. Extended-memory transfer error
-propagation and alternative document stores also remain runtime review work.
+`EXMS.xms_malloc` initializes the page-to-KiB shift before selecting ordinary
+XMS or SXMS allocation. The [allocation-size probe](xms-allocation-milestone.json)
+checks the driver's observed request with deliberately varied incoming CL,
+including wide SXMS sizes and failure returns. Its test-only multiplex shim
+intercepts XMS discovery and chains all unrelated requests to the real handler.
+This qualifies request construction, not an actual SXMS driver's memory manager.
+Extended-memory transfer error propagation and alternative document stores
+remain runtime review work.
 
 The heap review does not establish minimum physical RAM, supported file size,
 full-command operation at the startup boundary, or final legacy CPU coverage.
