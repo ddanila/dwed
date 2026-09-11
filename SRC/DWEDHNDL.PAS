@@ -413,7 +413,8 @@ begin
                 s := '';
                 with ctx.current^ do begin
                         for i := 1 to length(editor.line) do begin
-                                if editor.line[i] = ' ' then s := s + ' ' else break;
+                                if (i<editor.x) and (editor.line[i] in [' ',#9]) then
+                                        s:=s+editor.line[i] else break;
                         end;
                         cline := strs.split(cline, editor.x);
                         if strs.is_first(cline) then rline := cline;
@@ -422,7 +423,7 @@ begin
                         cline := strs.go_next(cline);
                         total := strs.renum(rline);
                         load_ed(ctx);
-                        if length(s) <> 0 then editor.line := s + ltrim(editor.line);
+                        if length(s) <> 0 then editor.line := s + editor.line;
                         chg := true;
                         editor.chg := length(s) <> 0;
                         editor.x := length(s) + 1;

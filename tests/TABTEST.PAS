@@ -39,6 +39,34 @@ begin
         ctx.current^.rline:=ctx.current^.cline; ctx.current^.scrline:=ctx.current^.cline;
         load_ed(ctx);
 end;
+procedure check_enter(source,indent:string);
+var position:integer; prefix,left,right,observed:string; first,second:EditorStr;
+begin
+        for position:=1 to length(source)+1 do begin
+                reset_document; first_line(source);
+                ctx.current^.editor.x:=position;
+                prefix:=copy(indent,1,position-1);
+                left:=copy(source,1,position-1);
+                right:=prefix+copy(source,position,255);
+                key(SCAN_ENTER,0);
+                first:=ctx.current^.rline; second:=strs.go_next(first);
+                strs.get(first,observed); check(observed=left,'Enter preserves left bytes');
+                strs.get(second,observed); check(observed=right,'Enter preserves suffix and literal indentation');
+                check(strs.is_last(second),'Enter inserts exactly one line');
+                check(ctx.current^.editor.x=length(prefix)+1,'Enter cursor follows indentation');
+                check(ctx.current^.chg,'Enter marks document dirty');
+                key(SCAN_Z,key_ctrl);
+                check(strs.is_last(ctx.current^.rline),'undo Enter restores line count');
+                strs.get(ctx.current^.rline,observed); check(observed=source,'undo Enter restores all bytes');
+                check(ctx.current^.editor.x=position,'undo Enter restores cursor');
+                check(not ctx.current^.chg,'undo Enter restores clean state');
+                key(SCAN_Z,key_ctrl or key_shift);
+                first:=ctx.current^.rline; second:=strs.go_next(first);
+                strs.get(first,observed); check(observed=left,'redo Enter restores left');
+                strs.get(second,observed); check(observed=right,'redo Enter restores indentation and suffix');
+                check(ctx.current^.editor.x=length(prefix)+1,'redo Enter restores cursor');
+        end;
+end;
 begin
         System.Assign(output,'A:\TAB.LOG'); System.Rewrite(output); checks:=0;
         { Compare bounded rendering and mappings with an independently expanded
@@ -125,6 +153,18 @@ begin
         check(ctx.current^.editor.sel_x=1,'unindent restores selection boundary');
         key(SCAN_Z,key_ctrl); expect_body('        '+#9+'A');
         key(SCAN_Z,key_ctrl); expect_body(#9+'A');
+        { Known prefixes provide an independent expected split for every byte
+          boundary, including boundaries inside indentation and full lines. }
+        check_enter('','');
+        check_enter('A  B','');
+        check_enter('  A  B','  ');
+        check_enter(#9+'A  B',#9);
+        check_enter(' '+#9+' A '+#128#255,' '+#9+' ');
+        check_enter(' '+#9+' ',' '+#9+' ');
+        body:=''; for i:=1 to 255 do body:=body+' ';
+        check_enter(body,body);
+        body:=' '+#9; for i:=3 to 255 do body:=body+'x';
+        check_enter(body,' '+#9);
         strs.free(ctx.current^.rline); undo_done(ctx.current^.history);
         FreeMem(ctx.current,sizeof(TFileContext)); FreeMem(ctx.clipboard,CB_SIZE);
         writeln(output,'PASS ',checks,' assertions'); close(output);

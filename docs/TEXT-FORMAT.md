@@ -17,9 +17,9 @@ opens a new document with that name; other open/read errors remain errors.
 Tabs display at configured tab stops while remaining literal bytes in storage.
 Cursor movement, selection highlighting and horizontal scrolling share the
 byte-to-cell mapping described in `TEXT-CELLS.md`. Clipboard byte preservation
-and rejection behavior are described in `CLIPBOARD.md`. Automatic indentation
-and commands that intentionally change whitespace still need their own
-behavioral coverage.
+and rejection behavior are described in `CLIPBOARD.md`. Automatic indentation is described and qualified in [AUTOINDENT.md](AUTOINDENT.md).
+Table editing and other commands that intentionally change whitespace still
+need their own behavioral coverage.
 
 The parent QEMU gate checks exact bytes after editing and saving each supported
 newline style, absent final newlines, tabs and high-bit characters; it checks
