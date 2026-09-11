@@ -40,6 +40,9 @@ The status line's ~*~ marks unsaved changes.
 Save, Close and Exit share Save/Discard/Cancel
 choices. Read the displayed choices: cancelling
 keeps the document open and unsaved.
+Click a button, or use ~Tab~/arrows to focus it.
+~Enter~/Space activates the focused choice.
+~Y~/~N~/~C~ and ~Esc~ remain direct shortcuts.
 
 A failed save retains the unsaved buffer.
 On protected media, use Save As to a writable drive.

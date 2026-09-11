@@ -2,8 +2,13 @@
 
 Save, Save As, Save All, Close and Exit use one save operation with explicit
 success, cancellation and failure outcomes. Close and Exit share the same
-keyboard Save/Discard/Cancel prompt. Enter or Y saves, N discards, and C or Esc
-cancels. Clean documents close without an unnecessary confirmation.
+Save/Discard/Cancel prompt. Save initially has focus. Tab, Shift-Tab and the
+left/right arrows cycle focus; Enter or Space activates the focused button.
+Y saves, N discards, and C or Esc cancels directly. A left-button press followed
+by release on the same button activates it. Blank-area clicks, right clicks
+and release over a different button do not activate a choice. Focus uses the
+configured selection colour, including the monochrome palette. Clean documents
+close without an unnecessary confirmation.
 
 An unnamed document asks for a filename in every save path. Cancelling that
 prompt or encountering a write error leaves its name and unsaved contents
@@ -25,9 +30,12 @@ The parent dialog scenarios exercise save-on-exit, discard/cancel, cancelled
 Save As, unnamed Close/Exit/Save All, stopping a batch on cancellation,
 overwrite acceptance/refusal, disk-full retention and unnamed startup/resume.
 They verify actual destination and backup bytes as well as editor state and
-process completion. Mouse operation of the confirmation controls remains part
-of release qualification. Injected DOS save failures and remaining recovery
-work are described in [SAVE-TRANSACTION.md](SAVE-TRANSACTION.md).
+process completion. Real-driver mouse scenarios cover all save/discard/cancel
+and replace/keep/cancel buttons, non-activating clicks and drags, keyboard focus,
+monochrome contrast and text selection retained after cancellation. Generated
+build and runtime evidence is in
+[dialog-input-milestone.json](dialog-input-milestone.json). Injected DOS save
+failures are described in [SAVE-TRANSACTION.md](SAVE-TRANSACTION.md).
 
 Pending save ownership and the recovery screen shared by editor exit paths
 are described in [SAVE-RECOVERY.md](SAVE-RECOVERY.md).

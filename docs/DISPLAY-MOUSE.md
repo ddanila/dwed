@@ -36,6 +36,16 @@ popup commands. Final destination and backup bytes are checked. Color cases
 run in LOW and HIGH/UMB, and a monochrome case exercises tab selection and the
 clipboard popup with the same real driver.
 
+## Confirmation controls
+
+Save/Discard/Cancel and Replace/Keep/Cancel use shared focused buttons. The
+real-driver scenarios exercise each choice, ignore right-button and blank-area
+clicks, and reject a press followed by release over a different button. Cancel
+retains the document's text selection. Keyboard navigation checks focus wrapping
+and activation; video-memory attributes prove that focus remains distinct in
+colour and monochrome modes. See [save dialog behaviour](SAVE-DIALOGS.md) and
+[generated evidence](dialog-input-milestone.json).
+
 ## Running the gate
 
 From the parent repository, prepare the external fixture and enable the mouse

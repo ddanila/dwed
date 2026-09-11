@@ -438,20 +438,11 @@ end;
 type TSaveOutcome = (SAVE_OK, SAVE_CANCELLED, SAVE_FAILED);
 
 function ask_choice(var ctx:TEditorContext; title, message, buttons:string):ANSWER;
-var e:TEvent; choice:ANSWER;
+var choice:ANSWER;
 begin
         if not scr.push then begin ask_choice:=CANCEL; exit end;
-        scrui.msg_box(ctx.config.color.menu,title,message,buttons);
-        scr.cursor_off; scr.show;
-        choice:=MAYBE;
-        repeat
-                wait_event(e);
-                if e.etype=KEYBOARD then case e.scancode of
-                SCAN_Y,SCAN_ENTER:choice:=YES;
-                SCAN_N:choice:=NO;
-                SCAN_C,SCAN_ESC:choice:=CANCEL;
-                end;
-        until choice<>MAYBE;
+        choice:=scrui.choice_box(ctx.config.color.menu,ctx.config.color.menu_sel,
+                title,message,buttons);
         scr.pop;
         ask_choice:=choice;
 end;

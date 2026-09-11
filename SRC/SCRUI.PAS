@@ -36,6 +36,7 @@ function yes_no : ANSWER;
 function yes_no_cancel:ANSWER;
 function yes_no_all:ANSWER;
 
+function choice_box(color,selected_color:byte; title,content,buttons:string):ANSWER;
 procedure msg_box(color : byte; title, content, bottom : string);
 function in_bound(x1, y1, x2, y2 : integer; x, y : integer):boolean;
 
@@ -427,7 +428,7 @@ begin
         yes_no_all := r;
 end;
 
-procedure msg_box(color : byte; title, content, bottom : string);
+procedure draw_msg_box(color:byte; title,content:string; var bottom:string; var bottom_x,bottom_y:integer);
 var
         w : integer;
         h : integer;
@@ -437,6 +438,7 @@ var
         pos_y : integer;
         needb : boolean;
 begin
+        bottom_x:=0; bottom_y:=0;
         w := scr.getwidth;
         h := scr.getheight;
         box_w := 0;
@@ -461,9 +463,76 @@ begin
         scr.hprint(pos_x + 1, pos_y + 3, color, ' ', box_w);
         if needb then begin
                 scr.hprint(pos_x + 1, pos_y + 4, color, ' ', box_w);
-                scr.print((w - length(bottom)) shr 1, pos_y + 4, color, bottom);
+                bottom_x:=(w-length(bottom)) shr 1; bottom_y:=pos_y+4;
+                scr.print(bottom_x,bottom_y,color,bottom);
                 scr.hprint(pos_x + 1, pos_y + 5, color, ' ', box_w);
         end;
+end;
+
+procedure msg_box(color : byte; title, content, bottom : string);
+var x,y:integer;
+begin
+        draw_msg_box(color,title,content,bottom,x,y);
+end;
+
+{ Three complete bracketed buttons map to Yes, No and Cancel. Hit testing uses
+  the actual clipped footer placement returned by the drawing routine. }
+function choice_box(color,selected_color:byte; title,content,buttons:string):ANSWER;
+const answers:array[0..2] of ANSWER=(YES,NO,CANCEL);
+var starts,ends:array[0..2] of integer;
+    x,y,i,j,count,focused,armed,hit:integer; e:TEvent; choice:ANSWER;
+        function button_at:integer;
+        var n:integer;
+        begin
+                button_at:=-1;
+                if e.mouse_y<>y then exit;
+                for n:=0 to 2 do
+                        if (e.mouse_x>=x+starts[n]-1) and
+                           (e.mouse_x<=x+ends[n]-1) then button_at:=n;
+        end;
+begin
+        draw_msg_box(color,title,content,buttons,x,y);
+        count:=0; i:=1;
+        while (i<=length(buttons)) and (count<3) do begin
+                if buttons[i]='[' then begin
+                        j:=i+1;
+                        while (j<=length(buttons)) and (buttons[j]<>']') do inc(j);
+                        if j>length(buttons) then break;
+                        starts[count]:=i; ends[count]:=j; inc(count); i:=j;
+                end;
+                inc(i);
+        end;
+        choice_box:=CANCEL;
+        if count<>3 then exit;
+        focused:=0; armed:=-1; choice:=MAYBE;
+        repeat
+                for i:=0 to 2 do begin
+                        j:=color; if i=focused then j:=selected_color;
+                        scr.print(x+starts[i]-1,y,j,copy(buttons,starts[i],ends[i]-starts[i]+1));
+                end;
+                scr.cursor_off; scr.show; wait_event(e);
+                if e.etype=KEYBOARD then begin
+                        armed:=-1;
+                        case e.scancode of
+                        SCAN_Y:choice:=YES;
+                        SCAN_N:choice:=NO;
+                        SCAN_C,SCAN_ESC:choice:=CANCEL;
+                        SCAN_ENTER,SCAN_SPACE:choice:=answers[focused];
+                        SCAN_LEFT:focused:=(focused+2) mod 3;
+                        SCAN_RIGHT:focused:=(focused+1) mod 3;
+                        SCAN_TAB:if e.ctrl_keys and key_shift<>0 then focused:=(focused+2) mod 3
+                                 else focused:=(focused+1) mod 3;
+                        end;
+                end else if e.etype=MOUSE_PRESS_B1 then begin
+                        armed:=button_at;
+                        if armed>=0 then focused:=armed;
+                end else if e.etype=MOUSE_RELEASE_B1 then begin
+                        hit:=button_at;
+                        if (armed>=0) and (hit=armed) then choice:=answers[hit];
+                        armed:=-1;
+                end;
+        until choice<>MAYBE;
+        choice_box:=choice;
 end;
 
 end.
