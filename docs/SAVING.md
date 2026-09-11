@@ -26,7 +26,7 @@ build serves as a negative control for the disk-full regression. Runtime fault
 injection for commit/close/rename and read-only media, interruption recovery,
 alternative storage backends and Microsoft 6.22 qualification remain open.
 
-This change preserves the existing line serialization. Tabs, long lines, line
-endings and final-newline state still need the file-semantics work in
-`EDIT-PLAN.md`. Clipboard export and other system2 buffered writers also need
+The shared writer now uses the document's [text representation](TEXT-FORMAT.md)
+to preserve newline style and final-newline state. The loader preserves tabs
+and rejects unsupported input explicitly. Clipboard export and other system2 buffered writers also need
 their own error-path audit; the editor save fix does not establish their safety.

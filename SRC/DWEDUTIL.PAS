@@ -621,6 +621,7 @@ begin
         getmem(p, sizeof(TFileContext));
         p^.fname := fname;
         p^.rline := strs.new;
+        p^.format.newline := #13#10;
         p^.config := @ctx.config;
         reset_file(p);
         p^.next := ctx.all;
@@ -636,7 +637,21 @@ begin
         r := SCRU_FULL;
         getmem(p, sizeof(TFileContext));
         p^.fname := fname;
-        p^.rline := strs.from_file(fname, ctx.config.tab_size, errCode, percent_proc);
+        p^.rline := strs.from_file(fname, p^.format, errCode, percent_proc);
+        if errCode = 2 then begin
+                freemem(p, sizeof(TFileContext));
+                new_file(ctx, fname);
+                errCode := 0;
+                load_file := SCRU_FULL;
+                exit;
+        end;
+        if errCode <> 0 then begin
+                freemem(p, sizeof(TFileContext));
+                { A failed load must not install a truncated document. }
+                if ctx.current = nil then new_file(ctx, DEFAULT_FILE_NAME);
+                load_file := SCRU_FULL;
+                exit;
+        end;
         p^.config := @ctx.config;
         reset_file(p);
         p^.next := ctx.all;
@@ -650,6 +665,9 @@ function get_err_msg(errCode:integer) : string;
 var     errMsg : string;
 begin
         case errCode of
+        1001: errMsg := 'Line exceeds 255 bytes; file was not opened';
+        1002: errMsg := 'Mixed line endings; file was not opened';
+        1003: errMsg := 'Unsupported control byte; file was not opened';
         1: errMsg := 'Invalid function number';
         2: errMsg := 'File not found';
         3: errMsg := 'Path not found';

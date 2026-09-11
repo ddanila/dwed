@@ -377,8 +377,8 @@ begin
         if rec.recno <> 0 then dbm_get(dbm_mem, rec.recno, s1, rec.len);
         dbm_free(dbm_mem, rec.recno);
         rec.recno := 0;
-        s2 := trim(copy(s1, pos, length(s1) - pos + 1));
-        s1 := rtrim(copy(s1, 1, pos - 1));
+        s2 := copy(s1, pos, length(s1) - pos + 1);
+        s1 := copy(s1, 1, pos - 1);
         rec.len := length(s1) + 1;
         if rec.len <> 1 then rec.recno := dbm_add(dbm_mem, s1, rec.len);
         dbb_put(dbb_idx, r, rec);

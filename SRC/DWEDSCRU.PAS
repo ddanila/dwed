@@ -38,7 +38,7 @@ begin
 end;
 
 procedure get_str_part(var ctx : TEditorContext; var s : string);
-var len, w, nl, sc  : integer;
+var len, w, nl, sc, i  : integer;
 begin
         len := ord(s[0]);
         w := ctx.current^.config^.width;
@@ -48,6 +48,8 @@ begin
         if nl > w then nl := w;
         if (nl <> 0) and (sc<> 0) then move(s[sc + 1], s[1], nl);
         s[0] := chr(nl);
+        { Keep tab bytes in storage; display their positions explicitly. }
+        for i := 1 to nl do if s[i] = #9 then s[i] := #26;
 end;
 
 procedure update_full(var ctx : TEditorContext);

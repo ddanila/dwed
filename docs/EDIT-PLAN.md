@@ -23,11 +23,12 @@ Completion gates:
    licensing notices and regression coverage. QBASIC runtime/debugging is a
    separate project.
 
-The initial toolchain experiment uses Free Pascal's i8086 MS-DOS cross compiler
-and retains the Pascal editor. Its runtime license and linking exception must
-be shipped as required; MIT applies to our and inherited MIT editor sources.
-Replace the tiny C-- launcher using existing assembler/C tools, and regenerate
-help data without the historical BIN2OBJ/HLPC executables.
+The build uses Free Pascal's i8086 MS-DOS cross compiler and retains the Pascal
+editor. Its runtime license and linking exception must be shipped as required;
+MIT applies to our and inherited MIT editor sources. NASM builds the launcher,
+and Python regenerates help data without historical BIN2OBJ/HLPC executables.
+The current text representation and remaining editing limits are described in
+`TEXT-FORMAT.md`.
 
 The previous bundled-binary assessment found successful ordinary edits in LOW
 and HIGH/UMB, but silent empty output on a nearly full disk (also reproduced on

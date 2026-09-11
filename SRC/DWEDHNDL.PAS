@@ -433,7 +433,7 @@ begin
                                                 scr.cln(0, 0, config^.color.top);
                                                 scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
                                                 scr.show;
-                                                strs.to_file(fname, rline, errCode, @save_file_progress);
+                                                strs.to_file(fname, rline, format, errCode, @save_file_progress);
                                                 r := SCRU_FULL;
                                                 if errCode <> 0 then begin
                                                         handle_error(ctx, errCode);
@@ -469,7 +469,7 @@ begin
                                         scr.cln(0, 0, config^.color.top);
                                         scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
                                         scr.show;
-                                        strs.to_file(fname, rline, errCode, @save_file_progress);
+                                        strs.to_file(fname, rline, format, errCode, @save_file_progress);
                                         if errCode <> 0 then begin
                                                 handle_error(ctx, errCode);
                                         end else chg := false;
@@ -481,7 +481,7 @@ begin
                 scr.cln(0, 0, config^.color.top);
                 scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
                 scr.show;
-                strs.to_file(fname, rline, errCode, @save_file_progress);
+                strs.to_file(fname, rline, format, errCode, @save_file_progress);
                 if errCode <> 0 then handle_error(ctx, errCode) else chg := false;
         end;
         ctx.current := srcctx;
@@ -512,7 +512,7 @@ begin
                 scr.cln(0, 0, ctx.current^.config^.color.top);
                 scr.print(1, 0, ctx.current^.config^.color.top, 'Save "' + newname + '"');
                 scr.show;
-                strs.to_file(newname, ctx.current^.rline, errCode, @save_file_progress);
+                strs.to_file(newname, ctx.current^.rline, ctx.current^.format, errCode, @save_file_progress);
                 if errCode <> 0 then handle_error(ctx, errCode) else ctx.current^.chg := false;
                 if errCode = 0 then begin
                         ctx.current^.fname := newname;
@@ -1159,7 +1159,7 @@ begin
                                 scr.cln(0, 0, config^.color.top);
                                 scr.print(1, 0, config^.color.top, 'Save "' + sfname + '"');
                                 scr.show;
-                                strs.to_file(fname, rline, errCode, @save_file_progress);
+                                strs.to_file(fname, rline, format, errCode, @save_file_progress);
                                 if errCode <> 0 then begin
                                         handle_error(ctx, errCode);
                                         canclose := false;

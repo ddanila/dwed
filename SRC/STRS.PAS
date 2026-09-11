@@ -28,6 +28,9 @@ interface
 
 type
 MemoryType = (MT_DOS, MT_SWAP, MT_SXMS);
+TTextFormat = record
+        newline : string[2];
+end;
 EditorStr = pointer;
 
 procedure init(mType : MemoryType);
@@ -35,8 +38,8 @@ procedure done;
 
 function new : EditorStr;
 
-function from_file(fname : string; tab_size : integer; var errCode : integer; scrupdate : pointer) : EditorStr;
-procedure to_file(fname : string; r : EditorStr; var errCode : integer; scrupdate : pointer);
+function from_file(fname : string; var format : TTextFormat; var errCode : integer; scrupdate : pointer) : EditorStr;
+procedure to_file(fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
 
 function create(next, prev : EditorStr; var body : string) : EditorStr;
 procedure free(r : EditorStr);
@@ -99,39 +102,108 @@ begin
         else create := EditorStr(strsdos.create(pointer(next), pointer(prev), body));
 end;
 
-function from_file(fname : string; tab_size : integer; var errCode : integer; scrupdate : pointer) : EditorStr;
+function from_file(fname : string; var format : TTextFormat; var errCode : integer; scrupdate : pointer) : EditorStr;
+var     f : file;
+        buffer : array[0..4095] of byte;
+        count, i : word;
+        previous_mode : byte;
+        close_error : integer;
+        root, last : EditorStr;
+        body : string;
+        pending_cr : boolean;
+        c : char;
+        current,total,start_date : longint;
+        scrup : TPercentUpdateProc;
+
+        procedure emit(separator : string);
+        begin
+                if separator <> '' then begin
+                        if format.newline = '' then format.newline := separator
+                        else if format.newline <> separator then begin
+                                errCode := 1002;
+                                exit;
+                        end;
+                end;
+                last := strs.create(nil, last, body);
+                if root = nil then root := last;
+                body := '';
+        end;
+
 begin
         spinner_start;
-        errCode := 0;
-        if not FileExists(fname) then begin
-                errCode := 104;
-                from_file := EditorStr(strs.new);
-        end else if memType = MT_SXMS then
-                from_file := EditorStr(strssxms.from_file(fname, tab_size, errCode, scrupdate))
-        else if memType = MT_SWAP then
-                from_file := EditorStr(strsswap.from_file(fname, tab_size, errCode, scrupdate))
-        else
-                from_file := EditorStr(strsdos.from_file(fname, tab_size, errCode, scrupdate));
+        errCode := 0; root := nil; last := nil;
+        body := ''; pending_cr := false; format.newline := '';
+        system.assign(f, fname);
+        previous_mode := system.FileMode; system.FileMode := 0;
+        {$I-} system.reset(f, 1); {$I+}
+        errCode := system.IOResult;
+        system.FileMode := previous_mode;
+        if errCode = 0 then begin
+                {$I-} total := system.filesize(f); {$I+}
+                errCode := system.IOResult;
+                current := 0; start_date := get_ticks;
+                scrup := TPercentUpdateProc(scrupdate);
+                repeat
+                        count := 0;
+                        if errCode = 0 then begin
+                                {$I-} system.blockread(f, buffer, sizeof(buffer), count); {$I+}
+                                errCode := system.IOResult;
+                        end;
+                        i := 0;
+                        while (i < count) and (errCode = 0) do begin
+                                c := chr(buffer[i]); inc(i);
+                                if pending_cr then begin
+                                        pending_cr := false;
+                                        if c = #10 then begin
+                                                emit(#13#10);
+                                                c := #0;
+                                        end else emit(#13);
+                                end;
+                                if errCode = 0 then begin
+                                        if c = #13 then pending_cr := true
+                                        else if c = #10 then emit(#10)
+                                        else if (c <> #0) or (buffer[i-1] = 0) then begin
+                                                if (ord(c) < 32) and (c <> #9) then errCode := 1003
+                                                else if length(body) = 255 then errCode := 1001
+                                                else body := body + c;
+                                        end;
+                                end;
+                        end;
+                        inc(current, count);
+                        if (scrupdate <> nil) and (errCode = 0) then
+                                scrup(current,total,start_date);
+                until (count = 0) or (errCode <> 0);
+                if (errCode = 0) and pending_cr then emit(#13);
+                if errCode = 0 then emit('');
+                {$I-} system.close(f); {$I+}
+                close_error := system.IOResult;
+                if errCode = 0 then errCode := close_error;
+        end;
+        if format.newline = '' then format.newline := #13#10;
+        if errCode <> 0 then begin
+                strs.free(root);
+                root := nil;
+        end;
+        from_file := root;
         spinner_stop;
 end;
 
-procedure to_file(fname : string; r : EditorStr; var errCode : integer; scrupdate : pointer);
+procedure to_file(fname : string; r : EditorStr; format : TTextFormat; var errCode : integer; scrupdate : pointer);
 var     f : TSaveFile;
         s : string;
-        newline : string[2];
         current,total,start_date : longint;
         scrup : TPercentUpdateProc;
 begin
         spinner_start;
         start_save(f,fname,errCode);
         if errCode=0 then begin
-                newline:=#13#10;
                 total:=renum(r); current:=0; start_date:=get_ticks;
                 scrup:=TPercentUpdateProc(scrupdate);
                 while not is_nil(r) and (errCode=0) do begin
                         get(r,s);
                         write_save(f,s[1],length(s),errCode);
-                        write_save(f,newline[1],2,errCode);
+                        if not is_last(r) then
+                                write_save(f,format.newline[1],length(format.newline),errCode);
                         r:=go_next(r); inc(current);
                         if (scrupdate<>nil) and (current mod 64=0) then
                                 scrup(current,total,start_date);

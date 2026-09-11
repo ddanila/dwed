@@ -306,7 +306,7 @@ var s1, s2 : string;
 begin
         strsdos.get(r, s1);
         s2 := copy(s1, pos, length(s1) - pos + 1);
-        s1 := rtrim(copy(s1, 1, pos - 1));
+        s1 := copy(s1, 1, pos - 1);
         r := strsdos.put(r, s1);
         strsdos.create(PDosStringRec(r)^.next, r, s2);
         split := r;

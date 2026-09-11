@@ -24,6 +24,8 @@ This is an intermediate editor build, not a qualified EDIT distribution.
 The [save protocol](SAVING.md) protects the
 destination against detected write failures, but recovery qualification and
 lossless file handling remain release gates; see `EDIT-PLAN.md`.
+Current supported input and explicit rejection rules are documented in
+[TEXT-FORMAT.md](TEXT-FORMAT.md).
 
 Editor sources and the vendored system2 library are MIT licensed. The vendored
 library's original revision and file checksums are in `vendor/system2/UPSTREAM.json`.

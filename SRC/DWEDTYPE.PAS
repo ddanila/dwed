@@ -123,6 +123,7 @@ TFileContext = record
         total        : DWord;
         scrx, scry   : integer;
         next         : PFileContext;
+        format       : TTextFormat;
         rline        : EditorStr;
         cline        : EditorStr;
         scrline      : EditorStr;
