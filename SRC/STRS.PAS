@@ -65,7 +65,7 @@ function is_nil(r : EditorStr) : boolean;
 
 implementation
 
-uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil;
+uses system2, scr, strsdos, strssxms, strsswap, dwedtype, str, strutil, safesave, dwedutil;
 
 const
 memType : MemoryType = MT_DOS;
@@ -116,24 +116,28 @@ begin
 end;
 
 procedure to_file(fname : string; r : EditorStr; var errCode : integer; scrupdate : pointer);
-var     f        : bfile;
-        fnamebak : string;
+var     f : TSaveFile;
+        s : string;
+        newline : string[2];
+        current,total,start_date : longint;
+        scrup : TPercentUpdateProc;
 begin
         spinner_start;
-        errCode := 0;
-        if FileExists(fname) then begin
-                fnamebak := change_ext(fname, '.bak');
-                if FileExists(fnamebak) then FileDelete(fnamebak);
-                assign(f, fname);
-                rename(f, fnamebak);
+        start_save(f,fname,errCode);
+        if errCode=0 then begin
+                newline:=#13#10;
+                total:=renum(r); current:=0; start_date:=get_ticks;
+                scrup:=TPercentUpdateProc(scrupdate);
+                while not is_nil(r) and (errCode=0) do begin
+                        get(r,s);
+                        write_save(f,s[1],length(s),errCode);
+                        write_save(f,newline[1],2,errCode);
+                        r:=go_next(r); inc(current);
+                        if (scrupdate<>nil) and (current mod 64=0) then
+                                scrup(current,total,start_date);
+                end;
+                finish_save(f,errCode);
         end;
-
-        if memType = MT_SXMS then
-                strssxms.to_file(fname, dword(r), errCode, scrupdate)
-        else if memType = MT_SWAP then
-                strsswap.to_file(fname, dword(r), errCode, scrupdate)
-        else
-                strsdos.to_file(fname, pointer(r), errCode, scrupdate);
         spinner_stop;
 end;
 

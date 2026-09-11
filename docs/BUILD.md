@@ -15,8 +15,9 @@ reproducibility. Compiler diagnostics are retained in `compiler.log`.
 
 This is an intermediate overlay build, not a complete EDIT distribution.
 The historical launcher is still required to run it. Bundled EXE/OBJ files are
-not inputs to this build command. Safe saving and lossless file handling remain
-release gates; see `EDIT-PLAN.md` before using it for real documents.
+not inputs to this build command. The [save protocol](SAVING.md) protects the
+destination against detected write failures, but recovery qualification and
+lossless file handling remain release gates; see `EDIT-PLAN.md`.
 
 Editor sources and the vendored system2 library are MIT licensed. The vendored
 library's original revision and file checksums are in `vendor/system2/UPSTREAM.json`.

@@ -1,0 +1,87 @@
+{
+  "artifacts": {
+    "DWEDOVL.exe": {
+      "bytes": 175678,
+      "sha256": "02e476f031ee795b93541382497fc5ba1290267c82000b7ebde2dac60f77e954"
+    },
+    "dwedhelp.hlp": {
+      "bytes": 6656,
+      "sha256": "9e476091cab746652ff9a5137f77f8f94c646a7fa3d2eb485fed2879afa8afa2"
+    }
+  },
+  "clean_builds_identical": true,
+  "parent_revision": "bb05871c65982f2609091a45fe58568e539ac5d1",
+  "runtime_launcher": "historical BIN/DWED.EXE",
+  "cpu": "QEMU 486 TCG",
+  "cases": [
+    {
+      "case": "edit-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "original_sha256": "e849f89907a6d0ea62b6a072691fa3ab2201c5074fbf717a10d0de2dcdbe03ae",
+      "saved_sha256": "3872781208b08a2b661be155d037a6253b640ded4bba7cf90910314eb92a8fb9"
+    },
+    {
+      "case": "edit-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "original_sha256": "e849f89907a6d0ea62b6a072691fa3ab2201c5074fbf717a10d0de2dcdbe03ae",
+      "saved_sha256": "3872781208b08a2b661be155d037a6253b640ded4bba7cf90910314eb92a8fb9"
+    },
+    {
+      "case": "disk-full-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "original_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636",
+      "saved_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636"
+    },
+    {
+      "case": "disk-full-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "original_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636",
+      "saved_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636"
+    },
+    {
+      "case": "read-only-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "original_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636",
+      "saved_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636"
+    },
+    {
+      "case": "read-only-high",
+      "mode": "high",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "original_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636",
+      "saved_sha256": "af9bec99c298d2c43ba38604aff84edea33fcc303f7227cb54a45313b0b48636"
+    },
+    {
+      "case": "backup-file-low",
+      "mode": "low",
+      "completed": true,
+      "exact_match": true,
+      "backup_matches_expected": true,
+      "original_sha256": "67901f0c6b85a03196a3c1cd68e8efc42f065fbb55cb404e0a5d464ed1d7737a",
+      "saved_sha256": "b6d17f1af31c163047f6a2e527af09539cfc13dbf297d1ecd3746a6c03ee9308"
+    }
+  ],
+  "negative_control": {
+    "overlay_sha256": "56d44eb8d6c294df82fd56c3127b3baab1ef8b13f3879ecb0e321f9577b55424",
+    "case": "disk-full-low",
+    "rejected": true,
+    "reason": "no error dialog after failed save"
+  }
+}

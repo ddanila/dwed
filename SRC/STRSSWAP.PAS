@@ -430,7 +430,7 @@ begin
         cno := 0;
 
         assign(f, fname);
-        reset(f);
+        ResetReadOnly(f);
         if not IsOpen(f) then errCode := 104 else total := filesize(f);
 
         if total <> 0 then begin

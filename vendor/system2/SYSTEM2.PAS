@@ -82,6 +82,7 @@ BFILE = RECORD
 END;
 
 PROCEDURE Assign (VAR f : BFILE; fname : STRING);
+PROCEDURE ResetReadOnly(VAR f : BFILE);
 PROCEDURE Reset (VAR f : BFILE);
 PROCEDURE ReWrite (VAR f : BFILE);
 PROCEDURE Append (VAR f : BFILE);
@@ -217,13 +218,14 @@ ASM
         POP  DS
 END;
 
-FUNCTION lReset:WORD;ASSEMBLER;
+FUNCTION lReset(access : WORD):WORD;ASSEMBLER;
 ASM
         PUSH DS
         XOR  AX, AX
         MOV  RES, AX
         MOV  SI, offset fname + 1
-        MOV  BX, $22 { access attr}
+        MOV  BX, access
+        OR   BX, $20 { deny write sharing }
         XOR  CX, CX
         MOV  DX, $1
         MOV  AX, seg fname
@@ -237,7 +239,8 @@ ASM
         MOV  DX, offset fname + 1
         MOV  AX, seg fname
         MOV  DS, AX
-        MOV  AX, $3D02
+        MOV  AX, access
+        MOV  AH, $3D
         INT  $21
         JNC  @end
 
@@ -649,14 +652,14 @@ BEGIN
         IF NOT f.is_open THEN BEGIN FreeMem(f.buf, SizeOf(BFILE_BUF)); f.buf := NIL; END;
 END;
 
-PROCEDURE Reset(VAR f : BFILE);
+PROCEDURE ResetMode(VAR f : BFILE; access : WORD);
 BEGIN
         IF f.is_open THEN EXIT;
         GetMem(f.buf, SizeOf(BFILE_BUF));
         IF f.buf = NIL THEN EXIT;
         f.ioresult := 0;
         fname := f.filename + #0;
-        f.f := lReset;
+        f.f := lReset(access);
         IF f.f = 0 THEN f.ioresult := 2;
         f.is_open := f.ioresult = 0;
         f.buf_count := 0;
@@ -679,6 +682,16 @@ BEGIN
         END;
 {$ENDIF}
         IF NOT f.is_open THEN BEGIN FreeMem(f.buf, SizeOf(BFILE_BUF)); f.buf := NIL; END;
+END;
+
+PROCEDURE Reset(VAR f : BFILE);
+BEGIN
+        ResetMode(f, 2);
+END;
+
+PROCEDURE ResetReadOnly(VAR f : BFILE);
+BEGIN
+        ResetMode(f, 0);
 END;
 
 PROCEDURE Append (VAR f : BFILE);
@@ -1293,7 +1306,7 @@ FUNCTION FileExists(s : STRING):BOOLEAN;
 VAR h : WORD;
 BEGIN
         fname := s + #0;
-        h := lReset;
+        h := lReset(0);
         IF h <> 0 THEN lclose(h);
         FileExists := h <> 0;
 END;
