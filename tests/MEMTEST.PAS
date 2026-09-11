@@ -134,6 +134,8 @@ begin
                 FillChar(info,sizeof(info),0); info.destination:='C:\ORIGINAL.TXT';
                 error:=recover_document(ctx,info,'C:\HUGE.TXT');
                 check(error=8,'oversized recovery reports memory exhaustion'); preserved;
+                error:=recover_record(ctx,'C:\$ER0000.REC',info,'C:\HUGE.TXT');
+                check(error=8,'failed associated recovery releases origin'); preserved;
         end;
         count:=0;
         repeat
@@ -147,6 +149,8 @@ begin
         check(MemAvail=before_heap,'new failure has no heap leak');
         for i:=1 to 3 do begin
                 check(new_file(ctx,'')=8,'repeat new refusal');
+                error:=recover_record(ctx,'C:\$ER0000.REC',info,'C:\SAMPLE.TXT');
+                check(error=8,'recovery origin refuses exhausted heap');
                 load_file(ctx,'C:\SAMPLE.TXT',error,nil);
                 check(error=8,'document header allocation refuses exhausted heap');
                 check((ctx.current=previous) and (ctx.all=previous),'load header failure preserves list');
@@ -154,16 +158,27 @@ begin
         end;
         while ctx.all<>original do begin
                 p:=ctx.all; ctx.all:=p^.next; strs.free(p^.rline);
-                undo_done(p^.history); FreeMem(p,sizeof(TFileContext));
+                undo_done(p^.history);
+                if p^.recovery<>nil then FreeMem(p^.recovery,sizeof(TRecoveryOrigin));
+                FreeMem(p,sizeof(TFileContext));
         end;
         ctx.current:=original;
         check(new_file(ctx,'')=0,'new document succeeds after memory release');
         load_file(ctx,'C:\SAMPLE.TXT',error,nil);
         check(error=0,'load succeeds after memory release');
         check(ctx.current^.editor.line='DWED_MARKER','successful retry loads exact first line');
+        check(ctx.current^.recovery=nil,'ordinary document has no recovery allocation');
+        s:='DWED_MARKER'+#13#10+'second line'+#13#10;
+        info.payload_size:=length(s); info.payload_crc:=crc_update($FFFFFFFF,s[1],length(s)) xor $FFFFFFFF;
+        check(recover_record(ctx,'C:\$ER0000.REC',info,'C:\SAMPLE.TXT')=0,'associated recovery retries after release');
+        check(ctx.current^.recovery<>nil,'recovery owns its origin');
+        check(ctx.current^.recovery^.name='C:\$ER0000.REC','origin has journal path');
+        check(ctx.current^.recovery^.info.payload_crc=info.payload_crc,'origin retains payload fingerprint');
         while ctx.all<>nil do begin
                 p:=ctx.all; ctx.all:=p^.next; strs.free(p^.rline);
-                undo_done(p^.history); FreeMem(p,sizeof(TFileContext));
+                undo_done(p^.history);
+                if p^.recovery<>nil then FreeMem(p^.recovery,sizeof(TRecoveryOrigin));
+                FreeMem(p,sizeof(TFileContext));
         end;
         writeln(output,'PASS ',checks,' assertions'); close(output);
         System.Assign(output,'A:\MEM.OK'); System.Rewrite(output);

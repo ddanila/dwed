@@ -33,7 +33,7 @@ implementation
 
 uses dwedhelp, scr, kminput, cstring, scrui, strs, str, dwedscru, dwedutil,
 dwedaddo, dwedhl, dwedlnch, system2, wincb, dwedtbl, dwedmenu,
-unredo, strsdos, dwedundo, textcell, dwedsave, startmem;
+unredo, strsdos, dwedundo, textcell, dwedsave, startmem, dwedrcv;
 
 {$F+}
 const
@@ -497,6 +497,7 @@ begin
                 save_document:=SAVE_OK;
         end;
         accepted:=pending_save_dialog(ctx,false);
+        if (errCode=0) and accepted then resolve_saved_recovery(ctx);
 end;
 
 function may_close_document(var ctx:TEditorContext):boolean;
@@ -1105,6 +1106,7 @@ begin
                 r := ctx.current;
                 strs.free(r^.rline);
                 undo_done(r^.history);
+                if r^.recovery<>nil then FreeMem(r^.recovery,sizeof(TRecoveryOrigin));
                 freemem(r, sizeof(TFileContext));
                 if prev <> nil then prev^.next := next else ctx.all := next;
                 if next = nil then next := ctx.all;
@@ -1235,6 +1237,7 @@ begin
                         srcctx := ctx.all;
                         ctx.all := ctx.all^.next;
                         undo_done(srcctx^.history);
+                        if srcctx^.recovery<>nil then FreeMem(srcctx^.recovery,sizeof(TRecoveryOrigin));
                         freemem(srcctx, sizeof(TFileContext));
                 end;
         end;

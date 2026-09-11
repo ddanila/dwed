@@ -68,8 +68,11 @@ including fingerprinted older backups.
 ~Enter~ or ~Esc~ keeps them. Changed contents and
 unverified older backups are left in place.
 An already open original remains a separate window.
-Retained generations still need manual inspection
-and cleanup after recovery.
+After saving recovered contents, EDIT verifies
+the new saved copy and offers cleanup again.
+This also works after further edits or Save As.
+Keep leaves the files for inspection; another
+save in this session offers the check again.
 ///1TEXT
 Tabs and high-bit codepage bytes are preserved.
 Existing CRLF, LF or CR line endings and the final

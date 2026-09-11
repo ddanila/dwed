@@ -24,7 +24,7 @@ unit dwedtype;
 
 interface
 
-uses strs, dwedhl, event, unredo, safesave, dosread;
+uses strs, dwedhl, event, unredo, safesave, dosread, saveinfo;
 
 const
 SCRU_QUIT   = 1;
@@ -116,7 +116,14 @@ TLineEditorContext = record
 end;
 
 PFileContext =^ TFileContext;
+PRecoveryOrigin = ^TRecoveryOrigin;
+TRecoveryOrigin = record
+        name : string;
+        info : TSaveRecord;
+end;
+
 TFileContext = record
+        recovery     : PRecoveryOrigin;
         fname        : string;
         sfname       : string;
         st           : SourceType;

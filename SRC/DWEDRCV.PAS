@@ -7,6 +7,8 @@ uses dwedtype,saveinfo;
 const CLEANUP_RETAINED_BACKUP=1015;
 
 function resolve_record(var ctx:TEditorContext; name:string; var expected:TSaveRecord; remove:boolean):integer;
+function recover_record(var ctx:TEditorContext; name:string; var info:TSaveRecord; source:string):integer;
+procedure resolve_saved_recovery(var ctx:TEditorContext);
 procedure discover_recovery(var ctx:TEditorContext);
 function recover_document(var ctx:TEditorContext; var info:TSaveRecord; source:string):integer;
 function read_record(var ctx:TEditorContext; name:string; var info:TSaveRecord):integer;
@@ -55,7 +57,8 @@ begin
         payload_matches:=error;
 end;
 
-function resolve_record(var ctx:TEditorContext; name:string; var expected:TSaveRecord; remove:boolean):integer;
+function resolve_copy(var ctx:TEditorContext; name:string; var expected:TSaveRecord;
+        saved_name:string; saved_size,saved_crc:longword; remove:boolean):integer;
 type TRecordBytes=array[0..sizeof(TSaveRecord)-1] of byte;
 var info:TSaveRecord; error,i:integer; f:file; attr:word; has_temporary,has_previous:boolean;
         function erase_name(path:string):integer;
@@ -70,6 +73,11 @@ begin
         error:=read_record(ctx,name,info);
         if error=0 then for i:=0 to sizeof(info)-1 do
                 if TRecordBytes(info)[i]<>TRecordBytes(expected)[i] then error:=RECORD_INVALID;
+        { The verified saved copy must never be one of the deletion targets. }
+        if (error=0) and (same_location(saved_name,name) or
+           same_location(saved_name,info.temporary) or
+           ((info.previous_backup<>'') and same_location(saved_name,info.previous_backup))) then
+                error:=RECOVERY_MISMATCH;
         has_previous:=false;
         if (error=0) and (info.previous_backup<>'') then begin
                 System.Assign(f,info.previous_backup); GetFAttr(f,attr);
@@ -80,7 +88,7 @@ begin
                 end
                 else if DosError<>2 then error:=DosError;
         end;
-        if error=0 then error:=payload_matches(ctx,info.destination,info.payload_size,info.payload_crc);
+        if error=0 then error:=payload_matches(ctx,saved_name,saved_size,saved_crc);
         has_temporary:=false;
         if error=0 then begin
                 System.Assign(f,info.temporary); GetFAttr(f,attr);
@@ -94,7 +102,79 @@ begin
                 if (error=0) and has_previous then error:=erase_name(info.previous_backup);
                 if error=0 then error:=erase_name(name);
         end;
-        resolve_record:=error;
+        resolve_copy:=error;
+end;
+
+function resolve_record(var ctx:TEditorContext; name:string; var expected:TSaveRecord; remove:boolean):integer;
+begin
+        resolve_record:=resolve_copy(ctx,name,expected,expected.destination,
+                expected.payload_size,expected.payload_crc,remove);
+end;
+
+procedure resolve_saved_recovery(var ctx:TEditorContext);
+var origin:PRecoveryOrigin; saved_name,number:string; saved_size,saved_crc:longword;
+    error,row,scroll,visible,width:integer; key:byte; done,settled:boolean;
+        procedure line(value:string);
+        begin
+                repeat
+                        if (row>=scroll) and (row<scroll+visible) then
+                                scr.print(2,2+row-scroll,ctx.config.color.text,copy(value,1,width));
+                        System.delete(value,1,width); inc(row);
+                until value='';
+        end;
+        function check(remove:boolean):integer;
+        begin
+                check:=resolve_copy(ctx,origin^.name,origin^.info,
+                        saved_name,saved_size,saved_crc,remove);
+        end;
+begin
+        origin:=ctx.current^.recovery;
+        if (origin=nil) or not ctx.pending_save.published then exit;
+        saved_name:=ctx.pending_save.destination;
+        saved_size:=ctx.pending_save.payload_size;
+        saved_crc:=longword(ctx.pending_save.payload_crc) xor $FFFFFFFF;
+        error:=check(false); scroll:=0; done:=false;
+        width:=scr.getwidth-4; if width<1 then width:=1;
+        visible:=scr.getheight-5;
+        repeat
+                scr.cls(ctx.config.color.text); row:=0;
+                scr.print(1,0,ctx.config.color.top,'Saved recovered document');
+                line('Recovery record:'); line(origin^.name);
+                line('New saved copy:'); line(saved_name);
+                if error=0 then begin
+                        line('The new saved copy has been verified.');
+                        line('Remove the listed recovery files?');
+                        line('Temporary:'); line(origin^.info.temporary);
+                        if origin^.info.previous_known=1 then begin
+                                line('Verified older backup, if still present:');
+                                line(origin^.info.previous_backup);
+                        end;
+                        line('Documents and normal backups will be kept.');
+                        scr.print(1,scr.getheight-2,ctx.config.color.top,'D Remove listed files   Enter/Esc Keep');
+                end else begin
+                        str(error,number); line('Cleanup unavailable. Error #'+number);
+                        line('Your document was saved. Recovery files remain for inspection.');
+                        if error=CLEANUP_RETAINED_BACKUP then line(origin^.info.previous_backup);
+                        scr.print(1,scr.getheight-2,ctx.config.color.top,'R Retry check   Enter/Esc Keep');
+                end;
+                scr.print(1,scr.getheight-1,ctx.config.color.top,'Up/Down Scroll');
+                scr.cursor_off; scr.show; key:=hi(kbd_getkey);
+                case key of
+                SCAN_ESC,SCAN_ENTER:done:=true;
+                SCAN_UP:if scroll>0 then dec(scroll);
+                SCAN_DOWN:if scroll+visible<row then inc(scroll);
+                SCAN_R:begin close_read(ctx.file_reader); error:=check(false); scroll:=0 end;
+                SCAN_D:if error=0 then begin
+                        error:=check(true); scroll:=0;
+                        if error=0 then begin
+                                FreeMem(origin,sizeof(TRecoveryOrigin));
+                                ctx.current^.recovery:=nil; done:=true;
+                        end;
+                end;
+                end;
+        until done;
+        if ctx.file_reader.opened then settled:=pending_save_dialog(ctx,false);
+        dwedscru.update(ctx,SCRU_FULL);
 end;
 
 function recover_document(var ctx:TEditorContext; var info:TSaveRecord; source:string):integer;
@@ -115,6 +195,20 @@ begin
                 ctx.current^.format:=format; undo_unsaved(ctx.current^.history); load_ed(ctx);
         end;
         recover_document:=error;
+end;
+
+function recover_record(var ctx:TEditorContext; name:string; var info:TSaveRecord; source:string):integer;
+var origin:PRecoveryOrigin; error:integer;
+begin
+        recover_record:=8;
+        if (MaxAvail<sizeof(TRecoveryOrigin)) or
+           (MemAvail-sizeof(TRecoveryOrigin)<UNDO_DEFAULT_RESERVE) then exit;
+        GetMem(origin,sizeof(TRecoveryOrigin));
+        origin^.name:=name; origin^.info:=info;
+        error:=recover_document(ctx,info,source);
+        if error=0 then ctx.current^.recovery:=origin
+        else FreeMem(origin,sizeof(TRecoveryOrigin));
+        recover_record:=error;
 end;
 
 function candidate(var info:TSaveRecord):string;
@@ -197,7 +291,7 @@ begin
                 SCAN_DOWN:if scroll+visible<row then inc(scroll);
                 SCAN_R:if confirm_cleanup then confirm_cleanup:=false
                        else if error=0 then begin
-                        error:=recover_document(ctx,info,source);
+                        error:=recover_record(ctx,name,info,source);
                         if error=0 then done:=true;
                         scroll:=0;
                 end else begin

@@ -714,6 +714,7 @@ end;
 
 procedure reset_file(p : PFileContext);
 begin
+        p^.recovery:=nil;
         undo_init(p^.history,UNDO_DEFAULT_LIMIT,UNDO_DEFAULT_RESERVE);
         with p^ do begin
                 sfname := mk_short_name(fname);

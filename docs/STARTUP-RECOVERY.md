@@ -48,6 +48,8 @@ DOS-call boundaries, not during physical sector writes.
 C checks whether the recorded payload is already installed and offers confirmed
 cleanup of a verified duplicate temporary and its record. See
 [RECOVERY-CLEANUP.md](RECOVERY-CLEANUP.md). New journals also identify the retained previous backup for verified cleanup.
-Legacy journals without that fingerprint remain conservative. Later-edited
-recovered contents still need a guided resolution workflow. The old destination
-and normal backup are never cleanup deletion targets.
+Legacy journals without that fingerprint remain conservative. A successful save
+of a recovered document offers cleanup using a verified new saved copy, including
+after further edits or Save As. This association lasts for the current editing
+session; the linked cleanup document describes retention and retry behaviour.
+The old destination and normal backup are never cleanup deletion targets.
